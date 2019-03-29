@@ -74,8 +74,11 @@ namespace Huobi {
 //            printf("------request------\n");
 //            printf(ptr->getUrl().c_str());
 //            printf("\n");
+            curl_easy_setopt(pCurl, CURLOPT_SSLKEYTYPE, "PEM");
+            curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYPEER, 1L);
+            curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYHOST, 1L);
             curl_easy_setopt(pCurl, CURLOPT_URL, request->getUrl().c_str()); // 访问的URL
-            curl_easy_setopt(pCurl, CURLOPT_SSLCERT ,"/etc/huobi_cert/cert.pem");
+            curl_easy_setopt(pCurl, CURLOPT_CAINFO, "/etc/huobi_cert/cert.pem");
             if (ptr->method == "POST") {
                 curl_easy_setopt(pCurl, CURLOPT_POST, 1);
                 curl_slist *plist = curl_slist_append(NULL, "Content-Type:application/json;charset=UTF-8");
