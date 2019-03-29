@@ -18,7 +18,6 @@ include_directories(./3rdparty/openssl/include)
 include_directories(./3rdparty/zlib/include)
 include_directories(./3rdparty/libdecnumber/include)
 
-add_subdirectory(example)
 add_subdirectory(unittest)
 
 

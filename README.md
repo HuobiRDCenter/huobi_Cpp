@@ -92,7 +92,7 @@ $ make install
 #### Run example 
 
 ```
-<In huobi_app folder>
+<In huobi_Cpp folder>
 $ cd examples
 $ cd GetCandlestickData
 $ mkdir build

@@ -1,6 +1,5 @@
 build/
 dist/
-lib/
 nbproject/
 *.inc
 *.tmp
