@@ -20,7 +20,7 @@ namespace Huobi {
         static long convertCSTInSecondToUTC(long timeInSecond) {
             if (timeInSecond > 946656000) {
                 // bigger than 2000-01-01 00:00:00
-                return timeInSecond - 8 * 60 * 60;
+                return (timeInSecond - 8 * 60 * 60)*1000;
             }
             return 0;
         }
