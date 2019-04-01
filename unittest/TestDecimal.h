@@ -57,9 +57,9 @@ TEST(TestDecimal, Mul) {
     {
         Decimal a("123.456");
         Decimal b("456.123");
-        ASSERT_EQ(Decimal(56311.121088), a * b);
+        ASSERT_EQ(Decimal("56311.121088"), a * b);
         a *= b;
-        ASSERT_EQ(Decimal(56311.121088), a);
+        ASSERT_EQ(Decimal("56311.121088"), a);
     }
     {
         Decimal a("123.456");

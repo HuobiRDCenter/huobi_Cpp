@@ -8,6 +8,7 @@
 #include "Utils/UrlParamsBuilder.h"
 #include "TimeService.h"
 #include "InputChecker.h"
+#include "Utils/JsonWriter.h"
 
 namespace Huobi {
 
@@ -188,7 +189,7 @@ namespace Huobi {
             for (int i = 0; i < list.size(); i++) {
                 JsonWrapper item = list.getJsonObjectAt(i);
                 Balance balance;
-                balance.balance = std::stod(item.getString("balance"));
+                balance.balance = item.getDecimal("balance");
                 balance.currency = item.getString("currency");
                 balance.type = BalanceType::lookup(item.getString("type"));
                 balances.push_back(balance);
@@ -453,16 +454,16 @@ namespace Huobi {
                 Order order;
                 order.orderId = item.getLong("id");
                 order.symbol = item.getString("symbol");
-                order.price = std::stod(item.getString("price"));
-                order.amount = std::stod(item.getString("amount"));
+                order.price = item.getDecimal("price");
+                order.amount = item.getDecimal("amount");
                 order.accountType =
                         AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
                 order.createdTimestamp =
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
                 order.type = OrderType::lookup(item.getString("type"));
-                order.filledAmount = std::stod(item.getString("filled-amount"));
-                order.filledCashAmount = std::stod(item.getString("filled-cash-amount"));
-                order.filledFees = std::stod(item.getString("filled-fees"));
+                order.filledAmount = item.getDecimal("filled-amount");
+                order.filledCashAmount = item.getDecimal("filled-cash-amount");
+                order.filledFees = item.getDecimal("filled-fees");
                 order.source = OrderSource::lookup(item.getString("source"));
                 order.state = OrderState::lookup(item.getString("state"));
                 orderList.push_back(order);
@@ -563,16 +564,16 @@ namespace Huobi {
             order.symbol = data.getString("symbol");
             order.orderId = data.getLong("id");
             order.accountType = AccountsInfoMap::getAccount(accessKey, data.getLong("account-id")).type;
-            order.amount = std::stod(data.getString("amount"));
+            order.amount = data.getDecimal("amount");
             order.canceledTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("canceled-at"));
             order.createdTimestamp =
                     TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
             order.finishedTimestamp =
                     TimeService::convertCSTInMillisecondToUTC(data.getLong("finished-at"));
-            order.filledAmount = std::stod(data.getString("field-amount"));
-            order.filledCashAmount = std::stod(data.getString("field-cash-amount"));
-            order.filledFees = std::stod(data.getString("field-fees"));
-            order.price = std::stod(data.getString("price"));
+            order.filledAmount = data.getDecimal("field-amount");
+            order.filledCashAmount = data.getDecimal("field-cash-amount");
+            order.filledFees = data.getDecimal("field-fees");
+            order.price = data.getDecimal("price");
             order.source = OrderSource::lookup(data.getString("source"));
             order.state = OrderState::lookup(data.getString("state"));
             order.type = OrderType::lookup(data.getString("type"));
@@ -733,7 +734,7 @@ namespace Huobi {
                 Order order;
                 order.accountType =
                         AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
-                order.amount = std::stod(item.getString("amount"));
+                order.amount = item.getDecimal("amount");
                 order.canceledTimestamp =
                         TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("canceled-at", 0));
                 order.finishedTimestamp =
@@ -815,7 +816,7 @@ namespace Huobi {
                     Balance balance;
                     balance.currency = in.getString("currency");
                     balance.type = BalanceType::lookup(in.getString("type"));
-                    balance.balance = std::stod(in.getString("balance"));
+                    balance.balance = in.getDecimal("balance");
                     balances.push_back(balance);
                 }
                 completeSubAccountInfo.balances = balances;
@@ -964,6 +965,44 @@ namespace Huobi {
 
     }
 
+    RestApi<std::vector<MarginBalanceDetail>>* RestApiImpl::getMarginBalanceDetail(
+            const char* symbol) {
+        InputChecker::checker()
+            ->checkSymbol(symbol);
+        
+        UrlParamsBuilder builder;
+        builder.putUrl("symbol", symbol);
+        auto res = createRequestByGetWithSignature<std::vector < MarginBalanceDetail >> ("/v1/margin/accounts/balance", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::vector<MarginBalanceDetail> marginBalanceDetailList;
+            JsonWrapper dataArray = json.getJsonObjectOrArray("data");
+            for (int i = 0; i < dataArray.size(); i++) {
+                JsonWrapper itemInData = dataArray.getJsonObjectAt(i);
+                MarginBalanceDetail marginBalanceDetail;
+                marginBalanceDetail.id = itemInData.getLong("id");
+                marginBalanceDetail.type = AccountType::lookup(itemInData.getString("type"));
+                marginBalanceDetail.symbol = itemInData.getString("symbol");
+                marginBalanceDetail.flPrice = itemInData.getDecimal("fl-price");
+                marginBalanceDetail.flType = itemInData.getString("fl-type");
+                marginBalanceDetail.state = AccountState::lookup(itemInData.getString("state"));
+                marginBalanceDetail.riskRate = itemInData.getDecimal("risk-rate");
+                JsonWrapper listArray = itemInData.getJsonObjectOrArray("list");
+                for (int i = 0; i < listArray.size(); i++) {
+                    JsonWrapper itemInList = listArray.getJsonObjectAt(i);
+                    Balance balance;
+                    balance.currency = itemInList.getString("currency");
+                    balance.type = BalanceType::lookup(itemInList.getString("type"));
+                    balance.balance = itemInList.getDecimal("balance");
+                    marginBalanceDetail.subAccountBalance.push_back(balance);
+                }
+                marginBalanceDetailList.push_back(marginBalanceDetail);
+            }
+            return marginBalanceDetailList;
+        };
+        return res;
+    }
+    
+    
     template <typename T>
     RestApi<T>* RestApiImpl::createRequestByPostWithSignature(const char* adress, UrlParamsBuilder& builder) {
         RestApi<T>* res = new RestApi<T>;

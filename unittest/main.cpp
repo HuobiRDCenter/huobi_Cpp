@@ -49,6 +49,8 @@ using namespace Huobi;
 #include "TestGetPriceDepth.h"
 #include "TestTransfer.h"
 #include "TestErrorResponse.h"
+#include "TestDecimal.h"
+#include "TestGetMarginBalanceDetail.h"
 
 int main(int argc, char **argv) {
 

@@ -58,6 +58,7 @@ namespace Huobi {
         std::vector<EtfSwapHistory> getEtfSwapHistory(const char* etfSymbol, int offset, int size);
         std::vector<Candlestick> getEtfCandlestick(const char* etfSymbol, CandlestickInterval interval,
                 int limit = 150);
+        std::vector<MarginBalanceDetail> getMarginBalanceDetail(const char* symbol);
     };
 }
 

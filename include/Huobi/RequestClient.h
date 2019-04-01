@@ -328,19 +328,22 @@ namespace Huobi {
          */
         virtual std::vector<Candlestick> getEtfCandlestick(const char* etfSymbol, CandlestickInterval interval,
                 int limit = 150) = 0;
+        /**
+         * Get the Balance of the Margin Loan Account.
+         * 
+         * @param symbol: The symbol, like "btcusdt". (mandatory)
+         * @return The margin loan account detail.
+         */
+        virtual std::vector<MarginBalanceDetail> getMarginBalanceDetail(const char* symbol) = 0;
     };
-
     
     RequestClient* createRequestClient();
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey);
-     
 
     RequestClient* createRequestClient(RequestOptions& op) ;
-        
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey, RequestOptions& op);
     
 }
 #endif /* SYNCCLIENT_H */
-

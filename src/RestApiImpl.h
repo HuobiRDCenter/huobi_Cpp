@@ -37,6 +37,7 @@
 #include "Huobi/EtfSwapHistory.h"
 #include "Huobi/Logger.h"
 #include "Huobi/RequestOptions.h"
+#include "Huobi/MarginBalanceDetail.h"
 #include "GetHost.h"
 
 namespace Huobi {
@@ -51,7 +52,7 @@ namespace Huobi {
         std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         std::string accessKey;
         std::string secretKey;
-        std::string host="api.huobi.pro";
+        std::string host = "api.huobi.pro";
     public:
 
         RestApiImpl() {
@@ -101,7 +102,7 @@ namespace Huobi {
                 this->TradingUrl = "https://";
                 this->TradingUrl = this->TradingUrl + host + "/api";
             }
-            
+
         }
         template <typename T>
         RestApi<T>* createRequestByPostWithSignature(const char* adress, UrlParamsBuilder&builder);
@@ -152,6 +153,7 @@ namespace Huobi {
         RestApi<std::vector<EtfSwapHistory>>*getEtfSwapHistory(const char* etfSymbol, int offset, int size);
         RestApi<std::vector<Candlestick>>*getETFCandlestick(
                 const char* symbol, CandlestickInterval interval, int size);
+        RestApi<std::vector<MarginBalanceDetail>>*getMarginBalanceDetail(const char* symbol);
     };
 }
 #endif /* RESTAPIIMPL_H */

@@ -59,6 +59,7 @@
 #include "Huobi/UnitPrice.h"
 #include "Huobi/Withdraw.h"
 #include "Huobi/WithdrawRequest.h"
+#include "Huobi/MarginBalanceDetail.h"
 
 #endif /* HUOBICLIENT_H */
 

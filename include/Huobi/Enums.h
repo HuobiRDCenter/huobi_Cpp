@@ -118,6 +118,8 @@ private:
         static BalanceType frozen;
         static BalanceType loan;
         static BalanceType interest;
+        static BalanceType loan_available;
+        static BalanceType transfer_out_available;
     };
 
     /**
@@ -289,6 +291,12 @@ private:
         static WithdrawState repealed;
     };
 
+    class QueryDirection : public BaseEnumClass<QueryDirection> {
+        DEFINE_ENUM_CLASS(QueryDirection);
+    public:
+        static QueryDirection PREV;
+        static QueryDirection NEXT;
+    };
 
     /**
      * IDLE,DELAY_CONNECT, CONNECTED,CLOSED_ON_ERROR.

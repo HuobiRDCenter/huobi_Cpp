@@ -37,6 +37,8 @@ template<> BaseEnumClass<class_name>::LookupMap BaseEnumClass<class_name>::m_loo
     BalanceType BalanceType::interest = BalanceType("interest");
     BalanceType BalanceType::loan = BalanceType("loan");
     BalanceType BalanceType::trade = BalanceType("trade");
+    BalanceType BalanceType::loan_available = BalanceType("loan-available");
+    BalanceType BalanceType::transfer_out_available = BalanceType("transfer-out-available");
 
     IMPL_LOOKUP_ENUM_CLASS(BalanceMode);
     BalanceMode BalanceMode::available = BalanceMode("0");
@@ -92,7 +94,6 @@ template<> BaseEnumClass<class_name>::LookupMap BaseEnumClass<class_name>::m_loo
     LoanOrderStates LoanOrderStates::invalid = LoanOrderStates("invalid");
 
 
-
     IMPL_LOOKUP_ENUM_CLASS(OrderSource);
     OrderSource OrderSource::sys = OrderSource("sys");
     OrderSource OrderSource::web = OrderSource("web");
@@ -135,6 +136,10 @@ template<> BaseEnumClass<class_name>::LookupMap BaseEnumClass<class_name>::m_loo
     WithdrawState WithdrawState::wallet_reject = WithdrawState("wallet-reject");
     WithdrawState WithdrawState::wallet_transfer = WithdrawState("wallet-transfer");
 
+    IMPL_LOOKUP_ENUM_CLASS(QueryDirection);
+    QueryDirection QueryDirection::PREV = QueryDirection("prev");
+    QueryDirection QueryDirection::NEXT = QueryDirection("next");
+    
     IMPL_LOOKUP_ENUM_CLASS(ConnectionState);
     ConnectionState ConnectionState::IDLE = ConnectionState("IDLE");
     ConnectionState ConnectionState::DELAY_CONNECT = ConnectionState("DELAY_CONNECT");
@@ -142,5 +147,4 @@ template<> BaseEnumClass<class_name>::LookupMap BaseEnumClass<class_name>::m_loo
     ConnectionState ConnectionState::CLOSED_ON_ERROR = ConnectionState("CLOSED_ON_ERROR");
 
 }
-
 

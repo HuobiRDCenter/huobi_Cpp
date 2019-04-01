@@ -30,7 +30,7 @@ TEST(TestGetMatchResult, request) {
     printf(request->getUrl().c_str());
     ASSERT_TRUE(request->getUrl().find("/v1/order/orders/24966984923/matchresults") != -1);
     ASSERT_EQ("GET", request->method);
-    ASSERT_TRUE(request->getUrl().find("Signature"));
+    ASSERT_TRUE(request->getUrl().find("Signature") != -1);
 }
 
 TEST(TestGetMatchResult, InvalidSymbol) {

@@ -223,5 +223,8 @@ namespace Huobi {
             int limit) {
         return RestApiInvoke::callSync(impl->getETFCandlestick(etfSymbol, interval, limit));
     }
-
+    
+    std::vector<MarginBalanceDetail> SyncClientImpl::getMarginBalanceDetail(const char* symbol) {
+        return RestApiInvoke::callSync(impl->getMarginBalanceDetail(symbol));
+    }
 }

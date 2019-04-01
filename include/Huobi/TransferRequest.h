@@ -30,7 +30,7 @@ namespace Huobi {
         AccountType from;
         AccountType to;
         std::string currency;
-        Decimal amount = 0;
+        Decimal amount;
     };
 
 }
