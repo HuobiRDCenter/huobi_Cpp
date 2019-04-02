@@ -231,8 +231,13 @@ private:
         static OrderSource api;
         static OrderSource app;
         static OrderSource margin_api;
+        static OrderSource margin_web;
+        static OrderSource margin_app;
         static OrderSource spot_api;
-        static OrderSource cleared;
+        static OrderSource spot_web;
+        static OrderSource spot_app;
+        static OrderSource fl_sys;
+        static OrderSource fl_mgt;
         static OrderSource invalid;
     };
 

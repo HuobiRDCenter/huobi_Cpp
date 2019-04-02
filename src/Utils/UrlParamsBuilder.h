@@ -1,16 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
- * File:   UrlParamsBuilder.h
- * Author: yuanxueqi
- *
- * Created on 2019年3月13日, 下午6:59
- */
-
 #ifndef URLPARAMSBUILDER_H
 #define URLPARAMSBUILDER_H
 #include <string>
@@ -97,7 +84,7 @@ namespace Huobi {
             return "";
         }
 
-        UrlParamsBuilder& putPost(std::string pre, long lparam) {
+        UrlParamsBuilder& putPost(const std::string& pre, long lparam) {
 
             if (lparam == 0) {
                 return *this;
@@ -105,7 +92,7 @@ namespace Huobi {
             return putPostImpl(pre, lparam);
         }
 
-        UrlParamsBuilder& putPost(std::string pre, int lparam) {
+        UrlParamsBuilder& putPost(const std::string& pre, int lparam) {
 
             if (lparam == 0) {
                 return *this;
@@ -113,25 +100,21 @@ namespace Huobi {
             return putPostImpl(pre, lparam);
         }
 
-        UrlParamsBuilder& putPost(std::string pre, Decimal lparam) {
+        UrlParamsBuilder& putPost(const std::string& pre, Decimal lparam) {
             if (lparam.isZero()) {
                 return *this;
             }
            return  putPostImpl(pre, lparam);
         }
 
-        UrlParamsBuilder& putPost(std::string pre, std::string lparam) {
+        UrlParamsBuilder& putPost(const std::string& pre, const std::string& lparam) {
             if (lparam.empty()) {
                 return *this;
             }
             return putPostImpl(pre, lparam);
         }
 
-        UrlParamsBuilder& putPost(std::string pre, std::list<std::string> lparam) {
-            //            if (lparam.empty()) {
-            //                return *this;
-            //            }
-            //            putPostImpl(pre, lparam);
+        UrlParamsBuilder& putPost(const std::string& pre, const std::list<std::string>& lparam) {
             if (!lparam.size()) {
                 throw  HuobiApiException(HuobiApiException::INPUT_ERROR, "list should not null");
             }
@@ -141,50 +124,39 @@ namespace Huobi {
             return *this;
         }
 
-        UrlParamsBuilder& putUrl(std::string pre, std::string lparam) {
+        UrlParamsBuilder& putUrl(const std::string& pre, const std::string& lparam) {
             if (lparam.empty()) {
                 return *this;
             }
-            //            if (adress == "") {
-            //                adress = pre + "=" + lparam;
-            //            } else {
-            //                adress = adress + "&" + pre + "=" + lparam;
-            //            }
            
             getMap[pre] = lparam;
             return *this;
         }
 
-        UrlParamsBuilder& putUrl(std::string pre, tm* lparam) {
+        UrlParamsBuilder& putUrl(const std::string& pre, tm* lparam) {
             if (lparam == NULL) {
                 return *this;
             }
             char buf[100];
             sprintf(buf, "%4d%02d%02d", lparam->tm_year, lparam->tm_mon + 1, lparam->tm_mday);
-            //            if (adress == "") {
-            //                adress = pre + "=" + buf;
-            //            } else {
-            //                adress = adress + "&" + pre + "=" + buf;
-            //            }
-            //            return *this;
             return putUrl(pre, buf);
         }
 
-        UrlParamsBuilder& putUrl(std::string pre, int lparam) {
+        UrlParamsBuilder& putUrl(const std::string& pre, int lparam) {
             if (lparam==0) {
                 return *this;
             }
             return putUrlImpl(pre, lparam);
         }
 
-        UrlParamsBuilder& putUrl(std::string pre, long lparam) {
+        UrlParamsBuilder& putUrl(const std::string& pre, long lparam) {
             if (lparam==0) {
                 return *this;
             }
             return putUrlImpl(pre, lparam);
         }
 
-        UrlParamsBuilder& putUrl(std::string pre, Decimal lparam) {
+        UrlParamsBuilder& putUrl(const std::string& pre, Decimal lparam) {
             if (lparam.isZero()) {
                 return *this;
             }
@@ -193,20 +165,15 @@ namespace Huobi {
     private:
 
         template <typename T>
-        UrlParamsBuilder& putUrlImpl(std::string pre, T lparam) {
+        UrlParamsBuilder& putUrlImpl(const std::string& pre, T lparam) {
             std::stringstream ss;
             ss << lparam;
-            //            if (adress == "") {
-            //                adress = pre + "=" + ss.str();
-            //            } else {
-            //                adress = adress + "&" + pre + "=" + ss.str();
-            //            }
             getMap[pre] = ss.str();
             return *this;
         }
 
         template <typename T>
-        UrlParamsBuilder& putPostImpl(std::string pre, T lparam) {
+        UrlParamsBuilder& putPostImpl(const std::string& pre, T lparam) {
 
             if (!isPost) {
                 isPost = true;

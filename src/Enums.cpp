@@ -100,10 +100,15 @@ template<> BaseEnumClass<class_name>::LookupMap BaseEnumClass<class_name>::m_loo
     OrderSource OrderSource::api = OrderSource("api");
     OrderSource OrderSource::app = OrderSource("app");
     OrderSource OrderSource::margin_api = OrderSource("margin-api");
+    OrderSource OrderSource::margin_web = OrderSource("margin-web");
+    OrderSource OrderSource::margin_app = OrderSource("margin-app");
     OrderSource OrderSource::spot_api = OrderSource("spot-api");
-    OrderSource OrderSource::cleared = OrderSource("cleared");
+    OrderSource OrderSource::spot_web = OrderSource("spot-api");
+    OrderSource OrderSource::spot_app = OrderSource("spot-api");
+    OrderSource OrderSource::fl_sys = OrderSource("fl-sys");
+    OrderSource OrderSource::fl_mgt = OrderSource("fl-mgt");
     OrderSource OrderSource::invalid = OrderSource("invalid");
-
+    
 
     IMPL_LOOKUP_ENUM_CLASS(OrderState);
     OrderState OrderState::canceled = OrderState("canceled");

@@ -401,6 +401,7 @@ namespace Huobi {
                 .putUrl("end-date", loanOrderRequest.endDate)
                 .putUrl("states", loanOrderRequest.states.getValue())
                 .putUrl("from", loanOrderRequest.fromId)
+                .putUrl("direct", loanOrderRequest.direction.getValue())
                 .putUrl("size", loanOrderRequest.size);
         auto res = createRequestByGetWithSignature<std::vector < Loan >> ("/v1/margin/loan-orders", builder);
         res->jsonParser = [this](const JsonWrapper & json) {

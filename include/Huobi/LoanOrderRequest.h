@@ -29,9 +29,10 @@ namespace Huobi {
          * \param states The loan order states, it could be created, accrual, cleared or invalid. (optional).
          * \param fromId Search order id to begin with (optional).
          * \param size The number of orders to return. (optional).
+         * \param direction The query direction, prev or next. (optional)
          */
-        LoanOrderRequest(const char* symbol, const char* startDate, const char* endDate, const LoanOrderStates& states, long fromId, long size) :
-        symbol(symbol), startDate(startDate), endDate(endDate), states(states), fromId(fromId), size(size) {
+        LoanOrderRequest(const char* symbol, const char* startDate, const char* endDate, const LoanOrderStates& states, long fromId, long size, QueryDirection direction) :
+        symbol(symbol), startDate(startDate), endDate(endDate), states(states), fromId(fromId), size(size), direction(direction) {
         }
 
         std::string symbol;
@@ -40,6 +41,7 @@ namespace Huobi {
         LoanOrderStates states;
         long fromId = 0;
         long size = 0;
+        QueryDirection direction;
     };
 
 }

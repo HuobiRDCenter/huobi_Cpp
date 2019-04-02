@@ -26,7 +26,7 @@ using namespace Huobi;
 
 TEST(TestGetLoanHistory, request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    LoanOrderRequest req = LoanOrderRequest("btcusdt", "2019-01-02", "2019-02-03", LoanOrderStates::created, 23456, 123);
+    LoanOrderRequest req = LoanOrderRequest("btcusdt", "2019-01-02", "2019-02-03", LoanOrderStates::created, 23456, 123, QueryDirection::NEXT);
     auto request = impl->getLoanHistory(req);
     ASSERT_EQ("GET", request->method);
     ASSERT_TRUE(request->getUrl().find("/v1/margin/loan-orders") != -1);
@@ -36,7 +36,7 @@ TEST(TestGetLoanHistory, request) {
     ASSERT_TRUE(request->getUrl().find("states=created") != -1);
     ASSERT_TRUE(request->getUrl().find("from=23456") != -1);
     ASSERT_TRUE(request->getUrl().find("size=123") != -1);
-    ASSERT_TRUE(request->getUrl().find("direct") == -1);
+    ASSERT_TRUE(request->getUrl().find("direct=next") != -1);
 }
 
 TEST(TestGetLoanHistory, request2) {

@@ -31,6 +31,7 @@
 #include "Huobi/CompleteSubAccountInfo.h"
 #include "Huobi/EtfSwapConfig.h"
 #include "Huobi/EtfSwapHistory.h"
+#include "Huobi/MarginBalanceDetail.h"
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -164,7 +165,7 @@ namespace Huobi {
          * \param size     The size of record. (mandatory)
          * \return The list of withdraw records.
          */
-        virtual std::vector<Withdraw> getWithdrawHistory(const char* currency, long fromId, int size) = 0; //todo
+        virtual std::vector<Withdraw> getWithdrawHistory(const char* currency, long fromId, int size) = 0;
         /**
          * Get the deposit records of an account
          *
@@ -173,7 +174,7 @@ namespace Huobi {
          * \param size     The size of record. (mandatory)
          * \return The list of deposit records.
          */
-        virtual std::vector<Deposit> getDepositHistory(const char* currency, long fromId, int size) = 0; ///todo
+        virtual std::vector<Deposit> getDepositHistory(const char* currency, long fromId, int size) = 0;
         /**
          * Transfer asset from specified account to another account.
          *
@@ -189,7 +190,7 @@ namespace Huobi {
          * \param amount   The amount of currency to borrow. (mandatory)
          * \return The margin order id.
          */
-        virtual long applyLoan(const char* symbol, const char* currency, Decimal amount) = 0; //todo
+        virtual long applyLoan(const char* symbol, const char* currency, Decimal amount) = 0;
         /**
          * Repay margin loan with you asset in your margin account.
          *
@@ -241,27 +242,27 @@ namespace Huobi {
          * \param orderId order id
          * \return The list of match result
          */
-        virtual std::vector<MatchResult> getMatchResults(const char* symbol, long orderId) = 0; //todo
+        virtual std::vector<MatchResult> getMatchResults(const char* symbol, long orderId) = 0;
         /**
          * Search for the trade records of an account
          *
          * \param matchResultRequest A specific account information, including symbols, types etc.
          * \return The list of match result.
          */
-        virtual std::vector<MatchResult> getMatchResults(MatchResultRequest& matchResultRequest) = 0; //todo
+        virtual std::vector<MatchResult> getMatchResults(MatchResultRequest& matchResultRequest) = 0;
         /**
          * Submit a request to withdraw some asset from an account
          *
          * \param withdrawRequest The withdraw request, including address, amount, etc
          * \return Withdraw id
          */
-        virtual long withdraw(WithdrawRequest& withdrawRequest) = 0; //todo
+        virtual long withdraw(WithdrawRequest& withdrawRequest) = 0;
         /**
          * Cancel an withdraw request
          *
          * \param withdrawId withdraw id
          */
-        virtual void* cancelWithdraw(const char* symbol, long withdrawId) = 0; //todo
+        virtual void* cancelWithdraw(const char* symbol, long withdrawId) = 0;
 
         /**
          * Get historical orders.
