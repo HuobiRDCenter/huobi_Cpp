@@ -144,12 +144,5 @@ template<> BaseEnumClass<class_name>::LookupMap BaseEnumClass<class_name>::m_loo
     IMPL_LOOKUP_ENUM_CLASS(QueryDirection);
     QueryDirection QueryDirection::PREV = QueryDirection("prev");
     QueryDirection QueryDirection::NEXT = QueryDirection("next");
-    
-    IMPL_LOOKUP_ENUM_CLASS(ConnectionState);
-    ConnectionState ConnectionState::IDLE = ConnectionState("IDLE");
-    ConnectionState ConnectionState::DELAY_CONNECT = ConnectionState("DELAY_CONNECT");
-    ConnectionState ConnectionState::CONNECTED = ConnectionState("CONNECTED");
-    ConnectionState ConnectionState::CLOSED_ON_ERROR = ConnectionState("CLOSED_ON_ERROR");
-
 }
 

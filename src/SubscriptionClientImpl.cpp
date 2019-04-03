@@ -21,7 +21,7 @@ namespace Huobi {
             {
                 bool flag = connection->flushSendBuffer(wsi);
                 if (!flag) {
-                    lws_cancel_service_pt(wsi);
+                    //lws_cancel_service_pt(wsi);
                     return 1;
                 }
                 break;
@@ -38,15 +38,17 @@ namespace Huobi {
             }
             case LWS_CALLBACK_CLIENT_CLOSED:
 
-                // connection->close();
-                lwsl_user("afer canceled.....");
-                break;
+                //connection->close();
+                lwsl_user("afer canceled.....\n");
+                connection->disconnect();
+                return 1;
                 //case LWS_CALLBACK_WSI_DESTROY:
             case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-                connection->closeOnError();
+                connection->disconnect();
                 lwsl_user("closed... \n");
-                break;
+                return 1;
             default:
+                lwsl_notice("notice %d\n", reason);
                 break;
         }
 
@@ -67,18 +69,18 @@ namespace Huobi {
     static void init_context() {
         if (context == nullptr) {
 
-            int logs =  LLL_ERR | LLL_WARN  ;
+        int logs =  LLL_ERR | LLL_WARN  ;
 
         lws_set_log_level(logs, NULL);
-            struct lws_context_creation_info info;
-            memset(&info, 0, sizeof (info));
-            info.port = CONTEXT_PORT_NO_LISTEN;
-            info.protocols = protocols;
-            info.gid = -1;
-            info.uid = -1;
-            info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
-            info.client_ssl_ca_filepath = "/etc/huobi_cert/cert.pem";
-            context = lws_create_context(&info);
+        struct lws_context_creation_info info;
+        memset(&info, 0, sizeof (info));
+        info.port = CONTEXT_PORT_NO_LISTEN;
+        info.protocols = protocols;
+        info.gid = -1;
+        info.uid = -1;
+        info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+        info.client_ssl_ca_filepath = "/etc/huobi_cert/cert.pem";
+        context = lws_create_context(&info);
         }
     }
     void SubscriptionClientImpl::startService() {

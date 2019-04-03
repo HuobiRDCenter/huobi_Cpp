@@ -1,5 +1,6 @@
 #include "WebSocketWatchDog.h"
 
+#include <list>
 #include <chrono>
 #include <thread>
 #include "WebSocketConnection.h"
@@ -23,36 +24,41 @@ namespace Huobi {
     void WebSocketWatchDog::WatchDogThread() {
         while (runningFlag) {
             AutoLock lock(mutex);
-            for (std::list < WebSocketConnection*>::iterator it = connectionList.begin(); it != connectionList.end(); ++it) {
-                lwsl_user("dog.....\n");
-                if ((*it)->getState() == ConnectionState::CONNECTED) {
+            for (std::list<WebSocketConnection*>::iterator it = connectionList.begin(); it != connectionList.end(); ++it) {
+                WebSocketConnection* connection = *it;
+                LineStatus lineStatus = connection->getLineStatus();
+                if (lineStatus == LineStatus::LINE_ACTIVE) {
                     // Check response
                     if (op.isAutoReconnect) {
-                        time_t ts = TimeService::getCurrentTimeStamp() - ((*it)->getLastReceivedTime());
-                        if (ts > op.receiveLimitMs) {
-                            Logger::WriteLog(" No response from server");
-                            lwsl_user("auto recon\n");
-                            (*it)->reConnect(op.connectionDelayOnFailure);
+                        if (connection->getConnectState() == ConnectionStatus::CONNECTED) {
+                            lwsl_user("time....\n");
+                            time_t ts = TimeService::getCurrentTimeStamp() - connection->getLastReceivedTime();
+                            if (ts > op.receiveLimitMs) {
+                                Logger::WriteLog(" No response from server");
+                                lwsl_user("auto recon\n");
+                                connection->reConnect(op.connectionDelayOnFailure);
+                            }
+                        } else if (connection->getConnectState() == ConnectionStatus::CLOSED) {
+                            lwsl_user("check close, try reconnect...\n");
+                            connection->reConnect(op.connectionDelayOnFailure);
+                        } else {
+                            lwsl_user("unknown...\n");
                         }
                     }
-                } else if ((*it)->getState() == ConnectionState::DELAY_CONNECT) {
+                } else if (lineStatus == LineStatus::LINE_DELAY) {
                     lwsl_user("delay....\n");
-                    (*it)->reConnect();
-                } else if ((*it)->getState() == ConnectionState::CLOSED_ON_ERROR) {
-                    if (op.isAutoReconnect) {
-                        lwsl_user("close...\n");
-                        (*it)->reConnect(op.connectionDelayOnFailure);
-                    }
+                    connection->reConnect();
+                } else {
+                    lwsl_user("else...\n");
                 }
             }
-            std::chrono::milliseconds dura(1000);
-            std::this_thread::sleep_for(dura);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         }
     }
 
     void WebSocketWatchDog::onConnectionCreated(WebSocketConnection* connection) {
         std::list<WebSocketConnection*>::iterator conit = connectionList.begin();
-        for ( ;conit != connectionList.end() ; conit++) {
+        for (; conit != connectionList.end(); conit++) {
             if (*conit == connection)
                 return;
         }

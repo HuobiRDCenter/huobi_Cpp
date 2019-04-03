@@ -18,22 +18,22 @@ namespace Huobi {
         /**
          * The minimum creation amounts per request.
          */
-        int purchaseMinAmount;
+        int purchaseMinAmount = 0;
         
         /**
          * The max creation amounts per request.
          */
-        int purchaseMaxAmount;
+        int purchaseMaxAmount = 0;
         
         /**
          * The minimum redemption amounts per request.
          */
-        int redemptionMinAmount;
+        int redemptionMinAmount = 0;
         
         /**
          * The max redemption amounts per request.
          */
-        int redemptionMaxAmount;
+        int redemptionMaxAmount = 0;
         
         /**
          * The creation fee rate.

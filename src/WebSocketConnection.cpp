@@ -5,6 +5,7 @@
 #include "TimeService.h"
 #include <libwebsockets.h>
 #include <ctime>
+#include <stdbool.h>
 namespace Huobi {
 
     class AutoLock {
@@ -21,6 +22,8 @@ namespace Huobi {
         std::mutex& mutex_;
     };
 
+    int WebSocketConnection::connectionCounter = 0;
+    
     WebSocketConnection::WebSocketConnection(
             const std::string& apiKey,
             const std::string& secretKey,
@@ -32,7 +35,8 @@ namespace Huobi {
         this->client = nullptr;
         this->dog = dog;
         this->host = host;
-        if (host.find("api") != -1) {
+        this->connectionId = connectionCounter++;
+        if (host.find("api") == 0) {
             this->subscriptionMarketUrl = "wss://";
             this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/ws";
             this->subscriptionTradingUrl = "wss://";
@@ -47,8 +51,9 @@ namespace Huobi {
 
     void WebSocketConnection::connect(lws_context* context) {
 
-        if (connectState == ConnectionState::CONNECTED) {
-            Logger::WriteLog("already connect");
+        if (connectStatus == ConnectionStatus::CONNECTED) {
+            Logger::WriteLog("[Sub][%d] Already connect", connectionId);
+            lwsl_user("Already connect\n");
             return;
         }
         this->context = context;
@@ -72,6 +77,7 @@ namespace Huobi {
         ccinfo.host = ccinfo.address;
         ccinfo.ssl_connection = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
         struct lws* conn = lws_client_connect_via_info(&ccinfo);
+        lineStatus = LineStatus::LINE_ACTIVE;
         lwsl_user("connect_endpoint end\n");
     }
 
@@ -91,18 +97,25 @@ namespace Huobi {
         std::list<std::string>::iterator it = sendBufferList.begin();
         for (; it != sendBufferList.end(); ++it) {
 
+            if (*it == "*") {
+                lwsl_user("Get close message\n");
+                sendBufferList.clear();
+                return false;
+            } 
+            
             uint8_t buf[LWS_PRE + 1024] = {0};
             int m;
             int n = lws_snprintf((char *) buf + LWS_PRE, 1024,
                     "%s", it->c_str());
 
             lwsl_user("Sending message %s\n", buf + LWS_PRE);
-            Logger::WriteLog("send: %s", buf + LWS_PRE);
+            Logger::WriteLog("[Sub][%d] Send: %s", connectionId, buf + LWS_PRE);
             m = lws_write(ws, buf + LWS_PRE, n, LWS_WRITE_TEXT);
             if (m < n) {
-                Logger::WriteLog("sending failed");
+                Logger::WriteLog("[Sub][%d] Sending failed", connectionId);
                 lwsl_err("sending failed: %d\n", m);
-                return true;
+                sendBufferList.clear();
+                return false;
             }
         }
         sendBufferList.clear();
@@ -111,8 +124,9 @@ namespace Huobi {
 
     void WebSocketConnection::onOpen(lws* wsi) {
         lwsl_user("onOpen \n");
-        Logger::WriteLog("onOpen...");
-        connectState = ConnectionState::CONNECTED;
+        Logger::WriteLog("[Sub][%d] Connected", connectionId);
+        connectStatus = ConnectionStatus::CONNECTED;
+        lineStatus = LineStatus::LINE_ACTIVE;
         lastReceivedTime = TimeService::getCurrentTimeStamp();
         client = wsi;
         dog->onConnectionCreated(this);
@@ -126,7 +140,7 @@ namespace Huobi {
     }
 
     void WebSocketConnection::onMessage(const char* message) {
-         lwsl_user("RX: %s \n", message);
+        lwsl_user("RX: %s \n", message);
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
         JsonDocument doc;
@@ -140,7 +154,7 @@ namespace Huobi {
             ex.errorCode = errorCode;
             ex.errorMsg = errorMsg;
             request->errorHandler(ex);
-            Logger::WriteLog(errorMsg.c_str());
+            Logger::WriteLog("[Sub][%d] Error: %s", errorMsg.c_str());
             close();
         } else if (json.containKey("op")) {
             std::string op = json.getString("op");
@@ -163,13 +177,11 @@ namespace Huobi {
     }
 
     void WebSocketConnection::onReceive(JsonWrapper& json) {
-        Logger::WriteLog("parse json...");
         request->implCallback(json);
     }
 
     void WebSocketConnection::processPingOnTradingLine(JsonWrapper& json) {
         lwsl_user("processPingOnTradingLine \n");
-        Logger::WriteLog("processPingOnTradingLine");
         long ts = json.getLong("ts");
         char buf[1024] = {0};
         sprintf(buf, "{\"op\":\"pong\",\"ts\":%ld}", ts);
@@ -178,7 +190,6 @@ namespace Huobi {
     }
 
     void WebSocketConnection::processPingOnMarketLine(JsonWrapper& json) {
-        Logger::WriteLog("processPingOnMarketLine");
         long ts = json.getLong("ping");
         char buf[1024] = {0};
         sprintf(buf, "{\"pong\":%ld}", ts);
@@ -231,44 +242,41 @@ namespace Huobi {
         if (delayInSecond != 0) {
             delayInSecond--;
         } else {
-            lwsl_user("");
+            lwsl_user("reConnecting...\n");
             this->connect(context);
         }
     }
 
     void WebSocketConnection::reConnect(int delayInSecond) {
-        Logger::WriteLog("Reconnecting after %d seconds later", delayInSecond);
-        lws_set_timeout(this->client, PENDING_TIMEOUT_CLIENT_CONN_IDLE, LWS_TO_KILL_ASYNC);
+        Logger::WriteLog("[Sub][%d] Reconnecting after %d seconds later", connectionId, delayInSecond);
+        lwsl_user("Reconnecting after %d seconds later\n", delayInSecond);
+        if (client != nullptr) {
+            lwsl_user("closing client\n");
+            send("*");
+            //lws_set_timeout(client, NO_PENDING_TIMEOUT, LWS_TO_KILL_ASYNC);
+            
+        } else {
+            lwsl_user("client is null\n");
+        }
         
+        client = nullptr;
         this->delayInSecond = delayInSecond;
-        connectState = ConnectionState::DELAY_CONNECT;
+        lineStatus = LineStatus::LINE_DELAY;
     }
 
-    void WebSocketConnection::cancel() {
-
-       
-    }
-
-    ConnectionState WebSocketConnection::getState() {
-        return connectState;
+    void WebSocketConnection::disconnect() {
+        Logger::WriteLog("[Sub][%d] Disconnected", connectionId);
+        connectStatus = ConnectionStatus::CLOSED;
+        client = nullptr;
     }
 
     void WebSocketConnection::close() {
-        Logger::WriteLog("Closing normally");
+        Logger::WriteLog("[Sub][%d] Closing normally", connectionId);
         lwsl_user("Closing normally \n");
+        lws_set_timeout(client, PENDING_TIMEOUT_KILLED_BY_PARENT, LWS_TO_KILL_ASYNC);
+        lineStatus = LineStatus::LINE_IDEL;
         dog->onClosedNormally(this);
     }
-
-    void WebSocketConnection::closeOnError() {
-        if (client != nullptr) {
-            lwsl_user("close on error\n");
-            cancel();
-            client = nullptr;
-            connectState = ConnectionState::CLOSED_ON_ERROR;
-            Logger::WriteLog("Connection is closing due to error");
-        }
-    }
-
 }
 
 

@@ -18,24 +18,39 @@
 
 namespace Huobi {
 
+    typedef enum LINESTATUS {
+        LINE_ACTIVE,
+        LINE_IDEL,
+        LINE_DELAY
+    } LineStatus;
+
+    typedef enum CONNECTIONSTATUS {
+        CONNECTED,
+        CLOSED,
+    } ConnectionStatus;
+
     class WebSocketConnection {
     public:
         WebSocketConnection(const std::string& apiKey, const std::string& secretKey,
                 WebSocketRequest* request, WebSocketWatchDog*dog, std::string host);
 
         void connect(lws_context* context);
+        void disconnect();
         void reConnect();
         void reConnect(int delayInSecond);
-        void cancel();
         void close();
-        void closeOnError();
         void onOpen(lws* wsi);
         void onMessage(const char* message);
         void send(const std::string& message);
         bool flushSendBuffer(lws* ws);
         long getLastReceivedTime();
-        ConnectionState getState();
 
+        ConnectionStatus getConnectState() {
+            return connectStatus;
+        }
+        LineStatus getLineStatus() {
+            return lineStatus;
+        }
 
     private:
         std::string createSignature();
@@ -49,13 +64,17 @@ namespace Huobi {
         std::unique_ptr<WebSocketRequest> request;
         lws_context* context;
         lws* client;
-        WebSocketWatchDog*dog;
-        ConnectionState connectState = ConnectionState::IDLE; 
+        WebSocketWatchDog* dog;
+        ConnectionStatus connectStatus = ConnectionStatus::CLOSED;
+        LineStatus lineStatus = LineStatus::LINE_IDEL;
         long lastReceivedTime = 0;
         int delayInSecond = 0;
         std::string host;
         std::string subscriptionMarketUrl = "wss://api.huobi.pro/ws";
         std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
+        int connectionId;
+        
+        static int connectionCounter;
     protected:
         std::list<std::string> sendBufferList;
     };

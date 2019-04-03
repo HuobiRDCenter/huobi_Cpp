@@ -11,7 +11,7 @@ namespace Huobi {
         /**
          * The UNIX formatted timestamp in UTC.
          */
-        long timestamp;
+        long timestamp = 0;
         
         /**
          * The aggregated trading volume in USDT.
@@ -21,7 +21,7 @@ namespace Huobi {
         /**
          * The number of completed trades. it returns 0 when get ETF candlestick.
          */
-        long count;
+        long count = 0;
         
         /**
          * The opening price.

@@ -11,12 +11,12 @@ namespace Huobi {
         /**
          * The number of cancel request sent successfully.
          */
-        int successCount;
+        int successCount = 0;
         
         /**
          * The number of cancel request failed.
          */
-        int failedCount;
+        int failedCount = 0;
     };
 
 }

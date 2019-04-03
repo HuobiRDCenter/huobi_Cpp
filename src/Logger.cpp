@@ -2,7 +2,7 @@
 
 namespace Huobi {
     int Logger::log = 2;
-    std::string Logger::log_file_locate = "/huobi.log";
+    std::string Logger::log_file_locate = "./huobi.log";
     FILE*Logger::log_fp = NULL;
 
     void Logger::WriteLog(const char*msg, ...) {

@@ -302,20 +302,6 @@ private:
         static QueryDirection PREV;
         static QueryDirection NEXT;
     };
-
-    /**
-     * IDLE,DELAY_CONNECT, CONNECTED,CLOSED_ON_ERROR.
-     */
-    class ConnectionState : public BaseEnumClass<ConnectionState> {
-        DEFINE_ENUM_CLASS(ConnectionState);
-    public:
-        static ConnectionState IDLE;
-        static ConnectionState DELAY_CONNECT;
-        static ConnectionState CONNECTED;
-        static ConnectionState CLOSED_ON_ERROR;
-
-    };
 }
 #endif /* TYPEDEFINE_H */
-
 

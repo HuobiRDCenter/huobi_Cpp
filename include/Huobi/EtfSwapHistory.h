@@ -30,7 +30,7 @@ namespace Huobi {
         /**
          * The UNIX formatted timestamp in UTC of the operation.
          */
-        long createdTimestamp;
+        long createdTimestamp = 0;
         
         /**
          * The ETF name.
@@ -50,7 +50,7 @@ namespace Huobi {
         /**
          * The operation result.
          */
-        int status;
+        int status = 0;
         
         /**
          * The fee rate.

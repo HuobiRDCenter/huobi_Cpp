@@ -14,7 +14,7 @@ namespace Huobi {
         /**
          * The transfer id.
          */
-        long id;
+        long id = 0;
         
         /**
          * The crypto currency to deposit.
@@ -49,12 +49,12 @@ namespace Huobi {
         /**
          * The UNIX formatted timestamp in UTC for the transfer creation.
          */
-        long createdTimestamp;
+        long createdTimestamp = 0;
         
         /**
          * The UNIX formatted timestamp in UTC for the transfer's latest update.
          */
-        long updatedTimestamp;
+        long updatedTimestamp = 0;
         
         /**
          * The deposit state of this transfer.

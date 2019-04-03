@@ -14,7 +14,7 @@ namespace Huobi {
         /**
          * The unique account id.
          */
-        long id;
+        long id = 0;
 
         /*
          * The type of this account, possible value: spot, margin, otc, point.

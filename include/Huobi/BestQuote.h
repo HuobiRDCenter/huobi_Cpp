@@ -24,7 +24,7 @@ namespace Huobi {
         /**
          * The Unix formatted timestamp in UTC.
          */
-        long timestamp;
+        long timestamp = 0;
         
         /**
          * The best bid price.

@@ -37,6 +37,7 @@ namespace Huobi {
             event.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             Candlestick data;
+            data.timestamp = TimeService::convertCSTInSecondToUTC(tick.getLong("id"));
             data.amount = tick.getDecimal("amount");
             data.close = tick.getDecimal("close");
             data.high = tick.getDecimal("high");

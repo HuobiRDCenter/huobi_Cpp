@@ -24,7 +24,7 @@ namespace Huobi {
 
         
     private:
-       std::list<WebSocketConnection*> connectionList;
+        std::list<WebSocketConnection*> connectionList;
         std::mutex mutex;
         bool runningFlag;
         std::thread dogthread;
@@ -33,4 +33,3 @@ namespace Huobi {
 
 
 #endif /* WEBSOCKETWATCHDOG_H */
-

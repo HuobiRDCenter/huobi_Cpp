@@ -14,12 +14,12 @@ namespace Huobi {
         /**
          * The order id.
          */
-        long id;
+        long id = 0;
         
         /**
          * The user id.
          */
-        long userId;
+        long userId = 0;
         
         /**
          * The account type which created the loan order.
@@ -69,12 +69,12 @@ namespace Huobi {
         /**
          * The UNIX formatted timestamp in UTC when the order was created.
          */
-        long createdTimestamp;
+        long createdTimestamp = 0;
         
         /**
          * The UNIX formatted timestamp in UTC when the last accrue happened.
          */
-        long accruedTimestamp;
+        long accruedTimestamp = 0;
     };
 }
 

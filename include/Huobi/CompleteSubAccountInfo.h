@@ -13,7 +13,7 @@ namespace Huobi {
         /**
          * The sub-id.
          */
-        long id;
+        long id = 0;
         
         /**
          * The sub account type.
