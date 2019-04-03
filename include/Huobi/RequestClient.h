@@ -260,9 +260,10 @@ namespace Huobi {
         /**
          * Cancel an withdraw request
          *
-         * \param withdrawId withdraw id
+         * \param currency The currency, like "btc".
+         * \param withdrawId withdraw id.
          */
-        virtual void* cancelWithdraw(const char* symbol, long withdrawId) = 0;
+        virtual void* cancelWithdraw(const char* currency, long withdrawId) = 0;
 
         /**
          * Get historical orders.

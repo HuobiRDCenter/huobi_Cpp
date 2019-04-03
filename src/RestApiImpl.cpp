@@ -238,7 +238,7 @@ namespace Huobi {
 
     RestApi<std::vector<Withdraw>>*RestApiImpl::getWithdrawHistory(const char* currency, long fromId, int size) {
         InputChecker::checker()
-                ->checkSymbol(currency)
+                ->checkCurrency(currency)
                 ->shouldBiggerThanZero(fromId, "fromTd")
                 ->shouldBiggerThanZero(size, "size");
         UrlParamsBuilder builder;
@@ -274,7 +274,7 @@ namespace Huobi {
 
     RestApi<std::vector<Deposit>>*RestApiImpl::getDepositHistory(const char* currency, long fromId, int size) {
         InputChecker::checker()
-                ->checkSymbol(currency)
+                ->checkCurrency(currency)
                 ->shouldBiggerThanZero(fromId, "fromTd")
                 ->shouldBiggerThanZero(size, "size");
         UrlParamsBuilder builder;
@@ -335,7 +335,7 @@ namespace Huobi {
     RestApi<long>* RestApiImpl::transfer(TransferRequest& transferRequest) {
         InputChecker::checker()
                 ->checkSymbol(transferRequest.symbol)
-                ->checkSymbol(transferRequest.currency)
+                ->checkCurrency(transferRequest.currency)
                 ->shouldBiggerThanZero(transferRequest.amount, "amount");
         const char* address;
         if (transferRequest.from == AccountType::spot && transferRequest.to == AccountType::margin) {
@@ -363,7 +363,7 @@ namespace Huobi {
     RestApi<long>* RestApiImpl::applyLoan(const char* symbol, const char* currency, Decimal amount) {
         InputChecker::checker()
                 ->checkSymbol(symbol)
-                ->checkSymbol(currency)
+                ->checkCurrency(currency)
                 ->shouldBiggerThanZero(amount, "amount");
         UrlParamsBuilder builder;
         builder.putPost("currency", currency)
@@ -658,8 +658,8 @@ namespace Huobi {
 
     RestApi<long>* RestApiImpl::withdraw(WithdrawRequest& withdrawRequest) {
         InputChecker::checker()
-                ->checkSymbol(withdrawRequest.currency)
-                ->checkSymbol(withdrawRequest.address)
+                ->checkCurrency(withdrawRequest.currency)
+                ->shouldNotNull(withdrawRequest.address, "address")
                 ->shouldBiggerThanZero(withdrawRequest.amount, "amount");
         UrlParamsBuilder builder;
         builder.putPost("address", withdrawRequest.address)
@@ -674,9 +674,9 @@ namespace Huobi {
         return res;
     }
 
-    RestApi<void*>* RestApiImpl::cancelWithdraw(const char* symbol, long withdrawId) {
+    RestApi<void*>* RestApiImpl::cancelWithdraw(const char* currency, long withdrawId) {
         InputChecker::checker()
-                ->checkSymbol(symbol)
+                ->checkCurrency(currency)
                 ->shouldBiggerThanZero(withdrawId, "withdrawId");
         char buf[100];
         sprintf(buf, "/v1/dw/withdraw-virtual/%ld/cancel", withdrawId);
@@ -760,7 +760,7 @@ namespace Huobi {
 
     RestApi<long>* RestApiImpl::transferBetweenParentAndSub(TransferMasterRequest& req) {
         InputChecker::checker()
-                ->checkSymbol(req.currency)
+                ->checkCurrency(req.currency)
                 ->shouldBiggerThanZero(req.amount, "amount")
                 ->shouldBiggerThanZero(req.subUid, "sub-uid")
                 ->shouldNotNull(req.type.getValue(), "type");

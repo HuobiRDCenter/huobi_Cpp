@@ -21,7 +21,7 @@ namespace Huobi {
         static InputChecker* checker();
     private:
 
-        bool isSpecialChar(char* str) {
+        bool isSpecialChar(const char* str) {
 
             int size = strlen(str);
             for (int i = 0; i < size; i++) {
@@ -54,7 +54,7 @@ namespace Huobi {
             return checker();
         }
 
-        InputChecker* shouldNotNull(std::string value, std::string name) {
+        InputChecker* shouldNotNull(const std::string& value, const std::string& name) {
             if (value.empty()) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "[Input] " + name + " should greater than 0");
@@ -62,19 +62,31 @@ namespace Huobi {
             return checker();
         }
 
-        InputChecker* checkSymbol(std::string symbol) {
+        InputChecker* checkSymbol(const std::string& symbol) {
             if (symbol.empty()) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "[Input] Symbol is mandatory");
             }
-            if (isSpecialChar((char*) symbol.c_str())) {
+            if (isSpecialChar(symbol.c_str())) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "[Input] " + symbol + " is invalid symbol");
             }
             return checker();
         }
+        
+        InputChecker* checkCurrency(const std::string& currency) {
+            if (currency.empty()) {
+                throw HuobiApiException(HuobiApiException::INPUT_ERROR,
+                        "[Input] Currency is mandatory");
+            }
+            if (isSpecialChar(currency.c_str())) {
+                throw HuobiApiException(HuobiApiException::INPUT_ERROR,
+                        "[Input] " + currency + " is invalid currency");
+            }
+            return checker();
+        }
 
-        InputChecker* checkETF(std::string symbol) {
+        InputChecker* checkETF(const std::string& symbol) {
             if (symbol != "hb10") {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "currently only support hb10 :-)");
