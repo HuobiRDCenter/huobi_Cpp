@@ -73,14 +73,36 @@ If not, you can follow <https://cmake.org/install/> to install it.
 
 The minimum required version of CMake is 2.8, but we suggest to use the lastest CMake version.
 
+#### Install 3rd party
+
+Please make sure the 3rd party libraries have been installed in your system. If not, please install them.
+
+OpenSSL - https://github.com/openssl/openssl
+
+curl - https://github.com/curl/curl
+
+libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
+
 #### Build SDK
 
 You should check the C++ 11 build environment.
 
-To build the SDK
+To build the SDK, you should build the decnumber firstly.
+
+``````
+$ git clone https://github.com/huobiapi/huobi_Cpp.git
+$ cd 3rdparty/libdecnumber/
+$ mkdir build
+$ cd build
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+$ make
+$ make install
+``````
+
+Then build the SDK library
 
 ```
-$ git clone https://github.com/huobiapi/huobi_Cpp.git
+<In huobi_Cpp folder>
 $ cd huobi_Cpp
 $ mkdir build
 $ cd build
@@ -97,11 +119,9 @@ $ cd examples
 $ cd GetCandlestickData
 $ mkdir build
 $ cd build
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DHUOBI_CLIENT_DIR=<The path of huobi_Cpp folder>
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $ make
 ```
-
-Please note that you should replace the path of huobi_Cpp on above command, and HUOBI_CLIENT_DIR must be defined in the cmake parameter.
 
 
 
