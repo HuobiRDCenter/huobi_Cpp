@@ -63,7 +63,7 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 *The SDK is compiled by C++ 11*.
 
-Currently, The SDK has the compatibility on linux system only. 
+Currently, The SDK has the compatibility on linux(ubuntu 18.04) system only.
 
 #### Install CMake
 
@@ -83,6 +83,29 @@ curl - https://github.com/curl/curl
 
 libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
 
+ubuntu 18.04:
+````
+$ sudo apt install cmake
+$ sudo apt install openssl
+$ sudo apt install libssl-dev
+$ sudo apt install libcurl4-openssl-dev
+````
+
+安装libwebsockets v3.1.0:
+
+参考: https://libwebsockets.org/
+````
+$ git clone https://github.com/warmcat/libwebsockets.git
+$ git reset --hard 89eedcaa94e1c8a97ea3af10642fd224bcea068f
+$ cd libwebsockets
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ sudo make install
+$ sudo ldconfig
+````
+
 #### Build SDK
 
 You should check the C++ 11 build environment.
@@ -90,25 +113,27 @@ You should check the C++ 11 build environment.
 To build the SDK, you should build the decnumber firstly.
 
 ``````
-$ git clone https://github.com/huobiapi/huobi_Cpp.git
-$ cd 3rdparty/libdecnumber/
+$ git clone https://github.com/huobiapi/libdecnumber.git
+$ cd libdecnumber
 $ mkdir build
 $ cd build
 $ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $ make
-$ make install
+$ sudo make install
+$ sudo ldconfig
 ``````
 
 Then build the SDK library
 
 ```
-<In huobi_Cpp folder>
+$ git clone https://github.com/huobiapi/huobi_Cpp.git
 $ cd huobi_Cpp
 $ mkdir build
 $ cd build
 $ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
 $ make
-$ make install
+$ sudo make install
+$ sudo ldconfig
 ```
 
 #### Run example 
@@ -617,3 +642,25 @@ subscriptionClient->startService();
 ```
 
 
+
+
+进入到根目录:
+````
+$ cd huobi_Cpp
+````
+
+构建镜像:
+````
+$ docker build -t huobisdk .
+````
+
+启动：
+````
+$ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdk
+````
+
+进入容器内部:
+
+````
+$ docker exec -it $(docker ps -qa | head -1) /bin/bash
+````
