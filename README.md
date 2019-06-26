@@ -96,14 +96,18 @@ centos 7
 $ sudo yum install cmake
 #openssl 1.0.2
 $ sudo yum install openssl openssl-devel
-#gcc 4.9
+#gcc 最低4.9.2 最高7.3.1 此处使用7.3.1
 $ sudo yum install centos-release-scl-rh centos-release-scl scl-utils-build scl-utils
 $ sudo yum check-update
-$ sudo yum install devtoolset-3-toolchain
-$ scl enable devtoolset-3 bash
-$ echo "source /opt/rh/devtoolset-3/enable" >> $HOME/.bashrc
+$ sudo yum install devtoolset-7-toolchain
+$ scl enable devtoolset-7 bash
+$ echo "source /opt/rh/devtoolset-7/enable" >> $HOME/.bashrc
 #curl
 $ sudo yum install libcurl-devel
+#libwebsockets v3.1.0
+$ wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+$ rpm -Uvh epel-release-latest-7.noarch.rpm
+$ yum install libwebsockets-devel
 ````
 
 安装libwebsockets v3.1.0:
@@ -667,9 +671,9 @@ $ cd huobi_Cpp
 构建镜像:
 ````
 #ubuntu
-$ docker build -t huobisdkubuntu -f UbuntuDockerfile .
+$ docker build -t huobisdkubuntu -f ./docker/ubuntu/Dockerfile .
 #centos
-$ docker build -t huobisdkcentos -f CentosDockerfile .
+$ docker build -t huobisdkcentos -f ./docker/centos/Dockerfile .
 ````
 
 启动：

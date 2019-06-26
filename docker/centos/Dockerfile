@@ -10,10 +10,16 @@ RUN yum update -y
 RUN yum group install 'Development Tools' -y
 RUN yum install -y  centos-release-scl-rh centos-release-scl scl-utils-build scl-utils
 RUN yum check-update -y
+
+#使用redhat源
+RUN yum install -y wget
+RUN wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN rpm -Uvh epel-release-latest-7.noarch.rpm
+RUN rm epel-release-latest-7.noarch.rpm
 RUN yum update -y
 
 
-#权限
+#权限  执行 sudo su 切换到root
 RUN yum install -y  sudo
 
 #编译
@@ -35,16 +41,19 @@ RUN yum install -y  net-tools
 RUN yum install -y  vim
 
 #加密
-RUN yum install -y openssl openssl-devel
+RUN yum install -y openssl-devel
 
-#shell
-#RUN yum install -y zsh
+#安装libwebsockets v3.1.0
+RUN yum install -y libwebsockets-devel
+
+#单元测试
+RUN yum install -y gtest-devel gmock-devel
 
 #升级
 RUN yum -y  upgrade
 
-#gcc 4.9
-RUN yum install -y devtoolset-3-toolchain
+#gcc 最低4.9.2 最高7.3.1 此处使用7.3.1
+RUN yum install -y devtoolset-7-toolchain
 
 # Configure environment
 ENV SHELL /bin/bash
@@ -69,18 +78,14 @@ RUN echo "127.0.1.1 $(hostname)" >> /etc/hosts
 USER $NB_USER
 
 #安装libdecnumber
-RUN source /opt/rh/devtoolset-3/enable && cd $USER_HOME && git clone https://github.com/huobiapi/libdecnumber.git && cd libdecnumber && mkdir build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make && sudo make install && sudo rm -rf $USER_HOME/libdecnumber
-
-#安装libwebsockets v3.1.0:
-#参考: https://libwebsockets.org/
-RUN source /opt/rh/devtoolset-3/enable && cd $USER_HOME && git clone https://github.com/warmcat/libwebsockets.git && cd libwebsockets && git reset --hard 89eedcaa94e1c8a97ea3af10642fd224bcea068f  && mkdir build && cd build && cmake .. && make && sudo make install && sudo rm -rf $USER_HOME/libwebsockets
+RUN source /opt/rh/devtoolset-7/enable && cd $USER_HOME && git clone https://github.com/huobiapi/libdecnumber.git && cd libdecnumber && mkdir build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make && sudo make install && sudo rm -rf $USER_HOME/libdecnumber
 
 #刷新库文件
 RUN sudo ldconfig
 
 # Setup jovyan home directory
 RUN mkdir $WORK_DIR && mkdir $USER_HOME/.local
-RUN echo "source /opt/rh/devtoolset-3/enable" >> $USER_HOME/.bashrc
+RUN echo "source /opt/rh/devtoolset-7/enable" >> $USER_HOME/.bashrc
 
 
 WORKDIR $WORK_DIR
