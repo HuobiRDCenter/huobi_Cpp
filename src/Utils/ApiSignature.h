@@ -1,5 +1,6 @@
 #ifndef APISIGNATURE_H
 #define APISIGNATURE_H
+
 #include<string>
 #include <time.h>
 #include <stdio.h>
@@ -63,40 +64,38 @@ namespace Huobi {
             return result;
         }
 
-        static std::string CreateSignature(std::string host,std::string accessKey, std::string secretKey,
-                std::string adress, std::string method, char *timeBuf, const char* param) {
+        static std::string CreateSignature(std::string host, std::string accessKey, std::string secretKey,
+                                           std::string adress, std::string method, char *timeBuf, const char *param) {
             if (accessKey.empty() || secretKey.empty()) {
                 throw HuobiApiException(HuobiApiException::KEY_MISSING, "API key and secret key are required");
             }
             std::string cre = method + "\n" + host + "\n" + adress + "\n"
-                    + "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
-                    + "&SignatureVersion=2&Timestamp=" + timeBuf;
+                              + "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
+                              + "&SignatureVersion=2&Timestamp=" + timeBuf;
             if (strcmp(param, "")) {
                 cre = cre + "&" + param;
             }
 
-            const EVP_MD * engine = EVP_sha256();
-            HMAC_CTX* ctx = HMAC_CTX_new();
+            const EVP_MD *engine = EVP_sha256();
+
+
+            HMAC_CTX ctx;
+            HMAC_CTX_init(&ctx);
             unsigned char output[1024] = {0};
-
-            HMAC_Init_ex(ctx, secretKey.c_str(), secretKey.size(), engine, NULL);
-            HMAC_Update(ctx, (unsigned char*) cre.c_str(), cre.size()); // input is OK; &input is WRONG !!!
+            HMAC_Init_ex(&ctx, secretKey.c_str(), secretKey.size(), engine, NULL);
+            HMAC_Update(&ctx, (unsigned char *) cre.c_str(), cre.size()); // input is OK; &input is WRONG !!!
             uint32_t len = 1024;
-            HMAC_Final(ctx, output, &len);
-            HMAC_CTX_free(ctx);
-            std::string code;
-//            if (adress == "/ws/v1") {
-                code = base64_encode(output, 32);
-//            } else {
-//
-//                code = escapeURL(base64_encode(output, 32));
-//            }
-            return code;
+            HMAC_Final(&ctx, output, &len);
+            HMAC_CTX_cleanup(&ctx);
 
+            std::string code;
+            code = base64_encode(output, 32);
+
+            return code;
         }
 
-        static std::string buildSignaturePath(std::string host,std::string accessKey, std::string secretKey,
-                std::string adress, std::string method, const char*param) {
+        static std::string buildSignaturePath(std::string host, std::string accessKey, std::string secretKey,
+                                              std::string adress, std::string method, const char *param) {
             time_t t = time(NULL);
             struct tm *local = gmtime(&t);
             char timeBuf[100] = {0};
@@ -107,7 +106,7 @@ namespace Huobi {
                     local->tm_hour,
                     local->tm_min,
                     local->tm_sec);
-            std::string code = escapeURL(CreateSignature(host,accessKey, secretKey, adress, method, timeBuf, param));
+            std::string code = escapeURL(CreateSignature(host, accessKey, secretKey, adress, method, timeBuf, param));
             std::string res = "";
             res +=
                     "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"

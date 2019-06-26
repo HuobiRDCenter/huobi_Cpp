@@ -77,9 +77,9 @@ The minimum required version of CMake is 2.8, but we suggest to use the lastest 
 
 Please make sure the 3rd party libraries have been installed in your system. If not, please install them.
 
-OpenSSL - https://github.com/openssl/openssl
+OpenSSL - <https://github.com/openssl/openssl>
 
-curl - https://github.com/curl/curl
+curl - <https://github.com/curl/curl>
 
 libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
 
@@ -91,9 +91,24 @@ $ sudo apt install libssl-dev
 $ sudo apt install libcurl4-openssl-dev
 ````
 
+centos 7
+````
+$ sudo yum install cmake
+#openssl 1.0.2
+$ sudo yum install openssl openssl-devel
+#gcc 4.9
+$ sudo yum install centos-release-scl-rh centos-release-scl scl-utils-build scl-utils
+$ sudo yum check-update
+$ sudo yum install devtoolset-3-toolchain
+$ scl enable devtoolset-3 bash
+$ echo "source /opt/rh/devtoolset-3/enable" >> $HOME/.bashrc
+#curl
+$ sudo yum install libcurl-devel
+````
+
 安装libwebsockets v3.1.0:
 
-参考: https://libwebsockets.org/
+参考: <https://libwebsockets.org/>
 ````
 $ git clone https://github.com/warmcat/libwebsockets.git
 $ git reset --hard 89eedcaa94e1c8a97ea3af10642fd224bcea068f
@@ -268,9 +283,9 @@ SubscriptionClient* subscription = createSubscriptionClient(
 
 If you do not set yout custom host, below default host will be used:
 
-For request: https://api.huobi.pro
+For request: <https://api.huobi.pro>
 
-For subscription: wss://api.huobi.pro
+For subscription: <wss://api.huobi.pro>
 
 
 
@@ -642,7 +657,7 @@ subscriptionClient->startService();
 ```
 
 
-
+### 使用docker构建sdk开发环境:
 
 进入到根目录:
 ````
@@ -651,12 +666,18 @@ $ cd huobi_Cpp
 
 构建镜像:
 ````
-$ docker build -t huobisdk .
+#ubuntu
+$ docker build -t huobisdkubuntu -f UbuntuDockerfile .
+#centos
+$ docker build -t huobisdkcentos -f CentosDockerfile .
 ````
 
 启动：
 ````
-$ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdk
+#ubuntu
+$ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdkubuntu
+#centos
+$ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdkcentos
 ````
 
 进入容器内部:
@@ -664,3 +685,4 @@ $ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdk
 ````
 $ docker exec -it $(docker ps -qa | head -1) /bin/bash
 ````
+
