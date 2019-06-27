@@ -91,6 +91,7 @@ namespace Huobi {
             curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, &writeFun); // !数据回调函数
             curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, &sBuffer); // !数据回调函数的参，一般为Buffer或文件fd
             if (request->method == "POST") {
+                //TODO: body需要转成utf-8
                 curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, request->getPostBody().c_str());
             }
             curl_easy_perform(pCurl);

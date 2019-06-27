@@ -64,6 +64,8 @@ if (LINUX)
     elseif (OPENSSL_VERSION EQUAL 1.0)
         MESSAGE(STATUS "openssl version is 1.0.x")
         add_definitions(-DOPENSSL_VERSION_1_0)
+    else ()
+        MESSAGE(FATAL_ERROR "openssl version should be 1.0.x or 1.1.x")
     endif ()
 endif ()
 
