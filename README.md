@@ -63,7 +63,7 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 *The SDK is compiled by C++ 11*.
 
-Currently, The SDK has the compatibility on linux(ubuntu 18.04) system only.
+Currently, The SDK has the compatibility on linux system only.
 
 #### Install CMake
 
@@ -91,24 +91,34 @@ $ sudo apt install libssl-dev
 $ sudo apt install libcurl4-openssl-dev
 ````
 
-centos 7
+centos 7   
+
+可以使用gcc也可以使用clang
+
 ````
 $ sudo yum install cmake
 #openssl 1.0.2
 $ sudo yum install openssl openssl-devel
-#gcc 最低4.9.2 最高7.3.1 此处使用7.3.1
+#curl
+$ sudo yum install libcurl libcurl-devel
+#libwebsockets v3.1.0
+$ yum install epel-release
+$ yum install libwebsockets libwebsockets-devel
+
+
 $ sudo yum install centos-release-scl-rh centos-release-scl scl-utils-build scl-utils
 $ sudo yum check-update
+
+#安装clang 最低3.4.2 最高5.0.1 此处使用5.0.1
+$ sudo yum install devtoolset-7-llvm
+$ echo "source /opt/rh/llvm-toolset-7/enable" >> $HOME/.bashrc
+$ source $HOME/.bashrc
+#安装gcc 最低4.9.2 最高7.3.1 此处使用7.3.1
 $ sudo yum install devtoolset-7-toolchain
-$ scl enable devtoolset-7 bash
 $ echo "source /opt/rh/devtoolset-7/enable" >> $HOME/.bashrc
-#curl
-$ sudo yum install libcurl-devel
-#libwebsockets v3.1.0
-$ wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-$ rpm -Uvh epel-release-latest-7.noarch.rpm
-$ yum install libwebsockets-devel
+$ source $HOME/.bashrc
 ````
+
 
 安装libwebsockets v3.1.0:
 

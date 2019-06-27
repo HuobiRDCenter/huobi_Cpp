@@ -8,7 +8,7 @@
 
 namespace Huobi {
 
-    template <class T>
+    template<class T>
     /**
      * All enums about Huobi pack
      * 
@@ -19,32 +19,34 @@ namespace Huobi {
         BaseEnumClass() : m_value() {
         }
 
-        const std::string& getValue() const {
-
+        const std::string &getValue() const {
             return m_value;
         }
 
-        static T lookup(const std::string& value) {
-            typename LookupMap::iterator it = m_lookupMap.find(value);
+        static T lookup(const std::string &value) {
+            auto it = m_lookupMap.find(value);
             if (it != m_lookupMap.end()) {
-                return *(it->second);
+                return *((T *) (it->second));
             }
             throw "error";
         }
 
-        bool operator==(const BaseEnumClass& obj) const {
+        bool operator==(const BaseEnumClass &obj) const {
             return m_value == obj.m_value;
         }
-    protected:
 
-        BaseEnumClass(const std::string& value) : m_value(value) {
+    protected:
+        BaseEnumClass(const std::string &value) : m_value(value) {
         }
 
         std::string m_value;
     public:
-        typedef std::map<std::string, T*> LookupMap;
-        static LookupMap m_lookupMap;
+        static std::map<std::string, void *> m_lookupMap;
     };
+
+    template<class T>
+    std::map<std::string, void *> BaseEnumClass<T>::m_lookupMap = {};
+
 
 #define DEFINE_ENUM_CLASS(class_name) \
 private: \
@@ -54,14 +56,14 @@ public: \
     class_name(const class_name& value) : BaseEnumClass(value.m_value) {} \
     bool operator == (const class_name& value) const { return this->m_value == value.m_value; } \
     bool operator != (const class_name& value) const { return !(*this == value); } \
-    class_name& operator =(const class_name& value) { this->m_value = value.m_value; } \
+    class_name& operator =(const class_name& value) { this->m_value = value.m_value; return *this; } \
 private:
 
     /**
      * 1min, 5min, 15min, 30min, 60min, 1day, 1mon, 1week, 1year
      */
     class CandlestickInterval : public BaseEnumClass<CandlestickInterval> {
-        DEFINE_ENUM_CLASS(CandlestickInterval);
+    DEFINE_ENUM_CLASS(CandlestickInterval);
     public:
         static CandlestickInterval min1;
         static CandlestickInterval min5;
@@ -79,7 +81,7 @@ private:
      * buy, sell, both.
      */
     class OrderSide : public BaseEnumClass<OrderSide> {
-        DEFINE_ENUM_CLASS(OrderSide);
+    DEFINE_ENUM_CLASS(OrderSide);
     public:
         static OrderSide buy;
         static OrderSide sell;
@@ -89,7 +91,7 @@ private:
      * SPOT, MARGIN, OTC, POINT, UNKNOWN.
      */
     class AccountType : public BaseEnumClass<AccountType> {
-        DEFINE_ENUM_CLASS(AccountType);
+    DEFINE_ENUM_CLASS(AccountType);
     public:
         static AccountType spot;
         static AccountType margin;
@@ -102,7 +104,7 @@ private:
      * working, lock.
      */
     class AccountState : public BaseEnumClass<AccountState> {
-        DEFINE_ENUM_CLASS(AccountState);
+    DEFINE_ENUM_CLASS(AccountState);
     public:
         static AccountState working;
         static AccountState lock;
@@ -112,7 +114,7 @@ private:
      * balance type.trade,frozen,loan,interest.
      */
     class BalanceType : public BaseEnumClass<BalanceType> {
-        DEFINE_ENUM_CLASS(BalanceType);
+    DEFINE_ENUM_CLASS(BalanceType);
     public:
         static BalanceType trade;
         static BalanceType frozen;
@@ -126,7 +128,7 @@ private:
      * The balance mode used for subscribing the balance notification.
      */
     class BalanceMode : public BaseEnumClass<BalanceMode> {
-        DEFINE_ENUM_CLASS(BalanceMode);
+    DEFINE_ENUM_CLASS(BalanceMode);
     public:
         static BalanceMode available;
         static BalanceMode total;
@@ -140,7 +142,7 @@ private:
      * asset change(other)
      */
     class AccountChangeType : public BaseEnumClass<AccountChangeType> {
-        DEFINE_ENUM_CLASS(AccountChangeType);
+    DEFINE_ENUM_CLASS(AccountChangeType);
     public:
         static AccountChangeType newOrder;
         static AccountChangeType trade;
@@ -159,7 +161,7 @@ private:
      * withdraw, deposit.
      */
     class DepositState : public BaseEnumClass<DepositState> {
-        DEFINE_ENUM_CLASS(DepositState);
+    DEFINE_ENUM_CLASS(DepositState);
     public:
         static DepositState unknown;
         static DepositState confirming;
@@ -172,7 +174,7 @@ private:
      *normal,rebalancing_start,creation_and_redemption_suspend,creation_suspend,redemption_suspend
      */
     class EtfStatus : public BaseEnumClass<EtfStatus> {
-        DEFINE_ENUM_CLASS(EtfStatus);
+    DEFINE_ENUM_CLASS(EtfStatus);
     public:
         static EtfStatus normal;
         static EtfStatus rebalancing_start;
@@ -185,7 +187,7 @@ private:
      *etf_swap_in,etf_swap_in
      */
     class EtfSwapType : public BaseEnumClass<EtfSwapType> {
-        DEFINE_ENUM_CLASS(EtfSwapType);
+    DEFINE_ENUM_CLASS(EtfSwapType);
     public:
         static EtfSwapType etf_swap_in;
         static EtfSwapType etf_swap_out;
@@ -195,7 +197,7 @@ private:
      * buy-market, sell-market, buy-limit, buy-ioc, sell-ioc, buy-limit-maker, sell-limit-maker.
      */
     class OrderType : public BaseEnumClass<OrderType> {
-        DEFINE_ENUM_CLASS(OrderType);
+    DEFINE_ENUM_CLASS(OrderType);
     public:
         static OrderType buy_market;
         static OrderType sell_market;
@@ -212,7 +214,7 @@ private:
      * created, accrual, cleared, invalid.
      */
     class LoanOrderStates : public BaseEnumClass<LoanOrderStates> {
-        DEFINE_ENUM_CLASS(LoanOrderStates);
+    DEFINE_ENUM_CLASS(LoanOrderStates);
     public:
         static LoanOrderStates created;
         static LoanOrderStates accrual;
@@ -224,7 +226,7 @@ private:
      * sys, web, api, app.
      */
     class OrderSource : public BaseEnumClass<OrderSource> {
-        DEFINE_ENUM_CLASS(OrderSource);
+    DEFINE_ENUM_CLASS(OrderSource);
     public:
         static OrderSource sys;
         static OrderSource web;
@@ -245,7 +247,7 @@ private:
      * SUBMITTED, PARTIALFILLED, CANCELLING. PARTIALCANCELED FILLED CANCELED
      */
     class OrderState : public BaseEnumClass<OrderState> {
-        DEFINE_ENUM_CLASS(OrderState);
+    DEFINE_ENUM_CLASS(OrderState);
     public:
         static OrderState submitted;
         static OrderState partial_filled;
@@ -259,7 +261,7 @@ private:
      * buy, sell.
      */
     class TradeDirection : public BaseEnumClass<TradeDirection> {
-        DEFINE_ENUM_CLASS(TradeDirection);
+    DEFINE_ENUM_CLASS(TradeDirection);
     public:
         static TradeDirection buy;
         static TradeDirection sell;
@@ -269,7 +271,7 @@ private:
      *master_transfer_in,master_transfer_out,master_point_transfer_in,master_point_transfer_out
      */
     class TransferMasterType : public BaseEnumClass<TransferMasterType> {
-        DEFINE_ENUM_CLASS(TransferMasterType);
+    DEFINE_ENUM_CLASS(TransferMasterType);
     public:
         static TransferMasterType master_transfer_in;
         static TransferMasterType master_transfer_out;
@@ -281,7 +283,7 @@ private:
      * withdraw, deposit.
      */
     class WithdrawState : public BaseEnumClass<WithdrawState> {
-        DEFINE_ENUM_CLASS(WithdrawState);
+    DEFINE_ENUM_CLASS(WithdrawState);
     public:
         static WithdrawState submitted;
         static WithdrawState reexamine;
@@ -297,7 +299,7 @@ private:
     };
 
     class QueryDirection : public BaseEnumClass<QueryDirection> {
-        DEFINE_ENUM_CLASS(QueryDirection);
+    DEFINE_ENUM_CLASS(QueryDirection);
     public:
         static QueryDirection PREV;
         static QueryDirection NEXT;
