@@ -86,7 +86,7 @@ curl - <https://github.com/curl/curl>
 libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
 
 
-###安装依赖包
+### 安装依赖包
 
 ubuntu 18.04:
 ````
