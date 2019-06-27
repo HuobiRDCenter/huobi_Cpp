@@ -40,7 +40,6 @@ if (APPLE)
 endif ()
 
 
-
 if (LINUX)
     message(STATUS "当前操作系统: Linux")
 endif ()
@@ -53,6 +52,20 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
 
 PROJECT(HuobiClient)
+
+if (LINUX)
+    execute_process(COMMAND sh ../getOpensslVersion.sh
+            OUTPUT_VARIABLE OPENSSL_VERSION
+            ERROR_QUIET)
+
+    if (OPENSSL_VERSION EQUAL 1.1)
+        MESSAGE(STATUS "openssl version is 1.1.x")
+        add_definitions(-DOPENSSL_VERSION_1_1)
+    elseif (OPENSSL_VERSION EQUAL 1.0)
+        MESSAGE(STATUS "openssl version is 1.0.x")
+        add_definitions(-DOPENSSL_VERSION_1_0)
+    endif ()
+endif ()
 
 IF (CMAKE_BUILD_TYPE MATCHES "Release")
     SET(CMAKE_BUILD_POSTFIX "Release")
@@ -73,7 +86,6 @@ FIND_PATH(
 include_directories(./include)
 include_directories(${LIBDECNUMBER_INCLUDE_DIR})
 include_directories(/usr/local/include)
-
 
 
 IF (ENABLE_UT)
