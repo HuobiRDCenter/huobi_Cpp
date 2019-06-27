@@ -43,6 +43,10 @@ RUN apt-get install -yq --no-install-recommends zlib1g-dev
 RUN apt-get install -yq --no-install-recommends locales
 RUN apt-get install -yq --no-install-recommends language-pack-zh-hans
 
+#测试
+RUN apt-get install libgtest-dev
+RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && cp *.a /usr/lib
+
 #升级
 RUN apt-get -y upgrade
 
