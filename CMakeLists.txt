@@ -67,6 +67,9 @@ if (LINUX)
     else ()
         MESSAGE(FATAL_ERROR "openssl version should be 1.0.x or 1.1.x")
     endif ()
+elseif (APPLE)
+    MESSAGE(STATUS "openssl version is 1.0.x")
+    add_definitions(-DOPENSSL_VERSION_1_0)
 endif ()
 
 IF (CMAKE_BUILD_TYPE MATCHES "Release")
@@ -88,6 +91,10 @@ FIND_PATH(
 include_directories(./include)
 include_directories(${LIBDECNUMBER_INCLUDE_DIR})
 include_directories(/usr/local/include)
+
+if (APPLE)
+    include_directories(/usr/local/opt/openssl/include)
+endif ()
 
 
 IF (ENABLE_UT)

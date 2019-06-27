@@ -63,7 +63,9 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 *The SDK is compiled by C++ 11*.
 
-Currently, The SDK has the compatibility on linux system only.
+编译器可以使用gcc也可以使用clang.
+
+Currently, The SDK has the compatibility on linux system(centos 7 and ubuntu 18.04) and macOS(10.14.5) only.
 
 #### Install CMake
 
@@ -83,6 +85,9 @@ curl - <https://github.com/curl/curl>
 
 libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
 
+
+###安装依赖包
+
 ubuntu 18.04:
 ````
 $ sudo apt install cmake
@@ -92,8 +97,6 @@ $ sudo apt install libcurl4-openssl-dev
 ````
 
 centos 7   
-
-可以使用gcc也可以使用clang
 
 ````
 $ sudo yum install cmake
@@ -119,8 +122,22 @@ $ echo "source /opt/rh/devtoolset-7/enable" >> $HOME/.bashrc
 $ source $HOME/.bashrc
 ````
 
+macOS 10.14.5
 
-安装libwebsockets v3.1.0:
+````
+#openssl 1.0.2
+$ brew install openssl
+#libwebsockets v3.1.0
+$ brew install libwebsockets
+#curl
+$ brew install curl curl-openssl
+#gtest
+$ brew install --HEAD https://gist.githubusercontent.com/Kronuz/96ac10fbd8472eb1e7566d740c4034f8/raw/gtest.rb
+````
+
+
+
+从源码编译安装libwebsockets v3.1.0:
 
 参考: <https://libwebsockets.org/>
 ````
