@@ -49,6 +49,11 @@ RUN yum install -y gtest gtest-devel gmock gmock-devel
 #clang 最低3.4.2 最高5.0.1 此处使用5.0.1
 RUN yum install -y devtoolset-7-llvm
 
+#支持中文
+RUN  yum install -y kde-l10n-Chinese telnet && yum reinstall -y glibc-common && yum clean all  &&  localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+
+
+
 #升级
 RUN yum -y  upgrade
 
@@ -56,8 +61,9 @@ RUN yum -y  upgrade
 ENV SHELL /bin/bash
 ENV NB_USER jovyan
 ENV NB_UID 1000
-ENV LANG zh_CN.UTF-8
-ENV LANGUAGE zh_CN.UTF-8
+ENV LANG "zh_CN.UTF-8"
+ENV LANGUAGE "zh_CN.UTF-8"
+ENV LC_ALL "zh_CN.UTF-8"
 ENV USER_HOME /home/$NB_USER
 ENV WORK_DIR $USER_HOME/work
 ENV TMP_DIR $USER_HOME/tmp
@@ -75,7 +81,7 @@ RUN echo "127.0.1.1 $(hostname)" >> /etc/hosts
 USER $NB_USER
 
 #安装libdecnumber
-RUN source /opt/rh/llvm-toolset-7/enable && cd $USER_HOME && git clone https://github.com/huobiapi/libdecnumber.git && cd libdecnumber && mkdir build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make && sudo make install && sudo rm -rf $USER_HOME/libdecnumber
+RUN source /opt/rh/llvm-toolset-7/enable && cd $USER_HOME && git clone https://github.com/huobiapi/libdecnumber.git && cd libdecnumber && mkdir build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG && make && sudo make install && sudo rm -rf $USER_HOME/libdecnumber
 
 #刷新库文件
 RUN sudo ldconfig

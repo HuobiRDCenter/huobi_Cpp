@@ -146,7 +146,10 @@ $ git clone https://github.com/huobiapi/libdecnumber.git
 $ cd libdecnumber
 $ mkdir build
 $ cd build
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+#使用clang
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG
+#使用gcc
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
 $ make
 $ sudo make install
 $ sudo ldconfig
@@ -159,7 +162,10 @@ $ git clone https://github.com/huobiapi/huobi_Cpp.git
 $ cd huobi_Cpp
 $ mkdir build
 $ cd build
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+#使用clang
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG
+#使用gcc
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
 $ make
 $ sudo make install
 $ sudo ldconfig
@@ -173,7 +179,10 @@ $ cd examples
 $ cd GetCandlestickData
 $ mkdir build
 $ cd build
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release
+#使用clang
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG
+#使用gcc
+$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
 $ make
 ```
 
