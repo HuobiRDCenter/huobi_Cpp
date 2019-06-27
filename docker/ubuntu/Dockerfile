@@ -27,6 +27,7 @@ RUN apt-get install -yq --no-install-recommends libcurl4-openssl-dev
 #编译
 RUN apt-get install -yq --no-install-recommends git
 RUN apt-get install -yq --no-install-recommends cmake
+RUN apt-get install -yq --no-install-recommends clang
 
 #网络
 RUN apt-get install -yq --no-install-recommends iputils-ping
@@ -75,7 +76,7 @@ USER $NB_USER
 RUN mkdir $WORK_DIR && mkdir $USER_HOME/.local
 
 #安装libdecnumber
-RUN cd $USER_HOME && git clone https://github.com/huobiapi/libdecnumber.git && cd libdecnumber && mkdir build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release && make && sudo make install && sudo rm -rf $USER_HOME/libdecnumber
+RUN cd $USER_HOME && git clone https://github.com/huobiapi/libdecnumber.git && cd libdecnumber && mkdir build && cd build && cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG && make && sudo make install && sudo rm -rf $USER_HOME/libdecnumber
 
 #安装libwebsockets v3.1.0:
 #参考: https://libwebsockets.org/

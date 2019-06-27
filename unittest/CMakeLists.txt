@@ -64,9 +64,7 @@ FIND_PATH(
 include_directories(../include)
 include_directories(${LIBDECNUMBER_INCLUDE_DIR})
 include_directories(/usr/local/include)
-if (APPLE)
-    include_directories(/usr/local/opt/openssl/include)
-endif ()
+
 
 AUX_SOURCE_DIRECTORY(. DIR_SRCS)
 

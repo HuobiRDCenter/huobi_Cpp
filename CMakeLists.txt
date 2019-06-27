@@ -74,9 +74,7 @@ include_directories(./include)
 include_directories(${LIBDECNUMBER_INCLUDE_DIR})
 include_directories(/usr/local/include)
 
-if (APPLE)
-    include_directories(/usr/local/opt/openssl/include)
-endif ()
+
 
 IF (ENABLE_UT)
     add_subdirectory(unittest)
