@@ -40,7 +40,6 @@ if (APPLE)
 endif ()
 
 
-
 if (LINUX)
     message(STATUS "当前操作系统: Linux")
 endif ()
@@ -60,6 +59,25 @@ configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
         "${PROJECT_BINARY_DIR}/config.h")
 
 include_directories("${PROJECT_BINARY_DIR}")
+
+if (LINUX)
+    execute_process(COMMAND sh ../getOpensslVersion.sh
+            OUTPUT_VARIABLE OPENSSL_VERSION
+            ERROR_QUIET)
+
+    if (OPENSSL_VERSION EQUAL 1.1)
+        MESSAGE(STATUS "openssl version is 1.1.x")
+        add_definitions(-DOPENSSL_VERSION_1_1)
+    elseif (OPENSSL_VERSION EQUAL 1.0)
+        MESSAGE(STATUS "openssl version is 1.0.x")
+        add_definitions(-DOPENSSL_VERSION_1_0)
+    else ()
+        MESSAGE(FATAL_ERROR "openssl version should be 1.0.x or 1.1.x")
+    endif ()
+elseif (APPLE)
+    MESSAGE(STATUS "openssl version is 1.0.x")
+    add_definitions(-DOPENSSL_VERSION_1_0)
+endif ()
 
 IF (CMAKE_BUILD_TYPE MATCHES "Release")
     SET(CMAKE_BUILD_POSTFIX "Release")
@@ -81,6 +99,9 @@ include_directories(./include)
 include_directories(${LIBDECNUMBER_INCLUDE_DIR})
 include_directories(/usr/local/include)
 
+if (APPLE)
+    include_directories(/usr/local/opt/openssl/include)
+endif ()
 
 
 IF (ENABLE_UT)

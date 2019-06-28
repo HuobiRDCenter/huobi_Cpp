@@ -77,16 +77,27 @@ namespace Huobi {
             }
 
             const EVP_MD *engine = EVP_sha256();
+            unsigned char output[1024] = {0};
+            uint32_t len = 1024;
 
-
+//openssl 1.0.x
+#ifdef OPENSSL_VERSION_1_0
             HMAC_CTX ctx;
             HMAC_CTX_init(&ctx);
-            unsigned char output[1024] = {0};
             HMAC_Init_ex(&ctx, secretKey.c_str(), secretKey.size(), engine, NULL);
-            HMAC_Update(&ctx, (unsigned char *) cre.c_str(), cre.size()); // input is OK; &input is WRONG !!!
-            uint32_t len = 1024;
+            HMAC_Update(&ctx, (unsigned char *) cre.c_str(), cre.size());
             HMAC_Final(&ctx, output, &len);
             HMAC_CTX_cleanup(&ctx);
+#endif
+
+            //openssl 1.1.x
+#ifdef OPENSSL_VERSION_1_1
+            HMAC_CTX* ctx = HMAC_CTX_new();
+            HMAC_Init_ex(ctx, secretKey.c_str(), secretKey.size(), engine, NULL);
+            HMAC_Update(ctx, (unsigned char*) cre.c_str(), cre.size());
+            HMAC_Final(ctx, output, &len);
+            HMAC_CTX_free(ctx);
+#endif
 
             std::string code;
             code = base64_encode(output, 32);

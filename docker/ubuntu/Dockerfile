@@ -41,13 +41,17 @@ RUN apt-get install -yq --no-install-recommends zlib1g-dev
 
 #中文支持
 RUN apt-get install -yq --no-install-recommends locales
-RUN apt-get install -yq --no-install-recommends language-pack-zh-hans
+
+
+#测试
+RUN apt-get install -yq --no-install-recommends libgtest-dev
+RUN cd /usr/src/gtest && cmake CMakeLists.txt && make && cp *.a /usr/lib
 
 #升级
 RUN apt-get -y upgrade
 
 #支持中文
-RUN echo "zh_CN.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
+RUN echo "zh_CN.UTF-8 UTF-8" > /etc/locale.gen && locale-gen zh_CN.UTF-8 en_US.UTF-8
 
 # Configure environment
 ENV SHELL /bin/bash

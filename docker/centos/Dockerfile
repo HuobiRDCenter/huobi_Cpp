@@ -52,8 +52,6 @@ RUN yum install -y devtoolset-7-llvm
 #支持中文
 RUN  yum install -y kde-l10n-Chinese telnet && yum reinstall -y glibc-common && yum clean all  &&  localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 
-
-
 #升级
 RUN yum -y  upgrade
 
