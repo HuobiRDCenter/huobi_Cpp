@@ -132,7 +132,7 @@ $ brew install libwebsockets
 #curl
 $ brew install curl curl-openssl
 #gtest
-$ brew install --HEAD https://gist.githubusercontent.com/Kronuz/96ac10fbd8472eb1e7566d740c4034f8/raw/gtest.rb
+$ brew install --HEAD https://gist.githubusercontent.com/huobiapi/e81f3714d37c7d92c3e9e6b6566a4cbe/raw/39f1a42024cecb40d0436b03acd67c0abe6d9571/gtest.rb
 ````
 
 
