@@ -54,6 +54,13 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
 PROJECT(HuobiClient)
 
+set(CURRENT_VERSION 1)
+
+configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
+        "${PROJECT_BINARY_DIR}/config.h")
+
+include_directories("${PROJECT_BINARY_DIR}")
+
 IF (CMAKE_BUILD_TYPE MATCHES "Release")
     SET(CMAKE_BUILD_POSTFIX "Release")
 ELSEIF (CMAKE_BUILD_TYPE MATCHES "Debug")
