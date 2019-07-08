@@ -173,7 +173,7 @@ namespace Huobi {
         } else if (json.containKey("subbed")) {
 
         }else {           
-            Logger::WriteLog("解析失败！：%s",message);
+            Logger::WriteLog("parse failed！：%s",message);
         }
     }
 
