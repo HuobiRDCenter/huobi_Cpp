@@ -133,7 +133,7 @@ namespace Huobi {
         if (request->isNeedSignature) {
             send(createSignature());
         } else {
-            if (request->connectionHandler) {
+            if (request->connectionHandler) {                
                 request->connectionHandler(this);
             }
         }
@@ -144,8 +144,7 @@ namespace Huobi {
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
         JsonDocument doc;
-        JsonWrapper json = doc.parseFromString(message);
-
+        JsonWrapper json = doc.parseFromString(message);          
         if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0)||      
               (json.containKey("err-code")&&json.getInt("err-code")!=0) ) {
             std::string errorCode = json.getStringOrDefault("err-code", "Unknown error code");
@@ -163,20 +162,23 @@ namespace Huobi {
             } else if (op == "ping") {
                 processPingOnTradingLine(json);
             } else if (op == "auth") {
-                if (request->connectionHandler) {
+                if (request->connectionHandler) {                   
                     request->connectionHandler(this);
                 }
             }
-        } else if (json.containKey("ch")) {
+        } else if (json.containKey("ch")) {       
             onReceive(json);
         } else if (json.containKey("ping")) {
             processPingOnMarketLine(json);
         } else if (json.containKey("subbed")) {
 
+        }else {           
+            Logger::WriteLog("解析失败！：%s",message);
         }
     }
 
     void WebSocketConnection::onReceive(JsonWrapper& json) {
+        
         request->implCallback(json);
     }
 
