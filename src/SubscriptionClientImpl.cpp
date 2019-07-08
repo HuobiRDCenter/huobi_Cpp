@@ -29,8 +29,8 @@ namespace Huobi {
             case LWS_CALLBACK_CLIENT_RECEIVE:
             {
                 // lwsl_user("receive");
-                char buf[4096] = {0};
-                unsigned int l = 4096;
+                char buf[4096*4] = {0};
+                unsigned int l = 4096*4;
                 l = gzDecompress((char*) in, len, buf, l);
                 //lwsl_user("RX %d: %s\n", l, (const char *) buf);
                 connection->onMessage(buf);
