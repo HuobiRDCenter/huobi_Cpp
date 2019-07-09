@@ -65,7 +65,9 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 编译器可以使用gcc也可以使用clang.
 
-Currently, The SDK has the compatibility on linux system(centos 7 and ubuntu 18.04) and macOS(10.14.5) only.
+Currently, The SDK has the compatibility on linux system(centos 7 and ubuntu 18.04) only.
+
+Later, macOS and windows.
 
 #### Install CMake
 
@@ -91,9 +93,13 @@ libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
 ubuntu 18.04:
 ````
 $ sudo apt install cmake
+#openssl 1.1.1
 $ sudo apt install openssl
 $ sudo apt install libssl-dev
-$ sudo apt install libcurl4-openssl-dev
+#curl
+$ sudo apt install curl libcurl4-openssl-dev
+#zip
+$ sudo apt install zlib1g-dev
 ````
 
 centos 7   
@@ -105,9 +111,10 @@ $ sudo yum install openssl openssl-devel
 #curl
 $ sudo yum install libcurl libcurl-devel
 #libwebsockets v3.1.0
-$ yum install epel-release
-$ yum install libwebsockets libwebsockets-devel
-
+$ sudo yum install epel-release
+$ sudo yum install libwebsockets libwebsockets-devel
+#zip
+$ sudo yum install zlib zlib-devel
 
 $ sudo yum install centos-release-scl-rh centos-release-scl scl-utils-build scl-utils
 $ sudo yum check-update
@@ -131,6 +138,8 @@ $ brew install openssl
 $ brew install libwebsockets
 #curl
 $ brew install curl curl-openssl
+#zlib
+$ brew install zlib
 #gtest
 $ brew install --HEAD https://gist.githubusercontent.com/huobiapi/e81f3714d37c7d92c3e9e6b6566a4cbe/raw/39f1a42024cecb40d0436b03acd67c0abe6d9571/gtest.rb
 ````
@@ -149,7 +158,6 @@ $ cd build
 $ cmake ..
 $ make
 $ sudo make install
-$ sudo ldconfig
 ````
 
 #### Build SDK
@@ -169,7 +177,6 @@ $ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=
 $ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
 $ make
 $ sudo make install
-$ sudo ldconfig
 ``````
 
 Then build the SDK library
@@ -185,7 +192,6 @@ $ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=
 $ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
 $ make
 $ sudo make install
-$ sudo ldconfig
 ```
 
 #### Run example 
