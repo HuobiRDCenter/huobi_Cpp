@@ -145,7 +145,7 @@ namespace Huobi {
                 return account;
             }
         }
-        // return NULL;
+        return Account();
     }
 
     std::vector<Order> SyncClientImpl::getOpenOrders(OpenOrderRequest& openOrderRequest) {

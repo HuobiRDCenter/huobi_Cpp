@@ -229,6 +229,47 @@ namespace Huobi {
         return req;
     }
 
+    WebSocketRequest *WebSocketApiImpl::subscribeOrderUpdateEventNew(const std::list<std::string> &symbols, const std::function<void (const OrderUpdateEvent &)> &callback, const std::function<void (HuobiApiException &)> &errorHandler)
+    {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<OrderUpdateEvent>();
+
+        req->connectionHandler = [symbols](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::orderChannelNew(symbol));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        };
+
+        req->JsonParser = [this](const JsonWrapper& json) {
+            ChannelParser parser = ChannelParser(json.getString("topic"));
+            OrderUpdateEvent orderUpdateEvent;
+            orderUpdateEvent.symbol = parser.getSymbol();
+            orderUpdateEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            Order order;
+            order.orderId = data.getLong("order-id");
+            order.symbol = parser.getSymbol();
+            order.accountType = AccountsInfoMap::getAccount(this->accessKey, data.getLong("account-id")).type;
+            order.amount = data.getDecimal("order-amount");
+            order.price = data.getDecimal("order-price");
+            order.createdTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
+            order.type = OrderType::lookup(data.getString("order-type"));
+            order.filledAmount = data.getDecimal("filled-amount");
+            order.filledCashAmount = data.getDecimal("filled-cash-amount");
+            order.filledFees = data.getDecimal("filled-fees");
+            order.state = OrderState::lookup(data.getString("order-state"));
+            order.source = OrderSource::lookup(data.getString("order-source"));
+            orderUpdateEvent.data = order;
+            return orderUpdateEvent;
+        };
+        req->isNeedSignature = true;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+    }
+
     WebSocketRequest* WebSocketApiImpl::subscribeAccountEvent(
             const BalanceMode& mode,
             const std::function<void(const AccountEvent&) >& callback,

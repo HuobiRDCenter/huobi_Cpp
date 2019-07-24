@@ -93,6 +93,12 @@ namespace Huobi {
                 const std::function<void(const OrderUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
+        void subscribeOrderUpdateEventNew(
+                const char* symbols,
+                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+
         void subscribeAccountEvent(
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,

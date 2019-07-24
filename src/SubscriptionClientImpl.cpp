@@ -160,6 +160,14 @@ namespace Huobi {
         createConnection(impl->subscribeOrderUpdateEvent(parseSymbols(symbols), callback, errorHandler));
     }
 
+    void SubscriptionClientImpl::subscribeOrderUpdateEventNew(
+            const char* symbols,
+            const std::function<void(const OrderUpdateEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribeOrderUpdateEventNew(parseSymbols(symbols), callback, errorHandler));
+    }
+
+
     void SubscriptionClientImpl::subscribeAccountEvent(
             const BalanceMode& mode,
             const std::function<void(const AccountEvent&) >& callback,

@@ -62,6 +62,11 @@ namespace Huobi {
                 const std::function<void(const OrderUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
 
+        WebSocketRequest* subscribeOrderUpdateEventNew(
+                const std::list<std::string>& symbols,
+                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
         WebSocketRequest * subscribeAccountEvent(
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
