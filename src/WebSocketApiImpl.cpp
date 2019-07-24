@@ -249,6 +249,7 @@ namespace Huobi {
                 JsonWrapper itemInList = listArray.getJsonObjectAt(i);
                 AccountChange change;
                 change.accountType = AccountsInfoMap::getAccount(this->accessKey, itemInList.getLong("account-id")).type;
+                change.accountId = itemInList.getLong("account-id");
                 change.currency = itemInList.getString("currency");
                 change.balance = itemInList.getDecimal("balance");
                 change.balanceType = BalanceType::lookup(itemInList.getString("type"));

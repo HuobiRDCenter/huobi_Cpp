@@ -29,6 +29,8 @@ namespace Huobi {
          * The balance type.
          */
         BalanceType balanceType;
+
+        long accountId {0};
     };
 }
 #endif /* ACCOUNTCHANGE_H */
