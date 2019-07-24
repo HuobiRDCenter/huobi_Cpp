@@ -18,14 +18,17 @@ int main(int argc, char** argv) {
     std::string apiSec;
     if(argc >= 3)
     {
-        std::string apiKey = argv[1];
-        std::string apiSec = argv[2];
+        apiKey = argv[1];
+        apiSec = argv[2];
     }
 
     if(argc >3)
     {
-        options.url = argv[4];
+        options.url = argv[3];
+	std::cout << "Using Url " << options.url << std::endl;
     }
+
+    
     SubscriptionClient* subscriptionClient = createSubscriptionClient(
                 apiKey.c_str(), apiSec.c_str(), options);
     subscriptionClient->subscribeAccountEvent(BalanceMode::available, [](AccountEvent accountEvent) {
