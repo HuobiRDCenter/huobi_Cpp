@@ -242,29 +242,15 @@ namespace Huobi {
             }
         };
 
-
-
-        long matchId;
-        long id;
-
-
-        double filled;
-        double unfilled;
-        double price;
-        double filledTurnover;
-        OrderState state;
-
-        req->JsonParser = [this](const JsonWrapper& json) {
+        req->JsonParser = [](const JsonWrapper& json) {
            // ChannelParser parser = ChannelParser(json.getString("topic"));
             OrderUpdateEventNew order;
             order.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
             JsonWrapper data = json.getJsonObjectOrArray("data");
             order.symbol = data.getString("symbol");
             order.id = data.getLong("order-id");
-            order.unfilled = data.getDecimal("order-amount").toDouble();
-            order.price = data.getDecimal("order-price").toDouble();
-           // order.createdTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
-         //   order.type = OrderType::lookup(data.getString("order-type"));
+            order.unfilled = data.getDecimal("unfilled-amount").toDouble();
+            order.price = data.getDecimal("price").toDouble();
             order.filled = data.getDecimal("filled-amount").toDouble();
             order.filledTurnover = data.getDecimal("filled-cash-amount").toDouble();
             order.state = OrderState::lookup(data.getString("order-state"));
