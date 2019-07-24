@@ -229,11 +229,11 @@ namespace Huobi {
         return req;
     }
 
-    WebSocketRequest *WebSocketApiImpl::subscribeOrderUpdateEventNew(const std::list<std::string> &symbols, const std::function<void (const OrderUpdateEvent &)> &callback, const std::function<void (HuobiApiException &)> &errorHandler)
+    WebSocketRequest *WebSocketApiImpl::subscribeOrderUpdateEventNew(const std::list<std::string> &symbols, const std::function<void (const OrderUpdateEventNew &)> &callback, const std::function<void (HuobiApiException &)> &errorHandler)
     {
         InputChecker::checker()->checkCallback(callback);
 
-        auto req = new WebSocketRequestImpl<OrderUpdateEvent>();
+        auto req = new WebSocketRequestImpl<OrderUpdateEventNew>();
 
         req->connectionHandler = [symbols](WebSocketConnection * connection) {
             for (std::string symbol : symbols) {
@@ -242,27 +242,33 @@ namespace Huobi {
             }
         };
 
+
+
+        long matchId;
+        long id;
+
+
+        double filled;
+        double unfilled;
+        double price;
+        double filledTurnover;
+        OrderState state;
+
         req->JsonParser = [this](const JsonWrapper& json) {
-            ChannelParser parser = ChannelParser(json.getString("topic"));
-            OrderUpdateEvent orderUpdateEvent;
-            orderUpdateEvent.symbol = parser.getSymbol();
-            orderUpdateEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+           // ChannelParser parser = ChannelParser(json.getString("topic"));
+            OrderUpdateEventNew order;
+            order.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            Order order;
-            order.orderId = data.getLong("order-id");
-            order.symbol = parser.getSymbol();
-            order.accountType = AccountsInfoMap::getAccount(this->accessKey, data.getLong("account-id")).type;
-            order.amount = data.getDecimal("order-amount");
-            order.price = data.getDecimal("order-price");
-            order.createdTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
-            order.type = OrderType::lookup(data.getString("order-type"));
-            order.filledAmount = data.getDecimal("filled-amount");
-            order.filledCashAmount = data.getDecimal("filled-cash-amount");
-            order.filledFees = data.getDecimal("filled-fees");
+            order.symbol = data.getString("symbol");
+            order.id = data.getLong("order-id");
+            order.unfilled = data.getDecimal("order-amount").toDouble();
+            order.price = data.getDecimal("order-price").toDouble();
+           // order.createdTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
+         //   order.type = OrderType::lookup(data.getString("order-type"));
+            order.filled = data.getDecimal("filled-amount").toDouble();
+            order.filledTurnover = data.getDecimal("filled-cash-amount").toDouble();
             order.state = OrderState::lookup(data.getString("order-state"));
-            order.source = OrderSource::lookup(data.getString("order-source"));
-            orderUpdateEvent.data = order;
-            return orderUpdateEvent;
+            return order;
         };
         req->isNeedSignature = true;
         req->Callback = callback;

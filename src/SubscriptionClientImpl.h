@@ -95,7 +95,7 @@ namespace Huobi {
 
         void subscribeOrderUpdateEventNew(
                 const char* symbols,
-                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(const OrderUpdateEventNew&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
 

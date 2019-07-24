@@ -57,7 +57,81 @@ int main(int argc, char** argv) {
     subscriptionClient->subscribeOrderUpdateEvent("ethusdt", [](OrderUpdateEvent change) {
             cout << "OrderUpdate: " << change.symbol
                  << " ts:" << change.timestamp
-                 << " Order:" << change.data;
+                 << " Account:" << change.data.accountType.getValue()
+                 << " OrderID:" << change.data.orderId
+                 << " OrderType:" << change.data.type.getValue()
+                 << " Price:" << change.data.orderId
+                 << " Size:" << change.data.amount
+                 << " Filled:" << change.data.filledAmount
+                 << " Status:" << change.data.state.getValue()
+                 << std::endl;
+    });
+
+    subscriptionClient->subscribeOrderUpdateEvent("ltcusdt", [](OrderUpdateEvent change) {
+            cout << "OrderUpdate: " << change.symbol
+                 << " ts:" << change.timestamp
+                 << " Account:" << change.data.accountType.getValue()
+                 << " OrderID:" << change.data.orderId
+                 << " OrderType:" << change.data.type.getValue()
+                 << " Price:" << change.data.orderId
+                 << " Size:" << change.data.amount
+                 << " Filled:" << change.data.filledAmount
+                 << " Status:" << change.data.state.getValue()
+                 << std::endl;
+    });
+
+    subscriptionClient->subscribeOrderUpdateEvent("eosusdt", [](OrderUpdateEvent change) {
+            cout << "OrderUpdate: " << change.symbol
+                 << " ts:" << change.timestamp
+                 << " Account:" << change.data.accountType.getValue()
+                 << " OrderID:" << change.data.orderId
+                 << " OrderType:" << change.data.type.getValue()
+                 << " Price:" << change.data.orderId
+                 << " Size:" << change.data.amount
+                 << " Filled:" << change.data.filledAmount
+                 << " Status:" << change.data.state.getValue()
+                 << std::endl;
+    });
+
+
+
+    subscriptionClient->subscribeOrderUpdateEventNew("ethusdt", [](OrderUpdateEventNew change) {
+            cout << "OrderUpdate: " << change.symbol
+                 << " ts:" << change.timestamp
+                 << " matchID:" << change.matchId
+                 << " OrderID:" << change.id
+                // << " OrderType:" << change.data.type.getValue()
+                 << " Price:" << change.price
+                 << " Size:" << change.unfilled
+                 << " Filled:" << change.filled
+                 << " Status:" << change.state.getValue()
+                 << std::endl;
+    });
+
+    subscriptionClient->subscribeOrderUpdateEventNew("ltcusdt", [](OrderUpdateEventNew change) {
+            cout << "OrderUpdate: " << change.symbol
+                 << " ts:" << change.timestamp
+                 << " matchID:" << change.matchId
+                 << " OrderID:" << change.id
+                // << " OrderType:" << change.data.type.getValue()
+                 << " Price:" << change.price
+                 << " Size:" << change.unfilled
+                 << " Filled:" << change.filled
+                 << " Status:" << change.state.getValue()
+                 << std::endl;
+    });
+
+    subscriptionClient->subscribeOrderUpdateEventNew("eosusdt", [](OrderUpdateEventNew change) {
+            cout << "OrderUpdate: " << change.symbol
+                 << " ts:" << change.timestamp
+                 << " matchID:" << change.matchId
+                 << " OrderID:" << change.id
+                // << " OrderType:" << change.data.type.getValue()
+                 << " Price:" << change.price
+                 << " Size:" << change.unfilled
+                 << " Filled:" << change.filled
+                 << " Status:" << change.state.getValue()
+                 << std::endl;
     });
 
     subscriptionClient->startService();
