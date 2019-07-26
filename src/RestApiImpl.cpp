@@ -48,7 +48,7 @@ namespace Huobi {
             std::vector<Candlestick> cans;
             JsonWrapper data = json.getJsonObjectOrArray("data");
 
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Candlestick candlestick;
                 candlestick.timestamp =
@@ -80,10 +80,10 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Trade> trades;
             JsonWrapper dataArray = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < dataArray.size(); i++) {
+            for (size_t i = 0; i < dataArray.size(); i++) {
                 JsonWrapper item = dataArray.getJsonObjectAt(i);
                 JsonWrapper dataArrayIn = item.getJsonObjectOrArray("data");
-                for (int j = 0; j < dataArrayIn.size(); j++) {
+                for (size_t j = 0; j < dataArrayIn.size(); j++) {
                     JsonWrapper itemIn = dataArrayIn.getJsonObjectAt(0);
                     Trade trade;
                     trade.price = itemIn.getDecimal("price");
@@ -106,7 +106,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Symbols> symbolsList;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Symbols symbols;
                 symbols.baseCurrency = item.getString("base-currency");
@@ -128,7 +128,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<std::string> stringList;
             JsonWrapper dataArray = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < dataArray.size(); i++) {
+            for (size_t i = 0; i < dataArray.size(); i++) {
                 stringList.push_back(dataArray.getStringAt(i));
             }
 
@@ -164,7 +164,7 @@ namespace Huobi {
             std::vector<Account>accounts;
             JsonWrapper data = json.getJsonObjectOrArray("data");
             size_t size = data.size();
-            for (int i = 0; i < size; i++) {
+            for (size_t i = 0; i < size; i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Account account;
                 account.id = item.getLong("id");
@@ -186,7 +186,7 @@ namespace Huobi {
             std::vector<Balance> balances;
             JsonWrapper data = json.getJsonObjectOrArray("data");
             JsonWrapper list = data.getJsonObjectOrArray("list");
-            for (int i = 0; i < list.size(); i++) {
+            for (size_t i = 0; i < list.size(); i++) {
                 JsonWrapper item = list.getJsonObjectAt(i);
                 Balance balance;
                 balance.balance = item.getDecimal("balance");
@@ -250,7 +250,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Withdraw> withdraws;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Withdraw withdraw;
                 withdraw.id = item.getLong("id");
@@ -286,7 +286,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Deposit> lstdeposit;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Deposit deposit;
                 deposit.id = item.getLong("id");
@@ -407,7 +407,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Loan> loans;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Loan loan;
                 loan.loanBalance = item.getDecimal("loan-balance");
@@ -450,7 +450,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Order> orderList;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Order order;
                 order.orderId = item.getLong("id");
@@ -595,7 +595,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<MatchResult> matchResultList;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 MatchResult matchResult;
                 matchResult.id = (item.getLong("id"));
@@ -635,7 +635,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<MatchResult> matchResultList;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 MatchResult matchResult;
                 matchResult.id = (item.getLong("id"));
@@ -730,7 +730,7 @@ namespace Huobi {
         res->jsonParser = [this] (const JsonWrapper & json) {
             std::vector<Order> orderList;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Order order;
                 order.accountType =
@@ -782,7 +782,7 @@ namespace Huobi {
         res->jsonParser = [this](JsonWrapper json) {
             std::vector<Balance> balances;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Balance balance;
                 balance.currency = item.getString("currency");
@@ -805,14 +805,14 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<CompleteSubAccountInfo> completeSubAccountInfos;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 CompleteSubAccountInfo completeSubAccountInfo;
                 completeSubAccountInfo.id = item.getLong("id");
                 completeSubAccountInfo.type = AccountType::lookup(item.getString("type"));
                 JsonWrapper list = item.getJsonObjectOrArray("list");
                 std::vector<Balance> balances;
-                for (int j = 0; j < list.size(); j++) {
+                for (size_t j = 0; j < list.size(); j++) {
                     JsonWrapper in = list.getJsonObjectAt(j);
                     Balance balance;
                     balance.currency = in.getString("currency");
@@ -846,7 +846,7 @@ namespace Huobi {
                     EtfStatus::lookup(std::to_string(data.getInt("etf_status")));
             JsonWrapper unitPrices = data.getJsonObjectOrArray("unit_price");
             std::vector<UnitPrice> unitPriceList;
-            for (int i = 0; i < unitPrices.size(); i++) {
+            for (size_t i = 0; i < unitPrices.size(); i++) {
                 JsonWrapper item = unitPrices.getJsonObjectAt(i);
                 UnitPrice unitPrice;
                 unitPrice.currency = item.getString("currency");
@@ -893,7 +893,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<EtfSwapHistory> etfSwapHistoryList;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 EtfSwapHistory etfSwapHistory;
                 etfSwapHistory.createdTimestamp = item.getLong("gmt_created");
@@ -907,7 +907,7 @@ namespace Huobi {
                 etfSwapHistory.pointCardAmount = detail.getDecimal("point_card_amount");
                 JsonWrapper usedCurrencyArray = detail.getJsonObjectOrArray("used_currency_list");
                 std::vector<UnitPrice> usedCurrencyList;
-                for (int j = 0; j < usedCurrencyArray.size(); j++) {
+                for (size_t j = 0; j < usedCurrencyArray.size(); j++) {
                     JsonWrapper currency = usedCurrencyArray.getJsonObjectAt(i);
                     UnitPrice unitPrice;
                     unitPrice.amount = currency.getDecimal("amount");
@@ -917,7 +917,7 @@ namespace Huobi {
                 etfSwapHistory.usedCurrencyList = usedCurrencyList;
                 JsonWrapper obtainCurrencyArray = detail.getJsonObjectOrArray("obtain_currency_list");
                 std::vector<UnitPrice> obtainCurrencyList;
-                for (int j = 0; j < obtainCurrencyArray.size(); j++) {
+                for (size_t j = 0; j < obtainCurrencyArray.size(); j++) {
                     JsonWrapper currency = obtainCurrencyArray.getJsonObjectAt(j);
                     UnitPrice unitPrice;
                     unitPrice.amount = currency.getDecimal("amount");
@@ -947,7 +947,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Candlestick> cands;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < data.size(); i++) {
+            for (size_t i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Candlestick candlestick;
                 candlestick.timestamp = TimeService::convertCSTInSecondToUTC(item.getLong("id"));
@@ -977,7 +977,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<MarginBalanceDetail> marginBalanceDetailList;
             JsonWrapper dataArray = json.getJsonObjectOrArray("data");
-            for (int i = 0; i < dataArray.size(); i++) {
+            for (size_t i = 0; i < dataArray.size(); i++) {
                 JsonWrapper itemInData = dataArray.getJsonObjectAt(i);
                 MarginBalanceDetail marginBalanceDetail;
                 marginBalanceDetail.id = itemInData.getLong("id");
@@ -988,7 +988,7 @@ namespace Huobi {
                 marginBalanceDetail.state = AccountState::lookup(itemInData.getString("state"));
                 marginBalanceDetail.riskRate = itemInData.getDecimal("risk-rate");
                 JsonWrapper listArray = itemInData.getJsonObjectOrArray("list");
-                for (int i = 0; i < listArray.size(); i++) {
+                for (size_t i = 0; i < listArray.size(); i++) {
                     JsonWrapper itemInList = listArray.getJsonObjectAt(i);
                     Balance balance;
                     balance.currency = itemInList.getString("currency");

@@ -33,7 +33,7 @@ namespace Huobi {
 
         explicit Decimal(double value) {
             char buf[DECDOUBLE_String] = {0};
-            snprintf(buf, DECDOUBLE_String, "%g", DECDOUBLE_String, value);
+            snprintf(buf, DECDOUBLE_String, "%g", value);
             decDoubleFromString(&data, buf, context.get());
         }
 
@@ -172,12 +172,13 @@ namespace Huobi {
         return out;
     }
 
-    static std::istream & operator>>(std::istream &in, Decimal& obj) {
-        std::string str;
-        in >> str;
-        obj = Decimal(str.c_str());
-        return in;
-    }
+    // Remove because it is not used.
+//    static std::istream & operator>>(std::istream &in, Decimal& obj) {
+//        std::string str;
+//        in >> str;
+//        obj = Decimal(str.c_str());
+//        return in;
+//    }
 }
 
 #endif /* DECIMAL_H */
