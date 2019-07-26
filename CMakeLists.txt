@@ -114,7 +114,7 @@ AUX_SOURCE_DIRECTORY(./src/Utils DIR_SRCS)
 
 ADD_LIBRARY(${PROJECT_NAME} STATIC ${DIR_SRCS})
 
-
+find_package(Boost)
 find_library(LIBWEBSOCKET_PATH websockets)
 IF (NOT LIBWEBSOCKET_PATH)
     MESSAGE(FATAL_ERROR "libwebsockets not found")

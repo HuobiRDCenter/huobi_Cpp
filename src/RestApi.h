@@ -7,29 +7,12 @@
 namespace Huobi {
 
     template <typename T>
-    class RestApi {
-    private:
+    struct RestApi {
         std::string postbody;
-        std::string url;
+        // std::string url;
+        std::string tagret;
+        std::string host;
 
-    public:
-
-        const std::string& getUrl() const {
-            return url;
-        }
-
-        void setUrl(std::string url) {
-            this->url = url;
-        }
-
-        std::string getPostBody() const {
-            return postbody;
-        }
-
-        void setPostBody(std::string json) {
-            this->postbody = json;
-        }
-    public:
         std::function<T(const JsonWrapper&) > jsonParser;
         std::string method;
     };
