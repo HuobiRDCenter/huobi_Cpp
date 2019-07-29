@@ -74,7 +74,7 @@ namespace Huobi {
             tradeEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             JsonWrapper dataArray = tick.getJsonObjectOrArray("data");
-            for (int i = 0; i < dataArray.size(); i++) {
+            for (size_t i = 0; i < dataArray.size(); i++) {
                 JsonWrapper item = dataArray.getJsonObjectAt(i);
                 Trade trade;
                 trade.amount = item.getDecimal("amount");
@@ -118,7 +118,7 @@ namespace Huobi {
             JsonWrapper asks = tick.getJsonObjectOrArray("asks");
             PriceDepth depth;
             std::vector<DepthEntry>bidsves;
-            for (int i = 0; i < bids.size(); i++) {
+            for (size_t i = 0; i < bids.size(); i++) {
                 DepthEntry de;
                 JsonWrapper item = bids.getArrayAt(i);
                 de.price=item.getDecimalAt(0);
@@ -126,7 +126,7 @@ namespace Huobi {
                 bidsves.push_back(de);                              
             }
             std::vector<DepthEntry>asksves;
-            for (int i = 0; i < asks.size(); i++) {
+            for (size_t i = 0; i < asks.size(); i++) {
                 DepthEntry de;
                 JsonWrapper item = asks.getArrayAt(i);
                 de.price=item.getDecimalAt(0);
@@ -245,7 +245,7 @@ namespace Huobi {
             accountEvent.changeType = AccountChangeType::lookup(data.getString("event"));
             accountEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
             JsonWrapper listArray = data.getJsonObjectOrArray("list");
-            for (int i = 0; i < listArray.size(); i++) {
+            for (size_t i = 0; i < listArray.size(); i++) {
                 JsonWrapper itemInList = listArray.getJsonObjectAt(i);
                 AccountChange change;
                 change.accountType = AccountsInfoMap::getAccount(this->accessKey, itemInList.getLong("account-id")).type;
