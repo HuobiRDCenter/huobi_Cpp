@@ -30,14 +30,14 @@ int main(int argc, char** argv) {
         apiSec = argv[2];
     }
 
-    if(argc >3)
+    if(argc >= 3)
     {
         options.url = argv[3];
         std::cout << "Using Url " << options.url << std::endl;
     }
 
 
-    RequestClient* client = createRequestClient(apiKey.c_str(),apiSec.c_str());
+    RequestClient* client = createRequestClient(apiKey.c_str(),apiSec.c_str(), options);
     long orderId = client->createOrder(newOrderRequest);
 
     Order orderInfo = client->getOrder("htusdt", orderId);

@@ -491,7 +491,12 @@ namespace Huobi {
                     ->shouldZero(newOrderRequest.price, "Price");
         }
 
-        Account account = AccountsInfoMap::getUser(accessKey)->getAccount(newOrderRequest.accountType);
+        int id = newOrderRequest.accountID ;
+        if(newOrderRequest.accountID == 0)
+        {
+            Account account = AccountsInfoMap::getUser(accessKey)->getAccount(newOrderRequest.accountType);
+            id = account.id;
+        }
 
         const char* source = "api";
         if (newOrderRequest.accountType == AccountType::margin) {
@@ -499,7 +504,7 @@ namespace Huobi {
         }
 
         UrlParamsBuilder builder;
-        builder.putPost("account-id", account.id)
+        builder.putPost("account-id", id)
                 .putPost("amount", newOrderRequest.amount)
                 .putPost("symbol", newOrderRequest.symbol)
                 .putPost("type", newOrderRequest.type.getValue())

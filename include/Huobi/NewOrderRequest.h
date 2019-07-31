@@ -23,7 +23,11 @@ namespace Huobi {
          * buy-limit, sell-limit, buy-limit-maker and sell-limit-maker)
          */
         NewOrderRequest(const std::string& symbol, const AccountType& accountType, const OrderType& type, Decimal amount, Decimal price = Decimal()) :
-        symbol(symbol), accountType(accountType), type(type), amount(amount), price(price) {
+        symbol(symbol), accountType(accountType), type(type), amount(amount), price(price),accountID(0) {
+        }
+
+        NewOrderRequest(const std::string& symbol, int id, const AccountType& accountType, const OrderType& type, Decimal amount, Decimal price = Decimal()) :
+        symbol(symbol), accountType(accountType), type(type), amount(amount), price(price), accountID(id){
         }
 
 
@@ -32,7 +36,7 @@ namespace Huobi {
         OrderType type;
         Decimal amount;
         Decimal price;
-
+        int accountID {0};
     };
 }
 #endif /* NEWORDERREQUEST_H */

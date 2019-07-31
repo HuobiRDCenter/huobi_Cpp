@@ -85,6 +85,10 @@ namespace Huobi {
                 this->TradingUrl = this->TradingUrl + host + "/api";
             }
 
+            std::cout << "REST OP URL:" << op.url << "  ExtractHost:" << host << "\n";
+            std::cout << "REST MarketQueryUrl:" << MarketQueryUrl << "\n";
+            std::cout << "REST TradingUrl:" << TradingUrl << "\n";
+
         }
 
         RestApiImpl(const char* accessKey,
@@ -117,6 +121,11 @@ namespace Huobi {
                 this->TradingUrl = protocal_prefix;
                 this->TradingUrl = this->TradingUrl + host + "/api";
             }
+
+            std::cout << "REST OP URL:" << op.url << "  ExtractHost:" << host << "\n";
+            std::cout << "REST MarketQueryUrl:" << MarketQueryUrl << "\n";
+            std::cout << "REST TradingUrl:" << TradingUrl << "\n";
+
         }
         template <typename T>
         RestApi<T>* createRequestByPostWithSignature(const char* adress, UrlParamsBuilder&builder);
