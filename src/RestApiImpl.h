@@ -65,15 +65,23 @@ namespace Huobi {
             accessKey = "";
             secretKey = "";
             host = GetHost(op.url);
-            if (host.find("api") != -1) {
-                this->MarketQueryUrl = "https://";
+
+            std::string protocal_prefix =  "https://";
+            if(op.url.find("http://") != std::string::npos)
+            {
+                    protocal_prefix =   "http://";
+            }
+
+
+            if (host.find("api") != std::string::npos) {
+                this->MarketQueryUrl = protocal_prefix;
                 this->MarketQueryUrl += host;
-                this->TradingUrl = "https://";
+                this->TradingUrl = protocal_prefix;
                 this->TradingUrl += host;
             } else {
-                this->MarketQueryUrl = "https://";
+                this->MarketQueryUrl =protocal_prefix;
                 this->MarketQueryUrl = this->MarketQueryUrl + host + "/api";
-                this->TradingUrl = "https://";
+                this->TradingUrl = protocal_prefix;
                 this->TradingUrl = this->TradingUrl + host + "/api";
             }
 
@@ -91,18 +99,24 @@ namespace Huobi {
             this->accessKey = accessKey;
             this->secretKey = secretKey;
             host = GetHost(op.url);
-            if (host.find("api") != -1) {
-                this->MarketQueryUrl = "https://";
-                this->MarketQueryUrl += host;
-                this->TradingUrl = "https://";
-                this->TradingUrl += host;
-            } else {
-                this->MarketQueryUrl = "https://";
-                this->MarketQueryUrl = this->MarketQueryUrl + host + "/api";
-                this->TradingUrl = "https://";
-                this->TradingUrl = this->TradingUrl + host + "/api";
+            std::string protocal_prefix =  "https://";
+            if(op.url.find("http://") != std::string::npos)
+            {
+                    protocal_prefix =   "http://";
             }
 
+
+            if (host.find("api") != std::string::npos) {
+                this->MarketQueryUrl = protocal_prefix;
+                this->MarketQueryUrl += host;
+                this->TradingUrl = protocal_prefix;
+                this->TradingUrl += host;
+            } else {
+                this->MarketQueryUrl =protocal_prefix;
+                this->MarketQueryUrl = this->MarketQueryUrl + host + "/api";
+                this->TradingUrl = protocal_prefix;
+                this->TradingUrl = this->TradingUrl + host + "/api";
+            }
         }
         template <typename T>
         RestApi<T>* createRequestByPostWithSignature(const char* adress, UrlParamsBuilder&builder);
