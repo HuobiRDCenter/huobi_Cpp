@@ -18,3 +18,4 @@ examples/GetPriceDepth
 examples/GetCandlestickData
 examples/SubscribeCandlestickEvent
 C:\work\libwebsockets\include
+C:\work\libdecnumber\src

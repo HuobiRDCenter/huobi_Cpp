@@ -254,6 +254,7 @@ namespace Huobi {
             order.filled = data.getDecimal("filled-amount").toDouble();
             order.filledTurnover = data.getDecimal("filled-cash-amount").toDouble();
             order.state = OrderState::lookup(data.getString("order-state"));
+            order.role = data.getString("role");
             return order;
         };
         req->isNeedSignature = true;
