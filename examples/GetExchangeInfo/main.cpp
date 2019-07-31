@@ -12,9 +12,15 @@ using namespace std;
 
 int main(int argc, char** argv) {
     RequestOptions options;
-    options.url = "https://api-cloud.huobi.co.kr";
+    options.url = "https://807163341442.coloc.huobi.com";
     RequestClient* client = createRequestClient(options);
-    ExchangeInfo exchangeInfo = client->getExchangeInfo();
+    ExchangeInfo exchangeInfo;
+    try {
+        exchangeInfo = client->getExchangeInfo();
+    } catch (HuobiApiException& ex) {
+        std::cout << "Ex : " << ex.errorMsg << " ex:" << ex.errorCode << std::endl;
+    }
+
 
     cout << "---- Supported symbols ----" << endl;
     for (Symbols symbols : exchangeInfo.symbolsList) {
