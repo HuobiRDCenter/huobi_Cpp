@@ -72,18 +72,10 @@ namespace Huobi {
                     protocal_prefix =   "http://";
             }
 
-
-            if (host.find("api") != std::string::npos) {
-                this->MarketQueryUrl = protocal_prefix;
-                this->MarketQueryUrl += host;
-                this->TradingUrl = protocal_prefix;
-                this->TradingUrl += host;
-            } else {
-                this->MarketQueryUrl =protocal_prefix;
-                this->MarketQueryUrl = this->MarketQueryUrl + host + "/api";
-                this->TradingUrl = protocal_prefix;
-                this->TradingUrl = this->TradingUrl + host + "/api";
-            }
+            this->MarketQueryUrl = protocal_prefix;
+            this->MarketQueryUrl += host;
+            this->TradingUrl = protocal_prefix;
+            this->TradingUrl += host;
 
             std::cout << "REST OP URL:" << op.url << "  ExtractHost:" << host << "\n";
             std::cout << "REST MarketQueryUrl:" << MarketQueryUrl << "\n";
@@ -110,17 +102,10 @@ namespace Huobi {
             }
 
 
-            if (host.find("api") != std::string::npos) {
-                this->MarketQueryUrl = protocal_prefix;
-                this->MarketQueryUrl += host;
-                this->TradingUrl = protocal_prefix;
-                this->TradingUrl += host;
-            } else {
-                this->MarketQueryUrl =protocal_prefix;
-                this->MarketQueryUrl = this->MarketQueryUrl + host + "/api";
-                this->TradingUrl = protocal_prefix;
-                this->TradingUrl = this->TradingUrl + host + "/api";
-            }
+            this->MarketQueryUrl = protocal_prefix;
+            this->MarketQueryUrl += host;
+            this->TradingUrl = protocal_prefix;
+            this->TradingUrl += host;
 
             std::cout << "REST OP URL:" << op.url << "  ExtractHost:" << host << "\n";
             std::cout << "REST MarketQueryUrl:" << MarketQueryUrl << "\n";
