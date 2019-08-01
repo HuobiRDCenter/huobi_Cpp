@@ -6,6 +6,8 @@
 #include <libwebsockets.h>
 #include <ctime>
 #include <stdbool.h>
+
+#include <iostream>
 namespace Huobi {
 
     class AutoLock {
@@ -36,7 +38,8 @@ namespace Huobi {
         this->dog = dog;
         this->host = host;
         this->connectionId = connectionCounter++;
-        if (host.find("api") == 0) {
+       // if (host.find("api") == 0) {
+        if(true)
             this->subscriptionMarketUrl = "wss://";
             this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/ws";
             this->subscriptionTradingUrl = "wss://";
@@ -47,6 +50,8 @@ namespace Huobi {
             this->subscriptionTradingUrl = "wss://";
             this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
         }
+        std::cout << "WebSocket subscriptionMarketUrl: " << subscriptionMarketUrl << "\n";
+        std::cout << "WebSocket subscriptionTradingUrl: " << subscriptionTradingUrl << "\n";
     };
 
     void WebSocketConnection::connect(lws_context* context) {

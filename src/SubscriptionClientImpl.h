@@ -39,6 +39,10 @@ namespace Huobi {
             secretKey = "";
             impl = new WebSocketApiImpl(apiKey, secretKey);
             this->op = op;
+            if (!op.url.empty()) {
+                host = GetHost(op.url);
+             }
+             std::cout << "websocket Host: " << host << "\n";
         }
 
         SubscriptionClientImpl(
@@ -60,6 +64,8 @@ namespace Huobi {
                 AccountsInfoMap::updateUserInfo(apiKey, restimpl);
                 delete restimpl;
             }
+
+            std::cout << "websocket Host: " << host << "\n";
         }
 
         ~SubscriptionClientImpl() {
