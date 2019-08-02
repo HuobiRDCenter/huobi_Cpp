@@ -107,7 +107,7 @@ namespace Huobi {
         }
         init_context();
         WebSocketConnection* connection = new WebSocketConnection(
-                this->apiKey, this->secretKey, request, dog,host);
+                this->apiKey, this->secretKey, request, dog,host, this->isUsingSSL);
         connectionList.push_back(connection);
     }
 
