@@ -4,6 +4,8 @@ nbproject/
 *.inc
 *.tmp
 .idea
+huobi_cpp_my.creator.user*
+huobi_cpp_my.creator.user
 cmake-build-debug/
 
 

@@ -123,7 +123,7 @@ namespace Huobi {
                 JsonWrapper item = bids.getArrayAt(i);
                 de.price=item.getDecimalAt(0);
                 de.amount=item.getDecimalAt(1);
-                bidsves.push_back(de);                              
+                bidsves.push_back(de);
             }
             std::vector<DepthEntry>asksves;
             for (int i = 0; i < asks.size(); i++) {
@@ -135,7 +135,7 @@ namespace Huobi {
             }
             depth.bids=bidsves;
             depth.asks=asksves;
-            priceDepthEvent.data=depth;            
+            priceDepthEvent.data=depth;
             return priceDepthEvent;
         };
 
@@ -209,8 +209,9 @@ namespace Huobi {
             JsonWrapper data = json.getJsonObjectOrArray("data");
             Order order;
             order.orderId = data.getLong("order-id");
+            order.accountID = data.getLong("account-id");
             order.symbol = parser.getSymbol();
-            order.accountType = AccountsInfoMap::getAccount(this->accessKey, data.getLong("account-id")).type;
+            order.accountType = AccountsInfoMap::getAccount(this->accessKey, order.accountID).type;
             order.amount = data.getDecimal("order-amount");
             order.price = data.getDecimal("order-price");
             order.createdTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
@@ -282,7 +283,7 @@ namespace Huobi {
             for (int i = 0; i < listArray.size(); i++) {
                 JsonWrapper itemInList = listArray.getJsonObjectAt(i);
                 AccountChange change;
-		long id = itemInList.getLong("account-id");
+        long id = itemInList.getLong("account-id");
                 change.accountType = AccountsInfoMap::getAccount(this->accessKey, id).type;
                 change.accountId = id;
                 change.currency = itemInList.getString("currency");

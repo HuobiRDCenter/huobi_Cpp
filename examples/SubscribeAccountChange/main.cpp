@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
         std::cout << "Using Url " << options.url << std::endl;
     }
 
-    
+
     SubscriptionClient* subscriptionClient = createSubscriptionClient(
                 apiKey.c_str(), apiSec.c_str(), options);
     //    subscriptionClient->subscribeAccountEvent(BalanceMode::available, [](const AccountEvent& accountEvent) {
@@ -69,7 +69,8 @@ int main(int argc, char** argv) {
 
     subscriptionClient->subscribeOrderUpdateEvent("ltcusdt", [](const OrderUpdateEvent& change) {
         cout << "OrderUpdate: " << change.symbol
-             << " ts:" << change.timestamp
+
+             << " AccountID:" << change.data.accountID
              << " Account:" << change.data.accountType.getValue()
              << " OrderID:" << change.data.orderId
              << " OrderType:" << change.data.type.getValue()
@@ -77,6 +78,7 @@ int main(int argc, char** argv) {
              << " Size:" << change.data.amount
              << " Filled:" << change.data.filledAmount
              << " Status:" << change.data.state.getValue()
+             << " ts:" << change.timestamp
              << std::endl;
     });
 
@@ -95,18 +97,18 @@ int main(int argc, char** argv) {
 
 
 
-    subscriptionClient->subscribeOrderUpdateEventNew("ethusdt,eosusdt", [](const OrderUpdateEventNew& change) {
-        cout << "OrderUpdate: " << change.symbol
-             << " ts:" << change.timestamp
-             << " matchID:" << change.matchId
-             << " OrderID:" << change.id
-             << " role:" << change.role
-             << " Price:" << change.price
-             << " Size:" << change.unfilled
-             << " Filled:" << change.filled
-             << " Status:" << change.state.getValue()
-             << std::endl;
-    });
+//    subscriptionClient->subscribeOrderUpdateEventNew("ethusdt,eosusdt", [](const OrderUpdateEventNew& change) {
+//        cout << "OrderUpdate: " << change.symbol
+//             << " ts:" << change.timestamp
+//             << " matchID:" << change.matchId
+//             << " OrderID:" << change.id
+//             << " role:" << change.role
+//             << " Price:" << change.price
+//             << " Size:" << change.unfilled
+//             << " Filled:" << change.filled
+//             << " Status:" << change.state.getValue()
+//             << std::endl;
+//    });
 
     subscriptionClient->subscribeOrderUpdateEventNew("ltcusdt", [](const OrderUpdateEventNew& change) {
         cout << "OrderUpdateMatch: " << change.symbol
