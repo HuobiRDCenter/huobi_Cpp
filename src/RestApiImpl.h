@@ -48,8 +48,6 @@ namespace Huobi {
         std::string TradingUrl = "https://api.huobi.pro:443";
         std::string MarketQueryUrl = "https://api.huobi.pro:443";
 
-        std::string subscriptionMarketUrl = "wss://api.huobi.pro:443/ws";
-        std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         std::string accessKey;
         std::string secretKey;
         std::string host = "api.huobi.pro";
@@ -67,10 +65,11 @@ namespace Huobi {
             host = GetHost(op.url);
 
             std::string protocal_prefix =  "https://";
-            if(op.url.find("http://") != std::string::npos)
+            if(host.find("coloc.huobi.com") != std::string::npos)
             {
-                    protocal_prefix =   "http://";
+                protocal_prefix =   "http://";
             }
+
 
             this->MarketQueryUrl = protocal_prefix;
             this->MarketQueryUrl += host;
@@ -95,12 +94,12 @@ namespace Huobi {
             this->accessKey = accessKey;
             this->secretKey = secretKey;
             host = GetHost(op.url);
-            std::string protocal_prefix =  "https://";
-            if(op.url.find("http://") != std::string::npos)
-            {
-                    protocal_prefix =   "http://";
-            }
 
+            std::string protocal_prefix =  "https://";
+            if(host.find("coloc.huobi.com") != std::string::npos)
+            {
+                protocal_prefix =   "http://";
+            }
 
             this->MarketQueryUrl = protocal_prefix;
             this->MarketQueryUrl += host;

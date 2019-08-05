@@ -24,6 +24,7 @@ namespace Huobi {
         SubscriptionOptions op;
         std::string host = "api.huobi.pro";
         WebSocketWatchDog* dog;
+        bool isUsingSSL {true};
 
     public:
         void startService() override;
@@ -31,6 +32,7 @@ namespace Huobi {
         SubscriptionClientImpl() {
             apiKey = "";
             secretKey = "";
+            isUsingSSL = true;
             impl = new WebSocketApiImpl(apiKey, secretKey);
         }
 
@@ -39,6 +41,17 @@ namespace Huobi {
             secretKey = "";
             impl = new WebSocketApiImpl(apiKey, secretKey);
             this->op = op;
+
+            isUsingSSL = true;
+            if(this->op.url.find("coloc.huobi.com") != std::string::npos)
+            {
+                isUsingSSL = false;
+            }
+
+            if (!op.url.empty()) {
+                host = GetHost(op.url);
+             }
+             std::cout << "websocket Host: " << host << "\n";
         }
 
         SubscriptionClientImpl(
@@ -47,11 +60,18 @@ namespace Huobi {
             this->apiKey = apiKey;
             this->secretKey = secretKey;
             this->op = op;
+            isUsingSSL = true;
+            if(this->op.url.find("coloc.huobi.com") != std::string::npos)
+            {
+                isUsingSSL = false;
+            }
+
             impl = new WebSocketApiImpl(apiKey, secretKey);
             if (!op.url.empty()) {
                 host = GetHost(op.url);
                 RequestOptions resop;
                 resop.url = op.url;
+
                 RestApiImpl* restimpl = new RestApiImpl(apiKey.c_str(), secretKey.c_str(), resop);
                 AccountsInfoMap::updateUserInfo(apiKey, restimpl);
                 delete restimpl;
@@ -60,6 +80,8 @@ namespace Huobi {
                 AccountsInfoMap::updateUserInfo(apiKey, restimpl);
                 delete restimpl;
             }
+
+            std::cout << "websocket Host: " << host << "\n";
         }
 
         ~SubscriptionClientImpl() {

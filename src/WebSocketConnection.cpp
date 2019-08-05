@@ -6,6 +6,8 @@
 #include <libwebsockets.h>
 #include <ctime>
 #include <stdbool.h>
+
+#include <iostream>
 namespace Huobi {
 
     class AutoLock {
@@ -29,24 +31,14 @@ namespace Huobi {
             const std::string& secretKey,
             WebSocketRequest* request,
             WebSocketWatchDog*dog,
-            std::string host) : request(request) {
+            std::string host,
+            bool isUsingSSL) : request(request) , isUseSSL(isUsingSSL){
         this->apiKey = apiKey;
         this->secretKey = secretKey;
         this->client = nullptr;
         this->dog = dog;
         this->host = host;
         this->connectionId = connectionCounter++;
-        if (host.find("api") == 0) {
-            this->subscriptionMarketUrl = "wss://";
-            this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/ws";
-            this->subscriptionTradingUrl = "wss://";
-            this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
-        } else {
-            this->subscriptionMarketUrl = "wss://";
-            this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/api/ws";
-            this->subscriptionTradingUrl = "wss://";
-            this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
-        }
     };
 
     void WebSocketConnection::connect(lws_context* context) {
@@ -61,21 +53,26 @@ namespace Huobi {
         struct lws_client_connect_info ccinfo = {0};
         ccinfo.context = context;
         ccinfo.address = host.c_str();
-        ccinfo.port = 443;
         if (request->isNeedSignature == true) {
             ccinfo.path = "/ws/v1";
         } else {
-            if (host.find("api") != -1) {
                 ccinfo.path = "/ws";
-            } else {
-                ccinfo.path = "/api/ws";
-            }
         }
         ccinfo.userdata = (void*) this;
         ccinfo.protocol = "ws";
         ccinfo.origin = "origin";
         ccinfo.host = ccinfo.address;
-        ccinfo.ssl_connection = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
+        if(isUseSSL)
+        {
+            ccinfo.port = 443;
+            ccinfo.ssl_connection = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
+        }
+        else
+        {
+            ccinfo.port = 80;
+            ccinfo.ssl_connection = 0 ;
+        }
+
         struct lws* conn = lws_client_connect_via_info(&ccinfo);
         lineStatus = LineStatus::LINE_ACTIVE;
         lwsl_user("connect_endpoint end\n");

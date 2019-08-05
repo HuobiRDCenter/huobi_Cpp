@@ -32,7 +32,7 @@ namespace Huobi {
     class WebSocketConnection {
     public:
         WebSocketConnection(const std::string& apiKey, const std::string& secretKey,
-                WebSocketRequest* request, WebSocketWatchDog*dog, std::string host);
+                WebSocketRequest* request, WebSocketWatchDog*dog, std::string host, bool isUsingSSL = true);
 
         void connect(lws_context* context);
         void disconnect();
@@ -70,9 +70,8 @@ namespace Huobi {
         long lastReceivedTime = 0;
         int delayInSecond = 0;
         std::string host;
-        std::string subscriptionMarketUrl = "wss://api.huobi.pro/ws";
-        std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         int connectionId;
+        bool isUseSSL;
         
         static int connectionCounter;
     protected:
