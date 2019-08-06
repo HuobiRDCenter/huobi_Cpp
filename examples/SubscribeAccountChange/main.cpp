@@ -5,10 +5,17 @@
  */
 
 #include <iostream>
+#include <chrono>
+#include <cstdint>
 #include "Huobi/HuobiClient.h"
 
 using namespace Huobi;
 using namespace std;
+
+uint64_t getCurrentTimeMsec()
+{
+    return  std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
 
 int main(int argc, char** argv) {
     SubscriptionOptions options;
@@ -67,6 +74,8 @@ int main(int argc, char** argv) {
     //                 << std::endl;
     //    });
 
+
+
     subscriptionClient->subscribeOrderUpdateEvent("ltcusdt", [](const OrderUpdateEvent& change) {
         cout << "OrderUpdate: " << change.symbol
 
@@ -79,40 +88,13 @@ int main(int argc, char** argv) {
              << " Filled:" << change.data.filledAmount
              << " Status:" << change.data.state.getValue()
              << " ts:" << change.timestamp
+             << " lts:" << getCurrentTimeMsec()
              << std::endl;
     });
 
-    //    subscriptionClient->subscribeOrderUpdateEvent("eosusdt", [](const OrderUpdateEvent& change) {
-    //            cout << "OrderUpdate: " << change.symbol
-    //                 << " ts:" << change.timestamp
-    //                 << " Account:" << change.data.accountType.getValue()
-    //                 << " OrderID:" << change.data.orderId
-    //                 << " OrderType:" << change.data.type.getValue()
-    //                 << " Price:" << change.data.orderId
-    //                 << " Size:" << change.data.amount
-    //                 << " Filled:" << change.data.filledAmount
-    //                 << " Status:" << change.data.state.getValue()
-    //                 << std::endl;
-    //    });
-
-
-
-//    subscriptionClient->subscribeOrderUpdateEventNew("ethusdt,eosusdt", [](const OrderUpdateEventNew& change) {
-//        cout << "OrderUpdate: " << change.symbol
-//             << " ts:" << change.timestamp
-//             << " matchID:" << change.matchId
-//             << " OrderID:" << change.id
-//             << " role:" << change.role
-//             << " Price:" << change.price
-//             << " Size:" << change.unfilled
-//             << " Filled:" << change.filled
-//             << " Status:" << change.state.getValue()
-//             << std::endl;
-//    });
 
     subscriptionClient->subscribeOrderUpdateEventNew("ltcusdt", [](const OrderUpdateEventNew& change) {
         cout << "OrderUpdateMatch: " << change.symbol
-             << " ts:" << change.timestamp
              << " matchID:" << change.matchId
              << " OrderID:" << change.id
              << " role:" << change.role
@@ -120,6 +102,8 @@ int main(int argc, char** argv) {
              << " Size:" << change.unfilled
              << " Filled:" << change.filled
              << " Status:" << change.state.getValue()
+             << " ts:" << change.timestamp
+             << " lts:" << getCurrentTimeMsec()
              << std::endl;
     });
 
