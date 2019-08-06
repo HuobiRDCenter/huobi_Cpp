@@ -139,7 +139,7 @@ namespace Huobi {
             return Decimal(decDoubleAbs(&result, &data, context.get()));
         }
 
-        double toDouble() {
+        double toDouble() const {
             char str[DECDOUBLE_String] = {0};
             decDoubleToString(&data, str);
             return strtod(str, 0);
