@@ -250,12 +250,14 @@ namespace Huobi {
             JsonWrapper data = json.getJsonObjectOrArray("data");
             order.symbol = data.getString("symbol");
             order.id = data.getLong("order-id");
+            order.localId = data.getDecimal("client-order-id").toDouble();
             order.unfilled = data.getDecimal("unfilled-amount").toDouble();
             order.price = data.getDecimal("price").toDouble();
             order.filled = data.getDecimal("filled-amount").toDouble();
             order.filledTurnover = data.getDecimal("filled-cash-amount").toDouble();
             order.state = OrderState::lookup(data.getString("order-state"));
             order.role = data.getString("role");
+            order.type =  OrderType::lookup(data.getString("order-type"));
             return order;
         };
         req->isNeedSignature = true;

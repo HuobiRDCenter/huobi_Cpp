@@ -97,6 +97,8 @@ int main(int argc, char** argv) {
         cout << "OrderUpdateMatch: " << change.symbol
              << " matchID:" << change.matchId
              << " OrderID:" << change.id
+             << " LocalID:" << change.localId
+             << " type:" << change.type.getValue()
              << " role:" << change.role
              << " Price:" << change.price
              << " Size:" << change.unfilled
