@@ -20,10 +20,10 @@ namespace Huobi {
                 local->tm_sec, msg);
         va_start(arg, msg);
         if (log == 2) {
-            log_fp = fopen(log_file_locate.c_str(), "a");
+            if(log_fp == NULL) log_fp = fopen(log_file_locate.c_str(), "a");
+
             if (log_fp) {
                 vfprintf(log_fp, buf, arg);
-                fflush(log_fp);
                 va_end(arg);
                 return;
             } else {
