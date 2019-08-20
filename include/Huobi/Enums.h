@@ -11,7 +11,7 @@ namespace Huobi {
     template<class T>
     /**
      * All enums about Huobi pack
-     * 
+     *
      */
     class BaseEnumClass {
     public:
@@ -97,6 +97,7 @@ private:
         static AccountType margin;
         static AccountType otc;
         static AccountType point;
+        static AccountType minepool;
         static AccountType unknown;
     };
 
