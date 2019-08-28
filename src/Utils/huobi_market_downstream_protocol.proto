@@ -1,0 +1,177 @@
+// Huobi gateway proto schema
+// Copyright 2019 Huobi Inc.  All rights reserved.
+// Version:1.0.0
+syntax = "proto3";
+
+package HuobiProto;
+
+import "google/protobuf/any.proto";
+
+
+
+// kline数据
+message Candlestick {
+  int64 ts = 1; // 当前message生成时间戳（毫秒）
+  int64 id = 2; // k线id，当前interval内开盘价的时间戳（秒）
+  string open = 3; // 开盘价
+  string close = 4; // 收盘价
+  string low = 5; // 最低价
+  string high = 6; // 最高价
+  string turnover = 7; // 成交额
+  string volume = 8; // 成交量
+  int32 num_of_trades = 9; // 成交笔数
+  string symbol = 10; // 交易对
+}
+
+// req kline
+message ReqCandlestick {
+  string symbol = 1; // 交易对
+  repeated Tick candlesticks = 2; // klines
+
+  message Tick {
+    int64 ts = 1; // 当前message生成时间戳（毫秒）
+    int64 id = 2; // k线id，当前interval内开盘价的时间戳（秒）
+    string open = 3; // 开盘价
+    string close = 4; // 收盘价
+    string low = 5; // 最低价
+    string high = 6; // 最高价
+    string turnover = 7; // 成交额
+    string volume = 8; // 成交量
+    int32 num_of_trades = 9; // 成交笔数
+  }
+}
+
+enum Interval {
+  MIN_1 = 0;
+  MIN_5 = 1;
+  MIN_15 = 2;
+  MIN_30 = 3;
+  MIN_60 = 4;
+  HOUR_4 = 5;
+  DAY_1 = 6;
+  WEEK_1 = 7;
+  MON_1 = 8;
+  YEAR_1 = 9;
+}
+
+// 深度数据
+message Depth {
+  int64 ts = 1; // 当前message生成时间戳（毫秒）
+  repeated Tick bids = 2; // 买盘，按照买1，买2排序
+  repeated Tick asks = 3; // 卖盘，按照卖1，卖2排序
+  bool delta = 4; //是否增量,true:增量，false：全量
+  string symbol = 5; // 交易对
+
+  message Tick {
+    string price = 1; // 价格
+    string size = 2; // 数量
+  }
+
+  enum Step {
+    STEP0 = 0; // 无聚合
+    STEP1 = 1; // 聚合度为报价精度*10
+    STEP2 = 2; // 聚合度为报价精度*100
+    STEP3 = 3; // 聚合度为报价精度*1000
+    STEP4 = 4; // 聚合度为报价精度*10000
+    STEP5 = 5; // 聚合度为报价精度*100000
+    PERCENT10 = 6;
+  }
+
+
+}
+
+// 成交记录 聚合
+message AggrTrade {
+  int64 first_trade_id = 1; // 起始TradeId
+  int64 last_trade_id = 2; // 结束TradeId
+  int64 ts = 3; // 成交时间戳
+  string price = 4; // 成交价格
+  string volume = 5; // 成交总量
+  Side side = 6; // 成交方向，buy：买，sell: 卖
+  string symbol = 7; // 交易对
+}
+
+// 成交记录 明细
+message Trade {
+  int64 trade_id = 1; // 交易id
+  int64 ts = 2; // 当前message生成时间戳（毫秒）
+  string price = 3; // 成交价格
+  string volume = 4; // 成交量
+  Side side = 5; // 成交方向
+  string symbol = 6; // 交易对
+}
+
+// req 成交记录 明细
+message ReqTrade {
+  string symbol = 1; // 交易对
+  repeated Tick trades = 2; // 明细
+
+  message Tick {
+    int64 trade_id = 1; // 交易id
+    int64 ts = 2; // 当前message生成时间戳（毫秒）
+    string price = 3; // 成交价格
+    string volume = 4; // 成交量
+    Side side = 5; // 成交方向
+  }
+}
+
+// 最近24小时成交
+message MarketSummary {
+  string symbol = 1; // 交易对唯一识别符
+  int64 ts = 2; // 当前message生成时间戳（毫秒）
+  int64 id =3; // 消息id
+  string open = 4; // 开盘价
+  string close = 5; // 收盘价
+  string low = 6; // 最低价
+  string high = 7; // 最高价
+  string turnover = 8; // 成交额
+  string volume = 9; // 成交量
+  int32 num_of_trades = 10; // 成交笔数
+}
+
+// 所有交易对的 日K线
+message Overview {
+  int64 ts = 1; // 当前message生成时间戳（毫秒）
+  repeated Tick tick = 2;
+
+
+  message Tick {
+    string symbol = 1; // 交易对唯一识别符
+    string open = 2; // 开盘价
+    string close = 3; // 收盘价
+    string low = 4; // 最低价
+    string high = 5; // 最高价
+    string turnover = 6; // 成交额
+    string volume = 7; // 成交量
+    int32 num_of_trades = 8; // 成交笔数
+  }
+
+}
+
+// 交易方向
+enum Side {
+  BUY = 0;
+  SELL = 1;
+}
+
+enum Action {
+  SUB = 0;
+  REQ = 1;
+  UNSUB = 2;
+  PUSH = 3;
+  PING = 4;
+  PONG = 5;
+}
+
+message Ping {
+  int64 ts = 1;
+}
+
+message Result {
+  int32 code = 1; // 响应码
+  int64 sequence = 2; // 响应序号，请求时传入，原样返回
+  Action action = 3; // 动作类型
+  string ch = 4; // 请求主题
+  string message = 5; // 错误消息
+  google.protobuf.Any data = 15; // 消息体
+}
