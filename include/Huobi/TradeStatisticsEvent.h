@@ -23,7 +23,10 @@ namespace Huobi {
         /**
          * The trade statistics.
          */
-        TradeStatistics tradeStatistics;
+      //  TradeStatistics tradeStatistics;
+        
+        
+        com::huobi::gateway::MarketSummary tradeStatistics;
     };
 }
 

@@ -23,7 +23,8 @@ namespace Huobi {
         /**
          * The price depth.
          */
-        PriceDepth data;
+      //  PriceDepth data;
+        com::huobi::gateway::Depth data;
     };
 }
 

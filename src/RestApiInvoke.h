@@ -94,7 +94,7 @@ namespace Huobi {
                 //TODO: body需要转成utf-8
                 curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, request->getPostBody().c_str());
             }
-            curl_easy_perform(pCurl);
+            code=curl_easy_perform(pCurl);
             if (code != CURLE_OK) {
                 std::cout << "curl_easy_perform() Err" << std::endl;
                 throw HuobiApiException("", "curl_easy_perform() Err");

@@ -22,11 +22,13 @@ namespace Huobi {
     };
 
     void WebSocketWatchDog::WatchDogThread() {
+        
         while (runningFlag) {
             AutoLock lock(mutex);
             for (std::list<WebSocketConnection*>::iterator it = connectionList.begin(); it != connectionList.end(); ++it) {
                 WebSocketConnection* connection = *it;
                 LineStatus lineStatus = connection->getLineStatus();
+              
                 if (lineStatus == LineStatus::LINE_ACTIVE) {
                     // Check response
                     if (op.isAutoReconnect) {
@@ -57,11 +59,15 @@ namespace Huobi {
     }
 
     void WebSocketWatchDog::onConnectionCreated(WebSocketConnection* connection) {
+      
         std::list<WebSocketConnection*>::iterator conit = connectionList.begin();
-        for (; conit != connectionList.end(); conit++) {
+          
+        for (; conit != connectionList.end(); conit++) {                 
             if (*conit == connection)
                 return;
         }
+    
+
         connectionList.push_back(connection);
     }
 

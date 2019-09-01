@@ -12,7 +12,8 @@
 #include "Huobi/OrderUpdateEvent.h"
 #include "Huobi/TradeStatisticsEvent.h"
 #include "SubscriptionOptions.h"
-
+#include "AggrTradeEvent.h"
+#include "OverviewEvent.h"
 
 namespace Huobi {
 
@@ -41,7 +42,7 @@ namespace Huobi {
                 const std::function<void(const CandlestickEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
         /**
-         * Subscribe price depth event. If the price depth is updated, server will send the data to client
+         * Subscribe price depth event in detail. If the price depth is updated, server will send the data to client
          * and onReceive in callback will be called.
          *
          * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
@@ -111,6 +112,32 @@ namespace Huobi {
         virtual void subscribeAccountEvent(
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+        /**
+         * Subscribe price depth event in aggregate. If the price depth is updated, server will send the data to client
+         * and onReceive in callback will be called.
+         *
+         * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt".
+         * \param callback The implementation is required. onReceive will be called if receive server's
+         * update.
+         * \param errorHandler The error handler will be called if subscription failed or error happen
+         * between client and Huobi server.
+         */
+        virtual void subscribeAggrTradeEvent(
+                const char* symbols,
+                const std::function<void(const AggrTradeEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+        /**
+         * Subscribe market overview data event . If the overview is updated, server will send the data to client
+         * and onReceive in callback will be called.
+         * \param callback The implementation is required. onReceive will be called if receive server's
+         * update.
+         * \param errorHandler The error handler will be called if subscription failed or error happen
+         * between client and Huobi server.
+         */
+        virtual void subscribeOverviewEvent(
+                const std::function<void(const OverviewEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
         /*
          * start sub,must excute after sub-function.

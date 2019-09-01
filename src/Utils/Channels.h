@@ -12,23 +12,52 @@ namespace Huobi {
 
         static std::string klineChannel(
                 const std::string& symbol, const CandlestickInterval& interval) {
+            
             JsonWriter writer;
             writer.put("sub", "market." + symbol + ".kline." + interval.getValue());
             writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+            std::cout<<writer.toJsonString()<<std::endl;
             return writer.toJsonString();
         }
-
+  static std::string klineChannel(
+                const std::string& symbol, const CandlestickInterval& interval,bool isProtobuf ) {
+            
+      std::string str;
+      if(interval.getValue().compare(1,1,"0",0,1)==0||interval.getValue().compare(1,1,"5",0,1)==0){
+          str=interval.getValue().substr(0,3);
+      }else{
+           str=interval.getValue().substr(0,2);
+      }
+            JsonWriter writer;
+            writer.put("action", "sub");
+            writer.put("ch", "candlestick#"+symbol+"@"+str);
+                     
+            return writer.toJsonString();
+        }
+        
+        
         static std::string tradeChannel(const std::string& symbol) {
             JsonWriter writer;
-            writer.put("sub", "market." + symbol + ".trade.detail");
-            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+//            writer.put("sub", "market." + symbol + ".trade.detail");
+//            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+            
+              writer.put("action", "sub");
+            writer.put("ch", "trades#"+symbol);
             return writer.toJsonString();
         }
 
         static std::string priceDepthChannel(const std::string& symbol) {
             JsonWriter writer;
-            writer.put("sub", "market." + symbol + ".depth.step0");
-            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+//            writer.put("sub", "market." + symbol + ".depth.step0");
+//            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+            
+    
+             writer.put("action", "sub");
+            writer.put("ch", "mbp#btcusdt@5.s0");
+            
+                        std::cout<<"send----"<<std::endl;
+                    std::cout<<writer.toJsonString()<<std::endl;
+            
             return writer.toJsonString();
         }
 
@@ -52,8 +81,30 @@ namespace Huobi {
 
         static std::string tradeStatisticsChannel(const std::string& symbol) {
             JsonWriter writer;
-            writer.put("sub", "market." + symbol + ".detail");
-            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+//            writer.put("sub", "market." + symbol + ".detail");
+//            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+             writer.put("action", "sub");
+            writer.put("ch", "summary#"+symbol);
+                std::cout<<"send----"<<std::endl;
+                    std::cout<<writer.toJsonString()<<std::endl;
+            return writer.toJsonString();
+        }
+        
+        static std::string AggrtradeChannel(const std::string& symbol) {
+            JsonWriter writer;
+             writer.put("action", "sub");
+            writer.put("ch", "aggrTrades#"+symbol);
+                std::cout<<"send----"<<std::endl;
+                    std::cout<<writer.toJsonString()<<std::endl;
+            return writer.toJsonString();
+        }
+        
+        static std::string OverviewChannel() {
+            JsonWriter writer;
+             writer.put("action", "sub");
+            writer.put("ch", "overview");
+                std::cout<<"send----"<<std::endl;
+                    std::cout<<writer.toJsonString()<<std::endl;
             return writer.toJsonString();
         }
     };

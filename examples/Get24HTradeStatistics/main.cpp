@@ -6,11 +6,11 @@
 
 #include "Huobi/HuobiClient.h"
 #include <iostream>
-
 using namespace Huobi;
 using namespace std;
 
 int main(int argc, char** argv) {
+    
     RequestClient* client = createRequestClient();
     TradeStatistics statistics = client->get24HTradeStatistics("btcusdt");
     cout << "---- Statistics ----" << endl;
@@ -20,5 +20,9 @@ int main(int argc, char** argv) {
     cout<<"Open: " << statistics.open<<endl;
     cout<<"Close: " << statistics.close<<endl;
     cout<<"Volume: " << statistics.volume<<endl;
+    
 
 }
+   
+
+    

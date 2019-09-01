@@ -3,6 +3,7 @@
 #include "Utils/JsonDocument.h"
 #include "Utils/JsonWriter.h"
 #include "TimeService.h"
+
 #include <libwebsockets.h>
 #include <ctime>
 #include <stdbool.h>
@@ -23,7 +24,7 @@ namespace Huobi {
     };
 
     int WebSocketConnection::connectionCounter = 0;
-    
+
     WebSocketConnection::WebSocketConnection(
             const std::string& apiKey,
             const std::string& secretKey,
@@ -35,18 +36,31 @@ namespace Huobi {
         this->client = nullptr;
         this->dog = dog;
         this->host = host;
+        // this->host="huobi-gateway.test-12.huobiapps.com";
+        //huobi-gateway.test-12.huobiapps.com/
         this->connectionId = connectionCounter++;
-        if (host.find("api") == 0) {
-            this->subscriptionMarketUrl = "wss://";
-            this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/ws";
-            this->subscriptionTradingUrl = "wss://";
-            this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
-        } else {
-            this->subscriptionMarketUrl = "wss://";
-            this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/api/ws";
-            this->subscriptionTradingUrl = "wss://";
-            this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
-        }
+        // if (host.find("api") == 0) {
+        //wss://api.huobi.pro/spot/v2/ws
+        //ws://huobi-gateway.test-12.huobiapps.com/
+        // this->subscriptionMarketUrl = "ws://";
+        //      this->subscriptionMarketUrl = "wss://";
+        //this->subscriptionMarketUrl = "ws://huobi-gateway.test-12.huobiapps.com/";
+        // this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/ws";
+        //       this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/spot/v2/ws";
+        //   this->subscriptionMarketUrl = this->subscriptionMarketUrl + host;
+
+
+
+        //            this->subscriptionTradingUrl = "wss://";
+        //            this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
+        //        } else {
+        ////            this->subscriptionMarketUrl = "wss://";
+        ////            this->subscriptionMarketUrl = this->subscriptionMarketUrl + host + "/api/ws";
+        //                      //this->subscriptionMarketUrl = "ws://huobi-gateway.test-12.huobiapps.com/";
+        //
+        //            this->subscriptionTradingUrl = "wss://";
+        //            this->subscriptionTradingUrl = this->subscriptionTradingUrl + host + "/ws/v1";
+        //        }
     };
 
     void WebSocketConnection::connect(lws_context* context) {
@@ -62,20 +76,35 @@ namespace Huobi {
         ccinfo.context = context;
         ccinfo.address = host.c_str();
         ccinfo.port = 443;
-        if (request->isNeedSignature == true) {
-            ccinfo.path = "/ws/v1";
-        } else {
-            if (host.find("api") != -1) {
-                ccinfo.path = "/ws";
-            } else {
-                ccinfo.path = "/api/ws";
-            }
-        }
+        //   ccinfo.port = 80;
+
+        //        if (request->isNeedSignature == true) {
+        //            ccinfo.path = "/ws/v1";
+        //        } else {
+        //            if (host.find("api") != -1) {
+        //                ccinfo.path = "/ws";
+        //            } else {
+        //                ccinfo.path = "/api/ws";
+        //            }
+        //        }
+        //                if (request->isNeedSignature == true) {
+        //            ccinfo.path = "";
+        //        } else {
+        //            if (host.find("api") != -1) {
+        //                ccinfo.path = "/spot/v2/ws";
+        //            } else {
+        //                ccinfo.path = "/spot/v2/ws";
+        //            }Ï
+        //        }
+        ccinfo.path = "/spot/v2/ws";
+        //ccinfo.path = "/";
         ccinfo.userdata = (void*) this;
         ccinfo.protocol = "ws";
+
         ccinfo.origin = "origin";
         ccinfo.host = ccinfo.address;
         ccinfo.ssl_connection = LCCSCF_USE_SSL | LCCSCF_ALLOW_SELFSIGNED | LCCSCF_SKIP_SERVER_CERT_HOSTNAME_CHECK;
+        //  ccinfo.ssl_connection = 0;
         struct lws* conn = lws_client_connect_via_info(&ccinfo);
         lineStatus = LineStatus::LINE_ACTIVE;
         lwsl_user("connect_endpoint end\n");
@@ -101,8 +130,8 @@ namespace Huobi {
                 lwsl_user("Get close message\n");
                 sendBufferList.clear();
                 return false;
-            } 
-            
+            }
+
             uint8_t buf[LWS_PRE + 1024] = {0};
             int m;
             int n = lws_snprintf((char *) buf + LWS_PRE, 1024,
@@ -123,63 +152,112 @@ namespace Huobi {
     }
 
     void WebSocketConnection::onOpen(lws* wsi) {
+
         lwsl_user("onOpen \n");
         Logger::WriteLog("[Sub][%d] Connected", connectionId);
         connectStatus = ConnectionStatus::CONNECTED;
         lineStatus = LineStatus::LINE_ACTIVE;
         lastReceivedTime = TimeService::getCurrentTimeStamp();
         client = wsi;
+
         dog->onConnectionCreated(this);
+
         if (request->isNeedSignature) {
             send(createSignature());
         } else {
-            if (request->connectionHandler) {                
+            if (request->connectionHandler) {
                 request->connectionHandler(this);
             }
         }
     }
 
     void WebSocketConnection::onMessage(const char* message) {
+
         lwsl_user("RX: %s \n", message);
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
-        JsonDocument doc;
-        JsonWrapper json = doc.parseFromString(message);          
-        if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0)||      
-              (json.containKey("err-code")&&json.getInt("err-code")!=0) ) {
-            std::string errorCode = json.getStringOrDefault("err-code", "Unknown error code");
-            std::string errorMsg = json.getStringOrDefault("err-msg", "Unknown error message");
-            HuobiApiException ex;
-            ex.errorCode = errorCode;
-            ex.errorMsg = errorMsg;
-            request->errorHandler(ex);
-            Logger::WriteLog("[Sub][%d] Error: %s", errorMsg.c_str());
-            close();
-        } else if (json.containKey("op")) {
-            std::string op = json.getString("op");
-            if (op == "notify") {
-                onReceive(json);
-            } else if (op == "ping") {
-                processPingOnTradingLine(json);
-            } else if (op == "auth") {
-                if (request->connectionHandler) {                   
-                    request->connectionHandler(this);
-                }
-            }
-        } else if (json.containKey("ch")) {       
-            onReceive(json);
-        } else if (json.containKey("ping")) {
-            processPingOnMarketLine(json);
-        } else if (json.containKey("subbed")) {
 
-        }else {           
-            Logger::WriteLog("parse failed！：%s",message);
+        com::huobi::gateway::Result result;
+
+        result.ParseFromString(message);
+
+        if (result.code() != 0 && result.code() != 200) {
+
+            HuobiApiException ex;
+            ex.errorCode = std::to_string(result.code());
+            ex.errorMsg = result.message();
+            request->errorHandler(ex);
+            Logger::WriteLog("[Sub][%d] Error: %s", ex.errorMsg.c_str());
+            close();
         }
+
+        std::cout << "-------action-----: " << result.action() << std::endl;
+        if (result.action() == com::huobi::gateway::Action::SUB) {
+            lwsl_user("sub success\n");
+
+        }
+        if (result.action() == com::huobi::gateway::Action::PING) {
+            std::cout << "------ping----" << std::endl;
+            std::cout << result.code() << std::endl;
+            processPingOnMarketLine(result);
+
+        }
+        //if(result.code()!=200)
+        //{
+        //    std::cout<<"error!"<<std::endl;
+        //        std::cout<<result.code()<<std::endl;
+        //         std::cout<<result.message()<<std::endl;
+        //         std::cout<<result.action()<<std::endl;
+        //
+        //}
+
+        if (result.action() == com::huobi::gateway::Action::PUSH) {
+
+            onReceive(result);
+        }
+
+
+        //        JsonDocument doc;
+        //        JsonWrapper json = doc.parseFromString(message);          
+        //        if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0)||      
+        //              (json.containKey("err-code")&&json.getInt("err-code")!=0) ) {
+        //            std::string errorCode = json.getStringOrDefault("err-code", "Unknown error code");
+        //            std::string errorMsg = json.getStringOrDefault("err-msg", "Unknown error message");
+        //       HuobiApiException ex;
+        //            ex.errorCode = errorCode;
+        //            ex.errorMsg = errorMsg;
+        //            request->errorHandler(ex);
+        //            Logger::WriteLog("[Sub][%d] Error: %s", errorMsg.c_str());
+        //       close();
+        //        } else if (json.containKey("op")) {
+        //            std::string op = json.getString("op");
+        //            if (op == "notify") {
+        //                onReceive(json);
+        //            } else if (op == "ping") {
+        //   processPingOnTradingLine(json);
+        //            } else if (op == "auth") {
+        //                if (request->connectionHandler) {                   
+        //                    request->connectionHandler(this);
+        //                }
+        //            }
+        //        } else if (json.containKey("ch")) {       
+        //            onReceive(json);
+        //        } else if (json.containKey("ping")) {
+        //            processPingOnMarketLine(json);
+        //        } else if (json.containKey("subbed")) {
+        //
+        //        }else {           
+        //            Logger::WriteLog("parse failed！：%s",message);
+        //        }
     }
 
-    void WebSocketConnection::onReceive(JsonWrapper& json) {
-        
-        request->implCallback(json);
+    //    void WebSocketConnection::onReceive(JsonWrapper& json) {
+    //        
+    //    request->implCallback(json);
+    //    }
+
+    void WebSocketConnection::onReceive(com::huobi::gateway::Result& result) {
+        request->implCallback(result);
     }
 
     void WebSocketConnection::processPingOnTradingLine(JsonWrapper& json) {
@@ -197,6 +275,25 @@ namespace Huobi {
         sprintf(buf, "{\"pong\":%ld}", ts);
         std::string message = buf;
         lwsl_user("processPingOnMarketLine %s\n", message.c_str());
+        send(message);
+    }
+
+    void WebSocketConnection::processPingOnMarketLine(com::huobi::gateway::Result& result) {
+
+        const ::google::protobuf::Any& what_type = result.data();
+        com::huobi::gateway::Ping ping;
+        if (what_type.Is<com::huobi::gateway::Ping>()) {
+            what_type.UnpackTo(&ping);
+            std::cout << "parse:" << ping.ts() << std::endl;
+
+        } else {
+            std::cout << "parse is not ping" << std::endl;
+
+        }
+        char buf[1024] = {0};
+        sprintf(buf, "{\"action\":\"pong\",\"ts\":%ld}", ping.ts());
+        std::string message = buf;
+        lwsl_user("processPingOnMarketLine protobuf version : %s\n", message.c_str());
         send(message);
     }
 
@@ -256,11 +353,11 @@ namespace Huobi {
             lwsl_user("closing client\n");
             send("*");
             //lws_set_timeout(client, NO_PENDING_TIMEOUT, LWS_TO_KILL_ASYNC);
-            
+
         } else {
             lwsl_user("client is null\n");
         }
-        
+
         client = nullptr;
         this->delayInSecond = delayInSecond;
         lineStatus = LineStatus::LINE_DELAY;

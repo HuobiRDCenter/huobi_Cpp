@@ -11,7 +11,8 @@
 #include "Huobi/PriceDepthEvent.h"
 #include "Huobi/OrderUpdateEvent.h"
 #include "Huobi/Enums.h"
-
+#include "Huobi/AggrTradeEvent.h"
+#include "Huobi/OverviewEvent.h"
 namespace Huobi {
 
     class WebSocketApiImpl {
@@ -66,6 +67,15 @@ namespace Huobi {
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
+        WebSocketRequest* subscribeAggrTradeEvent(
+                const std::list<std::string>& symbols,
+                const std::function<void(const AggrTradeEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+        WebSocketRequest* subscribeOverviewEvent(
+               
+                const std::function<void(const OverviewEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+        
     };
 
 }
