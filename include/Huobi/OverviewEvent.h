@@ -20,7 +20,7 @@ namespace Huobi {
         std::vector<Candlestick> cans;
 
         OverviewEvent(com::huobi::gateway::Overview overriew) {
-            timestamp = overriew.ts();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(overriew.ts());
             int j = overriew.tick_size();
             for (int i = 0; i < j; i++) {
                 cans.push_back(overriew.tick(i));

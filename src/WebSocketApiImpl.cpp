@@ -118,9 +118,7 @@ namespace Huobi {
             com::huobi::gateway::Trade trade;
             if (what_type.Is<com::huobi::gateway::Trade>()) {
                 what_type.UnpackTo(&trade);
-                TradeEvent tradeEvent(trade);
-                tradeEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(trade.ts());
-                tradeEvent.symbol = trade.symbol();
+                TradeEvent tradeEvent(trade);              
                 return tradeEvent;
             }
 
@@ -424,7 +422,7 @@ namespace Huobi {
                     candlestickEvent.data = Candlestick(req.candlesticks(i));
                     candlestickEvent.symbol = req.symbol();
                     candlestickEvent.interval = interval;
-                    candlestickEvent.timestamp = req.candlesticks(i).ts();
+                    candlestickEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(req.candlesticks(i).ts());
                     events.push_back(candlestickEvent);
                 }
                 return events;

@@ -44,7 +44,7 @@ namespace Huobi {
             tradeId = std::to_string(tick.trade_id());
 
 
-            timestamp = tick.ts();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(tick.ts());
 
 
             price = Decimal(tick.price().c_str());
@@ -62,7 +62,7 @@ namespace Huobi {
             tradeId = std::to_string(trade.trade_id());
 
 
-            timestamp = trade.ts();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(trade.ts());
 
 
             price = Decimal(trade.price().c_str());

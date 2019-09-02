@@ -3,6 +3,7 @@
 
 #include<vector>
 #include "DepthEntry.h"
+#include "/root/huobi_Cpp/src/TimeService.h"
 namespace Huobi {
 
     /**
@@ -26,7 +27,7 @@ namespace Huobi {
 
         PriceDepth(com::huobi::gateway::Depth data) {
 
-            timestamp = data.ts();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(data.ts());
             int bids_size = data.bids_size();
             int asks_size = data.asks_size();
             for (int i = 0; i < bids_size; i++) {

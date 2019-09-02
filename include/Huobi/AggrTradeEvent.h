@@ -37,7 +37,7 @@ namespace Huobi {
         AggrTradeEvent(com::huobi::gateway::AggrTrade aggrTrade) {
             first_trade_id = aggrTrade.first_trade_id();
             last_trade_id = aggrTrade.last_trade_id(); // 结束TradeId
-            ts = aggrTrade.ts(); // 成交时间戳
+            ts = TimeService::convertCSTInMillisecondToUTC(aggrTrade.ts()); // 成交时间戳
             price = Decimal(aggrTrade.price().c_str()); // 成交价格
             volume = Decimal(aggrTrade.volume().c_str()); // 成交总量
             direction = aggrTrade.side() == com::huobi::gateway::Side::BUY ? TradeDirection::buy : TradeDirection::sell; // 成交方向，buy：买，sell: 卖

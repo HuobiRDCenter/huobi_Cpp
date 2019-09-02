@@ -51,7 +51,7 @@ namespace Huobi {
 
         TradeStatistics(com::huobi::gateway::MarketSummary sum) {
 
-            timestamp = sum.ts();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(sum.ts());
 
             open = Decimal(sum.open().c_str());
 

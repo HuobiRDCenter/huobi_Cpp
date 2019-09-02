@@ -3,6 +3,7 @@
 
 #include "Huobi/Decimal.h"
 #include "/root/huobi_Cpp/src/Utils/huobi_gateway_market_downstream_protocol.pb.h"
+#include "/root/huobi_Cpp/src/TimeService.h"
 namespace Huobi {
 
     /**
@@ -51,7 +52,7 @@ namespace Huobi {
 
         Candlestick(com::huobi::gateway::Candlestick can) {
 
-            timestamp = can.id();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(can.id());
 
             amount = Decimal(can.turnover().c_str());
 
@@ -70,7 +71,7 @@ namespace Huobi {
 
         Candlestick(com::huobi::gateway::ReqCandlestick::Tick can) {
 
-            timestamp = can.id();
+            timestamp = TimeService::convertCSTInMillisecondToUTC(can.id());
 
             amount = Decimal(can.turnover().c_str());
 
