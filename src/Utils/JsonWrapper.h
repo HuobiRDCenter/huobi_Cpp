@@ -11,6 +11,7 @@ namespace Huobi {
     public:
         JsonWrapper(const rapidjson::Value& json);
         JsonWrapper(const JsonWrapper& orig);
+
         virtual ~JsonWrapper();
 
         // For object
@@ -20,9 +21,9 @@ namespace Huobi {
         const char* getStringOrDefault(const char* name, const char* def) const;
 
         long getLong(const char* name) const;
-        
+
         bool getBool(const char* name) const;
-        
+
         long getLongOrDefault(const char* name, long def) const;
 
         int getInt(const char* name) const;
@@ -41,7 +42,7 @@ namespace Huobi {
         long getLongAt(int index) const;
 
         Decimal getDecimalAt(int index) const;
-        
+
         const char* getStringAt(int index) const;
 
         bool containKey(const char* name) const;

@@ -16,12 +16,11 @@ namespace Huobi {
             writer.Key(key);
             writer.String(value.c_str());
         }
-        
+
         void putArray(const char* key, const std::list<std::string>& array) {
             writer.Key(key);
             writer.StartArray();
-            
-            
+
             std::list<std::string>::const_iterator it = array.begin();
             while (it != array.end()) {
                 writer.String((*it).c_str());
@@ -29,7 +28,25 @@ namespace Huobi {
             }
             writer.EndArray();
         }
-        
+
+        void putParams(const char* key, long value) {
+            writer.Key("params");
+            writer.StartObject();
+            writer.Key(key);
+            writer.Int64(value);
+            writer.EndObject();
+
+        }
+
+        void putParams(const char* key, int value) {
+            writer.Key("params");
+            writer.StartObject();
+            writer.Key(key);
+            writer.Int64(value);
+            writer.EndObject();
+
+        }
+
         std::string toJsonString() {
             writer.EndObject();
             std::string res = strBuf.GetString();

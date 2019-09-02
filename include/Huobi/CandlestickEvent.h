@@ -4,7 +4,6 @@
 #include <string>
 #include "Huobi/Enums.h"
 #include "Huobi/Candlestick.h"
-#include "/root/huobi_Cpp/src/Utils/huobi_gateway_market_downstream_protocol.pb.h"
 namespace Huobi {
 
     /**
@@ -29,7 +28,7 @@ namespace Huobi {
         /**
          * The data of candlestick/kline.
          */
-        com::huobi::gateway::Candlestick data;
+        Candlestick data;
     };
 }
 #endif /* CANDELSICKEVENT_H */

@@ -15,23 +15,22 @@ int main(int argc, char** argv) {
     //    options.url = "wss://api.huobi.pro";
     //  SubscriptionClient* client = createSubscriptionClient(options); 
     SubscriptionClient* client = createSubscriptionClient();
-    //    client->subscribePriceDepthEvent("btcusdt", [](PriceDepthEvent priceDepthEvent) {      
-    //        cout << "Symbol: " << priceDepthEvent.symbol << endl;
-    ////        cout << "Bid price: " << priceDepthEvent.data.bids[0].price<< endl;
-    ////        cout << "Ask price: " << priceDepthEvent.data.asks[0].price << endl;
-    ////        
-    //        cout << "Bid price: " << priceDepthEvent.data.bids(0).price()<< endl;
-    //        cout << "Ask price: " << priceDepthEvent.data.asks(0).price() << endl;
-    //    });
-    //    client->subscribeTradeEvent("btcusdt",[](TradeEvent tradeEvent){
-    //         cout << "price: " << tradeEvent.tradeList.price() << endl;
-    //                 cout << "volume: " << tradeEvent.tradeList.volume() << endl;
-    //         cout << "trade_id: " << tradeEvent.tradeList.trade_id() << endl;
-    //         cout << "side: " << tradeEvent.tradeList.side() << endl;
-    //                  cout << "symbol: " << tradeEvent.tradeList.symbol() << endl;
-    //
-    //
-    //    });
+//        client->subscribePriceDepthEvent("btcusdt", [](PriceDepthEvent priceDepthEvent) {      
+//            cout << "Symbol: " << priceDepthEvent.symbol << endl;
+//            cout << "Bid price: " << priceDepthEvent.data.bids[0].price<< endl;
+//            cout << "Ask price: " << priceDepthEvent.data.asks[0].price << endl;
+//            
+//           
+//        });
+//        client->subscribeTradeEvent("btcusdt",[](TradeEvent tradeEvent){
+//             cout << "price: " << tradeEvent.tradeList.price() << endl;
+//                     cout << "volume: " << tradeEvent.tradeList.volume << endl;
+//             cout << "trade_id: " << tradeEvent.tradeList.trade_id() << endl;
+//             cout << "side: " << tradeEvent.tradeList.side() << endl;
+//                      cout << "symbol: " << tradeEvent.tradeList.symbol() << endl;
+//    
+//    
+//        });
 
     //        client->subscribeAggrTradeEvent("btcusdt",[](AggrTradeEvent aggrTradeEvent){
     //         cout << "price: " << aggrTradeEvent.aggrTrade.price() << endl;

@@ -3,7 +3,7 @@
 #include "SyncClientImpl.h"
 #include "Huobi/SubscriptionOptions.h"
 #include "Huobi/RequestOptions.h"
-
+#include "Huobi/WsRequestClient.h"
 
 namespace Huobi {
 
@@ -38,5 +38,10 @@ namespace Huobi {
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey, RequestOptions&op) {
         return new SyncClientImpl(apiKey, secretKey, op);
+    }
+    
+    
+    WsRequestClient* createWsRequestClient() {
+        return new SubscriptionClientImpl();
     }
 }

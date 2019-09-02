@@ -215,7 +215,10 @@ namespace Huobi {
 
             onReceive(result);
         }
+ if (result.action() == com::huobi::gateway::Action::REQ) {
 
+            onReceive(result);
+        }
 
         //        JsonDocument doc;
         //        JsonWrapper json = doc.parseFromString(message);          

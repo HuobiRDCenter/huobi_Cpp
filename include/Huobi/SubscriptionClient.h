@@ -42,7 +42,7 @@ namespace Huobi {
                 const std::function<void(const CandlestickEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
         /**
-         * Subscribe price depth event in detail. If the price depth is updated, server will send the data to client
+         * Subscribe trade event in detail. If the price depth is updated, server will send the data to client
          * and onReceive in callback will be called.
          *
          * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
@@ -114,7 +114,7 @@ namespace Huobi {
                 const std::function<void(const AccountEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
         /**
-         * Subscribe price depth event in aggregate. If the price depth is updated, server will send the data to client
+         * Subscribe trade  event in aggregate. If the price depth is updated, server will send the data to client
          * and onReceive in callback will be called.
          *
          * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like

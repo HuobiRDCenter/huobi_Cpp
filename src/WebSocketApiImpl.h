@@ -19,7 +19,7 @@ namespace Huobi {
     private:
         std::string accessKey;
         std::string secretKey;
-        
+
     public:
 
         WebSocketApiImpl() {
@@ -30,8 +30,6 @@ namespace Huobi {
             this->accessKey = accessKey;
             this->secretKey = secretKey;
         }
-
-       
 
         std::string getAccessKey() {
             return accessKey;
@@ -72,10 +70,28 @@ namespace Huobi {
                 const std::function<void(const AggrTradeEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
         WebSocketRequest* subscribeOverviewEvent(
-               
                 const std::function<void(const OverviewEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
-        
+
+        WebSocketRequest* getLatestCandlestick(
+                const std::string& symbol,
+                CandlestickInterval interval,
+                const std::function<void(const std::vector<CandlestickEvent>&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+        WebSocketRequest* getPriceDepthEvent(
+                const std::string& symbol,
+                const std::function<void(const PriceDepthEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+        WebSocketRequest* get24HTradeStatisticsEvent(
+                const std::string& symbol,
+                const std::function<void(const TradeStatisticsEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+        WebSocketRequest* getTradeEvent(
+                const std::string& symbol,
+                int limit,
+                const std::function<void(const TradeEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
     };
 
 }

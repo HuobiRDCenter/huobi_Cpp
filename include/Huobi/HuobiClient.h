@@ -62,5 +62,6 @@
 #include "Huobi/MarginBalanceDetail.h"
 #include "Huobi/AggrTradeEvent.h"
 #include "Huobi/OverviewEvent.h"
+#include "Huobi/WsRequestClient.h"
 #endif /* HUOBICLIENT_H */
 

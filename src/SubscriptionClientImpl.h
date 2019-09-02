@@ -11,10 +11,10 @@
 #include "Huobi/RequestOptions.h"
 #include "GetHost.h"
 #include "RestApiImpl.h"
-
+#include "Huobi/WsRequestClient.h"
 namespace Huobi {
 
-    class SubscriptionClientImpl : public SubscriptionClient {
+    class SubscriptionClientImpl : public SubscriptionClient, public WsRequestClient {
     private:
 
         std::string apiKey;
@@ -28,6 +28,7 @@ namespace Huobi {
 
     public:
         void startService() override;
+        void startReq() override;
 
         SubscriptionClientImpl() {
             apiKey = "";
@@ -107,8 +108,28 @@ namespace Huobi {
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
         void subscribeOverviewEvent(
-
                 const std::function<void(const OverviewEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+        void getLatestCandlestick(
+                const char* symbol,
+                CandlestickInterval interval,
+                const std::function<void(const std::vector<CandlestickEvent>&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+        void getPriceDepthEvent(
+                const char* symbol,
+                const std::function<void(const PriceDepthEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+        void get24HTradeStatisticsEvent(
+                const char* symbol,
+                const std::function<void(const TradeStatisticsEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+        void getTradeEvent(
+                const char* symbol,
+                int limit,
+                const std::function<void(const TradeEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
     private:

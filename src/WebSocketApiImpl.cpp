@@ -36,7 +36,7 @@ namespace Huobi {
         //            event.symbol = parser.getSymbol();
         //            event.interval = interval;
         //            event.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
-        //            JsonWrapper tick = json.getJsonObjectOrArray("tick");
+        //                JsonWrapper tick = json.getJsonObjectOrArray("tick");
         //            Candlestick data;
         //            data.timestamp = TimeService::convertCSTInSecondToUTC(tick.getLong("id"));
         //            data.amount = tick.getDecimal("amount");
@@ -63,7 +63,7 @@ namespace Huobi {
                 what_type.UnpackTo(&can);
                 event.timestamp = TimeService::convertCSTInMillisecondToUTC(can.ts());
                 event.symbol = can.symbol();
-                event.data = can;
+                event.data = Candlestick(can);
                 return event;
             }
 
@@ -111,16 +111,16 @@ namespace Huobi {
         req->ResultParser = [](const com::huobi::gateway::Result & result) {
 
             // ChannelParser parser = ChannelParser(result.ch().c_str());
-            TradeEvent tradeEvent;
+
 
             // event.timestamp = TimeService::convertCSTInMillisecondToUTC(result.ts());
             const ::google::protobuf::Any& what_type = result.data();
             com::huobi::gateway::Trade trade;
             if (what_type.Is<com::huobi::gateway::Trade>()) {
                 what_type.UnpackTo(&trade);
-                // tradeEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(trade.ts());
-
-                tradeEvent.tradeList = trade;
+                TradeEvent tradeEvent(trade);
+                tradeEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(trade.ts());
+                tradeEvent.symbol = trade.symbol();
                 return tradeEvent;
             }
 
@@ -350,22 +350,18 @@ namespace Huobi {
             }
         };
 
-
         req->ResultParser = [](const com::huobi::gateway::Result & result) {
 
-            AggrTradeEvent aggrTradeEvent;
+
             const ::google::protobuf::Any& what_type = result.data();
             com::huobi::gateway::AggrTrade aggr;
             if (what_type.Is<com::huobi::gateway::AggrTrade>()) {
                 what_type.UnpackTo(&aggr);
-                aggrTradeEvent.aggrTrade = aggr;
-
+                AggrTradeEvent aggrTradeEvent(aggr);
                 return aggrTradeEvent;
             }
 
         };
-
-
         req->isNeedSignature = false;
         req->Callback = callback;
         req->errorHandler = errorHandler;
@@ -373,7 +369,6 @@ namespace Huobi {
     }
 
     WebSocketRequest* WebSocketApiImpl::subscribeOverviewEvent(
-
             const std::function<void(const OverviewEvent&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
         InputChecker::checker()->checkCallback(callback);
@@ -385,27 +380,158 @@ namespace Huobi {
             connection->send(Channels::OverviewChannel());
 
         };
-
-
         req->ResultParser = [](const com::huobi::gateway::Result & result) {
-
-            OverviewEvent overviewEvent;
+            
             const ::google::protobuf::Any& what_type = result.data();
             com::huobi::gateway::Overview overview;
             if (what_type.Is<com::huobi::gateway::Overview>()) {
                 what_type.UnpackTo(&overview);
-                overviewEvent.overriew = overview;
+                OverviewEvent overviewEvent(overview);              
                 std::cout << "-----size:-----" << overview.tick_size() << std::endl;
                 return overviewEvent;
             }
+        };
+        req->isNeedSignature = false;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+    }
 
+    WebSocketRequest* WebSocketApiImpl::getLatestCandlestick(
+            const std::string& symbol,
+            CandlestickInterval interval,
+            const std::function<void(const std::vector<CandlestickEvent>&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<std::vector < CandlestickEvent >> ();
+
+        req->connectionHandler = [symbol, interval](WebSocketConnection * connection) {
+
+            connection->send(Channels::ReqKlineChannel(symbol, interval));
 
         };
+        req->ResultParser = [interval](const com::huobi::gateway::Result & result) {
 
+            std::vector<CandlestickEvent> events;
+            const ::google::protobuf::Any& what_type = result.data();
+            com::huobi::gateway::ReqCandlestick req;
+            if (what_type.Is<com::huobi::gateway::ReqCandlestick>()) {
+                what_type.UnpackTo(&req);
+                int j = req.candlesticks_size();
+                for (int i = 0; i < j; i++) {
+                    CandlestickEvent candlestickEvent;
+                    candlestickEvent.data = Candlestick(req.candlesticks(i));
+                    candlestickEvent.symbol = req.symbol();
+                    candlestickEvent.interval = interval;
+                    candlestickEvent.timestamp = req.candlesticks(i).ts();
+                    events.push_back(candlestickEvent);
+                }
+                return events;
+            }
+        };
+        req->isNeedSignature = false;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+    }
 
+    WebSocketRequest* WebSocketApiImpl::getPriceDepthEvent(
+            const std::string& symbol,
+            const std::function<void(const PriceDepthEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<PriceDepthEvent>();
+
+        req->connectionHandler = [symbol](WebSocketConnection * connection) {
+
+            connection->send(Channels::ReqPriceDepthChannel(symbol));
+
+        };
+        req->ResultParser = [](const com::huobi::gateway::Result & result) {
+            PriceDepthEvent event;
+
+            // event.timestamp = TimeService::convertCSTInMillisecondToUTC(result.ts());
+            const ::google::protobuf::Any& what_type = result.data();
+            com::huobi::gateway::Depth dep;
+            if (what_type.Is<com::huobi::gateway::Depth>()) {
+                what_type.UnpackTo(&dep);
+                event.timestamp = TimeService::convertCSTInMillisecondToUTC(dep.ts());
+                event.symbol = dep.symbol();
+                event.data = dep;
+                return event;
+            }
+        };
+        req->isNeedSignature = false;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+
+    }
+
+    WebSocketRequest* WebSocketApiImpl::get24HTradeStatisticsEvent(
+            const std::string& symbol,
+            const std::function<void(const TradeStatisticsEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<TradeStatisticsEvent>();
+
+        req->connectionHandler = [symbol](WebSocketConnection * connection) {
+
+            connection->send(Channels::ReqtradeStatisticsChannel(symbol));
+
+        };
+        req->ResultParser = [](const com::huobi::gateway::Result & result) {
+
+            TradeStatisticsEvent tradeStatisticsEvent;
+            const ::google::protobuf::Any& what_type = result.data();
+            com::huobi::gateway::MarketSummary summary;
+            if (what_type.Is<com::huobi::gateway::MarketSummary>()) {
+                what_type.UnpackTo(&summary);
+                tradeStatisticsEvent.symbol = summary.symbol();
+                tradeStatisticsEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(summary.ts());
+                tradeStatisticsEvent.tradeStatistics = summary;
+                return tradeStatisticsEvent;
+            }
+        };
+        req->isNeedSignature = false;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+
+    }
+
+    WebSocketRequest* WebSocketApiImpl::getTradeEvent(
+            const std::string& symbol,
+            int limit,
+            const std::function<void(const TradeEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<TradeEvent > ();
+
+        req->connectionHandler = [symbol, limit](WebSocketConnection * connection) {
+
+            connection->send(Channels::ReqTradeEventChannel(symbol, limit));
+
+        };
+        req->ResultParser = [](const com::huobi::gateway::Result & result) {
+
+            const ::google::protobuf::Any& what_type = result.data();
+            com::huobi::gateway::ReqTrade trade;
+            if (what_type.Is<com::huobi::gateway::ReqTrade>()) {
+                what_type.UnpackTo(&trade);
+                TradeEvent tradeEvent(trade);
+                tradeEvent.symbol = trade.symbol();
+                return tradeEvent;
+            }
+        };
         req->isNeedSignature = false;
         req->Callback = callback;
         req->errorHandler = errorHandler;
         return req;
     }
 }
+
