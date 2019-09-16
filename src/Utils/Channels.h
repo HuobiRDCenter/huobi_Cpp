@@ -50,6 +50,14 @@ namespace Huobi {
             return writer.toJsonString();
         }
 
+        static std::string newOrderChannel(const std::string& symbol) {
+            JsonWriter writer;
+            writer.put("op", "sub");
+            writer.put("cid", std::to_string(TimeService::getCurrentTimeStamp()));
+            writer.put("topic", "orders." + symbol + ".update");
+            return writer.toJsonString();
+        }
+
         static std::string tradeStatisticsChannel(const std::string& symbol) {
             JsonWriter writer;
             writer.put("sub", "market." + symbol + ".detail");

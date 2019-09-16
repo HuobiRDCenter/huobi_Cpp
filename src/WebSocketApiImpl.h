@@ -18,7 +18,7 @@ namespace Huobi {
     private:
         std::string accessKey;
         std::string secretKey;
-        
+
     public:
 
         WebSocketApiImpl() {
@@ -29,8 +29,6 @@ namespace Huobi {
             this->accessKey = accessKey;
             this->secretKey = secretKey;
         }
-
-       
 
         std::string getAccessKey() {
             return accessKey;
@@ -66,7 +64,14 @@ namespace Huobi {
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* subscribeOrderUpdateNewEvent(
+                const std::list<std::string>& symbols,
+                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
     };
+
 
 }
 #endif /* WEBSOCKETAPIIMPL_H */

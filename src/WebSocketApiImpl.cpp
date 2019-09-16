@@ -29,7 +29,7 @@ namespace Huobi {
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         };
-        req->JsonParser = [interval](const JsonWrapper& json) {
+        req->JsonParser = [interval](const JsonWrapper & json) {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             CandlestickEvent event;
             event.symbol = parser.getSymbol();
@@ -67,7 +67,7 @@ namespace Huobi {
             }
         };
 
-        req->JsonParser = [](const JsonWrapper& json) {
+        req->JsonParser = [](const JsonWrapper & json) {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             TradeEvent tradeEvent;
             tradeEvent.symbol = parser.getSymbol();
@@ -108,7 +108,7 @@ namespace Huobi {
             }
         };
 
-        req->JsonParser = [](const JsonWrapper& json) {
+        req->JsonParser = [](const JsonWrapper & json) {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             PriceDepthEvent priceDepthEvent;
             priceDepthEvent.symbol = parser.getSymbol();
@@ -121,21 +121,21 @@ namespace Huobi {
             for (int i = 0; i < bids.size(); i++) {
                 DepthEntry de;
                 JsonWrapper item = bids.getArrayAt(i);
-                de.price=item.getDecimalAt(0);
-                de.amount=item.getDecimalAt(1);
-                bidsves.push_back(de);                              
+                de.price = item.getDecimalAt(0);
+                de.amount = item.getDecimalAt(1);
+                bidsves.push_back(de);
             }
             std::vector<DepthEntry>asksves;
             for (int i = 0; i < asks.size(); i++) {
                 DepthEntry de;
                 JsonWrapper item = asks.getArrayAt(i);
-                de.price=item.getDecimalAt(0);
-                de.amount=item.getDecimalAt(1);
+                de.price = item.getDecimalAt(0);
+                de.amount = item.getDecimalAt(1);
                 asksves.push_back(de);
             }
-            depth.bids=bidsves;
-            depth.asks=asksves;
-            priceDepthEvent.data=depth;            
+            depth.bids = bidsves;
+            depth.asks = asksves;
+            priceDepthEvent.data = depth;
             return priceDepthEvent;
         };
 
@@ -160,7 +160,7 @@ namespace Huobi {
             }
         };
 
-        req->JsonParser = [](const JsonWrapper& json) {
+        req->JsonParser = [](const JsonWrapper & json) {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             TradeStatisticsEvent tradeStatisticsEvent;
             tradeStatisticsEvent.symbol = parser.getSymbol();
@@ -201,7 +201,7 @@ namespace Huobi {
             }
         };
 
-        req->JsonParser = [this](const JsonWrapper& json) {
+        req->JsonParser = [this](const JsonWrapper & json) {
             ChannelParser parser = ChannelParser(json.getString("topic"));
             OrderUpdateEvent orderUpdateEvent;
             orderUpdateEvent.symbol = parser.getSymbol();
@@ -239,7 +239,7 @@ namespace Huobi {
         req->connectionHandler = [mode](WebSocketConnection * connection) {
             connection->send(Channels::accountChannel(mode));
         };
-        req->JsonParser = [this](const JsonWrapper& json) {
+        req->JsonParser = [this](const JsonWrapper & json) {
             AccountEvent accountEvent;
             JsonWrapper data = json.getJsonObjectOrArray("data");
             accountEvent.changeType = AccountChangeType::lookup(data.getString("event"));
@@ -262,4 +262,49 @@ namespace Huobi {
         return req;
 
     }
+
+    WebSocketRequest* WebSocketApiImpl::subscribeOrderUpdateNewEvent(
+            const std::list<std::string>& symbols,
+            const std::function<void(const OrderUpdateEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<OrderUpdateEvent>();
+
+        req->connectionHandler = [symbols](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::newOrderChannel(symbol));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        };
+
+        req->JsonParser = [this](const JsonWrapper & json) {
+            ChannelParser parser = ChannelParser(json.getString("topic"));
+            OrderUpdateEvent orderUpdateEvent;
+            orderUpdateEvent.symbol = parser.getSymbol();
+            orderUpdateEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            Order order;
+            order.orderId = data.getLong("order-id");
+            order.symbol = parser.getSymbol();     
+            order.price = data.getDecimal("price");
+            order.type = OrderType::lookup(data.getString("order-type"));
+            order.filledAmount = data.getDecimal("filled-amount");
+            order.filledCashAmount = data.getDecimal("filled-cash-amount");
+            order.state = OrderState::lookup(data.getString("order-state"));
+            orderUpdateEvent.match_id = data.getLong("match-id");
+            orderUpdateEvent.client_order_id = data.getString("client-order-id");
+            orderUpdateEvent.role = DealRole::lookup(data.getString("role"));
+            orderUpdateEvent.unfilled_amount = data.getDecimal("unfilled-amount");
+            orderUpdateEvent.data = order;
+            return orderUpdateEvent;
+        };
+        req->isNeedSignature = true;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+    }
+
+
 }
+

@@ -33,17 +33,17 @@ TEST(TestGetAccount, Request) {
     ASSERT_TRUE(request->getUrl().find("Signature"));
 }
 
-//TEST(TestGetAccount, Result) {
-//    std::string data = "{\"status\":\"ok\",\"data\":[{\"id\":5628009,\"type\":\"spot\",\"subtype\":\"\",\"state\":\"working\"},{\"id\":5695557,\"type\":\"otc\",\"subtype\":\"\",\"state\":\"working\"}]}\n";
-//
-//    RestApiImpl* impl = new RestApiImpl("12345", "67890");
-//    auto request = impl->getAccounts();
-//    JsonWrapper json = JsonDocument().parseFromString(data);
-//    auto result = request->jsonParser(json);
-//    ASSERT_EQ(5628009l, result[0].id);
-//    ASSERT_EQ(AccountType::spot, result[0].type);
-//    ASSERT_EQ(AccountState::working, result[0].state);
-//}
+TEST(TestGetAccount, Result) {
+    std::string data = "{\"status\":\"ok\",\"data\":[{\"id\":5628009,\"type\":\"spot\",\"subtype\":\"\",\"state\":\"working\"},{\"id\":5695557,\"type\":\"otc\",\"subtype\":\"\",\"state\":\"working\"}]}\n";
+
+    RestApiImpl* impl = new RestApiImpl("12345", "67890");
+    auto request = impl->getAccounts();
+    JsonWrapper json = JsonDocument().parseFromString(data);
+    auto result = request->jsonParser(json);
+    ASSERT_EQ(5628009l, result[0].id);
+    ASSERT_EQ(AccountType::spot, result[0].type);
+    ASSERT_EQ(AccountState::working, result[0].state);
+}
 
 #endif /* TESTGETACCOUNT_H */
 

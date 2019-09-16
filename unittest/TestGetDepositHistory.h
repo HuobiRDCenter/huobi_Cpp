@@ -26,7 +26,11 @@ using namespace Huobi;
 
 TEST(TestGetDepositHistory, Request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    auto request = impl->getDepositHistory("btc", 24966984923l, 1);
+    DepositRecordRequest req;
+    req.currency = "btc";
+    req.fromId = 24966984923l;
+    req.size = 1;
+    auto request = impl->getDepositHistory(req);
     ASSERT_EQ("GET", request->method);
     ASSERT_TRUE(request->getUrl().find("Signature") != -1);
     ASSERT_TRUE(request->getUrl().find("currency=btc") != -1);
@@ -37,27 +41,32 @@ TEST(TestGetDepositHistory, Request) {
 
 TEST(TestGetDepositHistory, Result) {
     std::string data = "{\n"
-      "    \n"
-      "    \"status\": \"ok\",\n"
-      "    \"data\": [\n"
-      "      {\n"
-      "        \"id\": 1171,\n"
-      "        \"type\": \"deposit\",\n"
-      "        \"currency\": \"ht\",\n"
-      "        \"tx-hash\": \"ed03094b84eafbe4bc16e7ef766ee959885ee5bcb265872baaa9c64e1cf86c2b\",\n"
-      "        \"amount\": 7.457467,\n"
-      "        \"address\": \"rae93V8d2mdoUQHwBDBdM4NHCMehRJAsbm\",\n"
-      "        \"address-tag\": \"100040\",\n"
-      "        \"fee\": 345,\n"
-      "        \"state\": \"confirmed\",\n"
-      "        \"created-at\": 1510912472199,\n"
-      "        \"updated-at\": 1511145876575\n"
-      "      }\n" 
-      "    ]\n"
-      "}";
-    
+            "    \n"
+            "    \"status\": \"ok\",\n"
+            "    \"data\": [\n"
+            "      {\n"
+            "        \"id\": 1171,\n"
+            "        \"type\": \"deposit\",\n"
+            "        \"currency\": \"ht\",\n"
+            "        \"tx-hash\": \"ed03094b84eafbe4bc16e7ef766ee959885ee5bcb265872baaa9c64e1cf86c2b\",\n"
+            "        \"amount\": 7.457467,\n"
+            "        \"address\": \"rae93V8d2mdoUQHwBDBdM4NHCMehRJAsbm\",\n"
+            "        \"address-tag\": \"100040\",\n"
+            "        \"fee\": 345,\n"
+            "        \"state\": \"confirmed\",\n"
+            "        \"created-at\": 1510912472199,\n"
+            "        \"updated-at\": 1511145876575\n"
+            "      }\n"
+            "    ]\n"
+            "}";
+
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    auto request = impl->getDepositHistory("btc", 24966984923l, 1);
+    DepositRecordRequest req;
+    req.currency = "btc";
+    req.fromId = 24966984923l;
+    req.size = 1;
+
+    auto request = impl->getDepositHistory(req);
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto withdrawDepositList = request->jsonParser(json);
     ASSERT_EQ(Decimal("345"), withdrawDepositList[0].fee);
@@ -70,7 +79,7 @@ TEST(TestGetDepositHistory, Result) {
     ASSERT_EQ("ht", withdrawDepositList[0].currency);
     ASSERT_EQ("ed03094b84eafbe4bc16e7ef766ee959885ee5bcb265872baaa9c64e1cf86c2b", withdrawDepositList[0].txHash);
     ASSERT_EQ(DepositState::confirmed, withdrawDepositList[0].depositState);
-    
+
 }
 #endif /* TESTGETDEPOSITHISTORY_H */
 

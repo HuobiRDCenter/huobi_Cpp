@@ -5,14 +5,14 @@
  */
 
 /* 
- * File:   TestGetHistoryOrders.h
- * Author: mawenrui
+ * File:   TestGetOrderHistory.h
+ * Author: yuanxueqi
  *
- * Created on March 26, 2019, 2:20 PM
+ * Created on 2019年9月16日, 下午6:08
  */
 
-#ifndef TESTGETHISTORYORDERS_H
-#define TESTGETHISTORYORDERS_H
+#ifndef TESTGETORDERHISTORY_H
+#define TESTGETORDERHISTORY_H
 
 #include <gtest/gtest.h>
 #include <../src/RestApiImpl.h>
@@ -23,39 +23,21 @@
 
 using namespace Huobi;
 
-TEST(TestGetHistoryOrders, request) {
+TEST(TestGetOrderHistory, request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    HistoricalOrdersRequest req("htbtc", OrderState::canceled);
-    auto request = impl->getHistoricalOrders(req);
-    ASSERT_TRUE(request->getUrl().find("/v1/order/orders") != 0);
+    OrdersHistoryRequest req("htbtc", 1556417645419l, 1556533539282l, QueryDirection::PREV, 10);
+    auto request = impl->getOrderHistory(req);
+    ASSERT_TRUE(request->getUrl().find("/v1/order/history") != 0);
     ASSERT_EQ("GET", request->method);
     ASSERT_TRUE(request->getUrl().find("Signature") != -1);
     ASSERT_TRUE(request->getUrl().find("symbol=htbtc") != -1);
-    ASSERT_TRUE(request->getUrl().find("states=canceled") != -1);
-    ASSERT_TRUE(request->getUrl().find("start-date") == -1);
-    ASSERT_TRUE(request->getUrl().find("end-date") == -1);
-    ASSERT_TRUE(request->getUrl().find("types") == -1);
-    ASSERT_TRUE(request->getUrl().find("from") == -1);
-    ASSERT_TRUE(request->getUrl().find("size") == -1);
+    ASSERT_TRUE(request->getUrl().find("start-time") != -1);
+    ASSERT_TRUE(request->getUrl().find("end-time") != -1);
+    ASSERT_TRUE(request->getUrl().find("direct") != -1);
+    ASSERT_TRUE(request->getUrl().find("size") != -1);
 }
 
-TEST(TestGetHistoryOrders, request2) {
-    RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    HistoricalOrdersRequest req("htbtc", OrderState::submitted, OrderType::sell_limit, "2019-01-02", "2019-02-03", "2222", 12);
-    auto request = impl->getHistoricalOrders(req);
-    ASSERT_TRUE(request->getUrl().find("/v1/order/orders") != 0);
-    ASSERT_EQ("GET", request->method);
-    ASSERT_TRUE(request->getUrl().find("Signature") != -1);
-    ASSERT_TRUE(request->getUrl().find("symbol=htbtc") != -1);
-    ASSERT_TRUE(request->getUrl().find("states=submitted") != -1);
-    ASSERT_TRUE(request->getUrl().find("start-date=2019-01-02") != -1);
-    ASSERT_TRUE(request->getUrl().find("end-date=2019-02-03") != -1);
-    ASSERT_TRUE(request->getUrl().find("types=sell-limit") != -1);
-    ASSERT_TRUE(request->getUrl().find("from=2222") != -1);
-    ASSERT_TRUE(request->getUrl().find("size=12") != -1);
-}
-
-TEST(TestGetHistoryOrders, result) {
+TEST(TestGetOrderHistory, result) {
     std::string data = "{\n"
             "    \"status\":\"ok\",\n"
             "    \"data\":[\n"
@@ -93,17 +75,17 @@ TEST(TestGetHistoryOrders, result) {
             "}\n"
             "\n";
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    HistoricalOrdersRequest req("btcusdt", OrderState::canceled);
-    auto request = impl->getHistoricalOrders(req);
+    OrdersHistoryRequest req;
+    auto request = impl->getOrderHistory(req);
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto orders = request->jsonParser(json);
-    
+
     ASSERT_EQ(2, orders.size());
     ASSERT_EQ(24965104183l, orders[0].orderId);
     ASSERT_EQ(AccountType::spot, orders[0].accountType);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155568l),orders[0].canceledTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155647l),orders[0].finishedTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155350l),orders[0].createdTimestamp);
+    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155568l), orders[0].canceledTimestamp);
+    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155647l), orders[0].finishedTimestamp);
+    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155350l), orders[0].createdTimestamp);
     ASSERT_EQ(Decimal("0.0888"), orders[0].filledAmount);
     ASSERT_EQ(Decimal("0.011"), orders[0].filledCashAmount);
     ASSERT_EQ(Decimal("0.03445"), orders[0].filledFees);
@@ -117,5 +99,6 @@ TEST(TestGetHistoryOrders, result) {
     ASSERT_EQ(0, orders[1].canceledTimestamp);
 }
 
-#endif /* TESTGETHISTORYORDERS_H */
+
+#endif /* TESTGETORDERHISTORY_H */
 

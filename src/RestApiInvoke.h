@@ -71,7 +71,7 @@ namespace Huobi {
             }
             std::string sBuffer;
             printf("\n");
-            printf("------request------\n");
+            printf("------request------\n");                            
             printf(ptr->getUrl().c_str());
             printf("\n");
             curl_easy_setopt(pCurl, CURLOPT_SSLKEYTYPE, "PEM");

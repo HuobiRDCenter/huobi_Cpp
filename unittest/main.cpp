@@ -51,7 +51,12 @@ using namespace Huobi;
 #include "TestErrorResponse.h"
 #include "TestDecimal.h"
 #include "TestGetMarginBalanceDetail.h"
-
+#include "TestSubmitCancelClientOrder.h"
+#include "TestGetOrderByClientOrderId.h"
+#include "TestGetFeeRate.h"
+#include "TestTransferFutures.h"
+#include "TestGetOrderHistory.h"
+#include "TestSubscribeOrderUpdateNewEvent.h"
 int main(int argc, char **argv) {
 
     User* user = new User();
