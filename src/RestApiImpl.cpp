@@ -84,7 +84,7 @@ namespace Huobi {
                 JsonWrapper item = dataArray.getJsonObjectAt(i);
                 JsonWrapper dataArrayIn = item.getJsonObjectOrArray("data");
                 for (int j = 0; j < dataArrayIn.size(); j++) {
-                    JsonWrapper itemIn = dataArrayIn.getJsonObjectAt(0);
+                    JsonWrapper itemIn = dataArrayIn.getJsonObjectAt(j);
                     Trade trade;
                     trade.price = itemIn.getDecimal("price");
                     trade.amount = itemIn.getDecimal("amount");
