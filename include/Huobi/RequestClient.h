@@ -386,6 +386,14 @@ namespace Huobi {
          * \return The order list.
          */
         virtual std::vector<Order> getOrderHistory(OrdersHistoryRequest& req) = 0;
+
+        /**
+         * Get the lastest trade with their price, volume and direction.
+         *
+         * \param symbol The symbol, like "btcusdt". (mandatory)
+         * \return The last trade with price and amount.
+         */
+        virtual Trade getMarketTrade(const char* symbol) = 0;
     };
 
     RequestClient* createRequestClient();

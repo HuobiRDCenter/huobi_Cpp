@@ -57,6 +57,7 @@ using namespace Huobi;
 #include "TestTransferFutures.h"
 #include "TestGetOrderHistory.h"
 #include "TestSubscribeOrderUpdateNewEvent.h"
+#include "TestGetMarketTrade.h"
 int main(int argc, char **argv) {
 
     User* user = new User();

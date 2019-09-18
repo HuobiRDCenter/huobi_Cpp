@@ -66,7 +66,7 @@ namespace Huobi {
         std::vector<std::string> getCurrencies();
         long transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest);
         std::vector<Order> getOrderHistory(OrdersHistoryRequest& req);
-
+        Trade getMarketTrade(const char* symbol);
     };
 }
 

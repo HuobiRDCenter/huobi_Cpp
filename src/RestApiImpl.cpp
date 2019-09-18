@@ -1085,7 +1085,7 @@ namespace Huobi {
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<FeeRate> feeRatelList;
             JsonWrapper dataArray = json.getJsonObjectOrArray("data");
-            
+
             for (int i = 0; i < dataArray.size(); i++) {
                 JsonWrapper itemInData = dataArray.getJsonObjectAt(i);
                 FeeRate feeRate;
@@ -1160,6 +1160,27 @@ namespace Huobi {
                 orderList.push_back(order);
             }
             return orderList;
+        };
+        return res;
+    }
+
+    RestApi<Trade>*RestApiImpl::getMarketTrade(const char* symbol) {
+        InputChecker::checker()
+                ->checkSymbol(symbol);
+        UrlParamsBuilder builder;
+        builder.putUrl("symbol", symbol);
+        auto res = createRequestByGet<Trade> ("/market/trade", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper tick = json.getJsonObjectOrArray("tick");          
+            JsonWrapper data = tick.getJsonObjectOrArray("data");
+            JsonWrapper item = data.getJsonObjectAt(0);
+            Trade trade;
+            trade.price = item.getDecimal("price");
+            trade.amount = item.getDecimal("amount");
+            trade.tradeId = item.getString("id");
+            trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
+            trade.direction = TradeDirection::lookup(item.getString("direction"));
+            return trade;
         };
         return res;
     }

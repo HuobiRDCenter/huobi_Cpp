@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
             "xxxxx", "xxxxx", options);
     
     SubscriptionClient* subscriptionClient = createSubscriptionClient(
-           "xxx", "xxx");
+           "xxxx", "xxx");
     
     subscriptionClient->subscribeAccountEvent(BalanceMode::available, [](AccountEvent accountEvent) {
         cout << "---- Account Change: " << accountEvent.changeType.getValue() << " ----" << endl;

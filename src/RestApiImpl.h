@@ -165,6 +165,7 @@ namespace Huobi {
         RestApi<std::vector<FeeRate>>*getFeeRate(const char* symbols);
         RestApi<long>* transferBetweenFuturesAndPro(TransferFuturesRequest& req);
         RestApi<std::vector<Order>>*getOrderHistory(OrdersHistoryRequest& req);
+        RestApi<Trade>*getMarketTrade(const char* symbol);
     };
 }
 #endif /* RESTAPIIMPL_H */

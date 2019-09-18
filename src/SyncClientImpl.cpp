@@ -256,4 +256,8 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->getOrderHistory(req));
     }
 
+    Trade SyncClientImpl::getMarketTrade(const char* symbol) {
+         return RestApiInvoke::callSync(impl->getMarketTrade(symbol));
+    }
+
 }
