@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
      *  Set other fields flexibly.
      */
     newOrderRequest.client_order_id = "xxx";
-    long orderId = client->createOrder(newOrderRequest1);
+    long orderId = client->createOrder(newOrderRequest);
     cout << orderId << endl;
     /**
      *  Create newOrderRequest by static method. 
