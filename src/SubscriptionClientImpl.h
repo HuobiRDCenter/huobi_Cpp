@@ -22,8 +22,7 @@ namespace Huobi {
         WebSocketApiImpl *impl;
         std::list<WebSocketConnection*> connectionList;
         SubscriptionOptions op;
-       // std::string host = "api.huobi.pro";
-        std::string host = "api.huobi.so";
+        std::string host = "api.huobi.pro";      
         WebSocketWatchDog* dog;
 
     public:
