@@ -120,7 +120,7 @@ namespace Huobi {
             std::string code = escapeURL(CreateSignature(host, accessKey, secretKey, adress, method, timeBuf, param));
             std::string res = "";
             res +=
-                    "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
+                   "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
                     + "&SignatureVersion=2&Timestamp=" + timeBuf + "&Signature=" + code;
 
             return res;

@@ -69,6 +69,8 @@ namespace Huobi {
     OrderType OrderType::sell_ioc = OrderType("sell-ioc");
     OrderType OrderType::buy_limit_maker = OrderType("buy-limit-maker");
     OrderType OrderType::sell_limit_maker = OrderType("sell-limit-maker");
+    OrderType OrderType::buy_stop_limit = OrderType("buy_stop_limit");
+    OrderType OrderType::sell_stop_limit = OrderType("sell_stop_limit");
     OrderType OrderType::invalid = OrderType("invalid");
 
 
@@ -99,6 +101,7 @@ namespace Huobi {
     OrderState OrderState::partial_canceled = OrderState("partial-canceled");
     OrderState OrderState::partial_filled = OrderState("partial-filled");
     OrderState OrderState::submitted = OrderState("submitted");
+    OrderState OrderState::created = OrderState("created");
 
     TradeDirection TradeDirection::buy = TradeDirection("buy");
     TradeDirection TradeDirection::sell = TradeDirection("sell");
@@ -122,5 +125,18 @@ namespace Huobi {
 
     QueryDirection QueryDirection::PREV = QueryDirection("prev");
     QueryDirection QueryDirection::NEXT = QueryDirection("next");
+
+    StopOrderOperator StopOrderOperator::greater_than_and_equal = StopOrderOperator("gte");
+    StopOrderOperator StopOrderOperator::less_than_and_equal = StopOrderOperator("lte");
+
+    DealRole DealRole::taker = DealRole("taker");
+    DealRole DealRole::maker = DealRole("maker");
+
+    SymbolState SymbolState::online = SymbolState("online");
+    SymbolState SymbolState::offline = SymbolState("offline");
+    SymbolState SymbolState::suspend = SymbolState("suspend");
+
+    TransferFuturesType TransferFuturesType::futures_to_pro = TransferFuturesType("futures-to-pro");
+    TransferFuturesType TransferFuturesType::pro_to_futures = TransferFuturesType("pro-to-futures");
 }
 

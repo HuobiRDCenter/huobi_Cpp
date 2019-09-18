@@ -84,7 +84,7 @@ namespace Huobi {
                 JsonWrapper item = dataArray.getJsonObjectAt(i);
                 JsonWrapper dataArrayIn = item.getJsonObjectOrArray("data");
                 for (int j = 0; j < dataArrayIn.size(); j++) {
-                    JsonWrapper itemIn = dataArrayIn.getJsonObjectAt(0);
+                    JsonWrapper itemIn = dataArrayIn.getJsonObjectAt(j);
                     Trade trade;
                     trade.price = itemIn.getDecimal("price");
                     trade.amount = itemIn.getDecimal("amount");
@@ -115,6 +115,11 @@ namespace Huobi {
                 symbols.amountPrecision = item.getInt("amount-precision");
                 symbols.symbolPartition = item.getString("symbol-partition");
                 symbols.symbol = item.getString("symbol");
+                symbols.state = SymbolState::lookup(item.getString("state"));
+                symbols.valuePrecision = item.getInt("value-precision");
+                symbols.minOrderAmt = item.getLong("min-order-amt");
+                symbols.maxOrderAmt = item.getLong("max-order-amt");
+                symbols.leverageRatio = item.getIntOrDefault("leverage-ratio", 0);
                 symbolsList.push_back(symbols);
             }
             return symbolsList;
@@ -236,16 +241,19 @@ namespace Huobi {
         return res;
     }
 
-    RestApi<std::vector<Withdraw>>*RestApiImpl::getWithdrawHistory(const char* currency, long fromId, int size) {
+    RestApi<std::vector<Withdraw>>*RestApiImpl::getWithdrawHistory(WithdrawRecordRequest& request) {
+
         InputChecker::checker()
-                ->checkCurrency(currency)
-                ->shouldBiggerThanZero(fromId, "fromTd")
-                ->shouldBiggerThanZero(size, "size");
+                ->checkCurrency(request.currency)
+                ->greaterOrEqual(request.fromId, 0, "fromTd")
+                ->shouldBiggerThanZero(request.size, "size");
         UrlParamsBuilder builder;
-        builder.putUrl("currency", currency)
+        builder.putUrl("currency", request.currency)
                 .putUrl("type", "withdraw")
-                .putUrl("from", fromId)
-                .putUrl("size", size);
+                .putUrl("from", request.fromId)
+                .putUrl("size", request.size)
+                .putUrl("direct", request.direct.getValue());
+
         auto res = createRequestByGetWithSignature<std::vector < Withdraw >> ("/v1/query/deposit-withdraw", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Withdraw> withdraws;
@@ -272,16 +280,17 @@ namespace Huobi {
         return res;
     }
 
-    RestApi<std::vector<Deposit>>*RestApiImpl::getDepositHistory(const char* currency, long fromId, int size) {
+    RestApi<std::vector<Deposit>>*RestApiImpl::getDepositHistory(DepositRecordRequest& request) {
         InputChecker::checker()
-                ->checkCurrency(currency)
-                ->shouldBiggerThanZero(fromId, "fromTd")
-                ->shouldBiggerThanZero(size, "size");
+                ->checkCurrency(request.currency)
+                ->greaterOrEqual(request.fromId, 0, "fromTd")
+                ->shouldBiggerThanZero(request.size, "size");
         UrlParamsBuilder builder;
-        builder.putUrl("currency", currency)
+        builder.putUrl("currency", request.currency)
                 .putUrl("type", "deposit")
-                .putUrl("from", fromId)
-                .putUrl("size", size);
+                .putUrl("from", request.fromId)
+                .putUrl("size", request.size)
+                .putUrl("direct", request.direct.getValue());
         auto res = createRequestByGetWithSignature<std::vector < Deposit >> ("/v1/query/deposit-withdraw", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Deposit> lstdeposit;
@@ -305,6 +314,7 @@ namespace Huobi {
             }
             return lstdeposit;
         };
+
         return res;
     }
 
@@ -435,7 +445,7 @@ namespace Huobi {
 
     RestApi<std::vector<Order>>*RestApiImpl::getOpenOrders(OpenOrderRequest& openOrderRequest) {
         InputChecker::checker()->checkSymbol(openOrderRequest.symbol)
-                ->checkRange(openOrderRequest.size, 1, 2000, "size")
+                ->checkRange(openOrderRequest.size, 1, 500, "size")
                 ->shouldNotNull(openOrderRequest.accountType.getValue(), "accountType");
 
         AccountType accountType = openOrderRequest.accountType;
@@ -445,7 +455,9 @@ namespace Huobi {
         builder.putUrl("account-id", account.id)
                 .putUrl("symbol", openOrderRequest.symbol)
                 .putUrl("side", openOrderRequest.side.getValue())
-                .putUrl("size", openOrderRequest.size);
+                .putUrl("size", openOrderRequest.size)
+                .putUrl("from", openOrderRequest.fromId)
+                .putUrl("direct", openOrderRequest.direct.getValue());
         auto res = createRequestByGetWithSignature<std::vector < Order >> ("/v1/order/openOrders", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             std::vector<Order> orderList;
@@ -491,6 +503,12 @@ namespace Huobi {
                     ->shouldZero(newOrderRequest.price, "Price");
         }
 
+        if (newOrderRequest.type == OrderType::buy_stop_limit
+                || newOrderRequest.type == OrderType::sell_stop_limit) {
+            InputChecker::checker()
+                    ->shouldBiggerThanZero(newOrderRequest.stop_price, "stop_price")
+                    ->checkEnumNull(newOrderRequest.orderOperator);
+        }
         Account account = AccountsInfoMap::getUser(accessKey)->getAccount(newOrderRequest.accountType);
 
         const char* source = "api";
@@ -504,7 +522,10 @@ namespace Huobi {
                 .putPost("symbol", newOrderRequest.symbol)
                 .putPost("type", newOrderRequest.type.getValue())
                 .putPost("source", source)
-                .putPost("price", newOrderRequest.price);
+                .putPost("price", newOrderRequest.price)
+                .putPost("client-order-id", newOrderRequest.client_order_id)
+                .putPost("stop-price", newOrderRequest.stop_price)
+                .putPost("operator", newOrderRequest.orderOperator.getValue());
         auto res = createRequestByPostWithSignature<long>("/v1/order/orders/place", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             std::string value = json.getString("data");
@@ -609,6 +630,9 @@ namespace Huobi {
                 matchResult.source = OrderSource::lookup(item.getString("source"));
                 matchResult.symbol = item.getString("symbol");
                 matchResult.type = OrderType::lookup(item.getString("type"));
+                matchResult.role = DealRole::lookup(item.getString("role"));
+                matchResult.filled_points = item.getDecimal("filled-points");
+                matchResult.fee_deduct_currency = item.getString("fee-deduct-currency");
                 matchResultList.push_back(matchResult);
             }
 
@@ -649,6 +673,9 @@ namespace Huobi {
                 matchResult.source = OrderSource::lookup(item.getString("source"));
                 matchResult.symbol = item.getString("symbol");
                 matchResult.type = OrderType::lookup(item.getString("type"));
+                matchResult.role = DealRole::lookup(item.getString("role"));
+                matchResult.filled_points = item.getDecimal("filled-points");
+                matchResult.fee_deduct_currency = item.getString("fee-deduct-currency");
                 matchResultList.push_back(matchResult);
             }
             return matchResultList;
@@ -966,11 +993,11 @@ namespace Huobi {
 
     }
 
-    RestApi<std::vector<MarginBalanceDetail>>* RestApiImpl::getMarginBalanceDetail(
+    RestApi<std::vector<MarginBalanceDetail>>*RestApiImpl::getMarginBalanceDetail(
             const char* symbol) {
         InputChecker::checker()
-            ->checkSymbol(symbol);
-        
+                ->checkSymbol(symbol);
+
         UrlParamsBuilder builder;
         builder.putUrl("symbol", symbol);
         auto res = createRequestByGetWithSignature<std::vector < MarginBalanceDetail >> ("/v1/margin/accounts/balance", builder);
@@ -1002,8 +1029,162 @@ namespace Huobi {
         };
         return res;
     }
-    
-    
+
+    RestApi<long>* RestApiImpl::cancelOrderByClientOrderId(const char* client_order_id) {
+        RestApi<long>* res;
+        UrlParamsBuilder builder;
+        builder.putPost("client-order-id", client_order_id);
+        res = createRequestByPostWithSignature<long>("/v1/order/orders/submitCancelClientOrder", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::string value = json.getString("data");
+            long id = atol(value.c_str());
+            return id;
+        };
+        return res;
+    }
+
+    RestApi<Order>* RestApiImpl::getOrderByClientOrderId(const char* client_order_id) {
+        UrlParamsBuilder builder;
+        builder.putUrl("clientOrderId", client_order_id);
+        auto res = createRequestByGetWithSignature<Order>("/v1/order/orders/getClientOrder", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            Order order;
+            order.symbol = data.getString("symbol");
+            order.orderId = data.getLong("id");
+            order.accountType = AccountsInfoMap::getAccount(accessKey, data.getLong("account-id")).type;
+            order.amount = data.getDecimal("amount");
+            order.canceledTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("canceled-at"));
+            order.createdTimestamp =
+                    TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
+            order.finishedTimestamp =
+                    TimeService::convertCSTInMillisecondToUTC(data.getLong("finished-at"));
+            order.filledAmount = data.getDecimal("field-amount");
+            order.filledCashAmount = data.getDecimal("field-cash-amount");
+            order.filledFees = data.getDecimal("field-fees");
+            order.price = data.getDecimal("price");
+            order.source = OrderSource::lookup(data.getString("source"));
+            order.state = OrderState::lookup(data.getString("state"));
+            order.type = OrderType::lookup(data.getString("type"));
+            return order;
+        };
+        return res;
+    }
+
+    RestApi<std::vector<FeeRate>>*RestApiImpl::getFeeRate(const char* symbols) {
+        std::string input(symbols);
+        std::stringstream ss(input);
+        std::string temp;
+        while (std::getline(ss, temp, ',')) {
+            InputChecker::checker()->checkSymbol(temp);
+        }
+        UrlParamsBuilder builder;
+        builder.putUrl("symbols", ApiSignature::escapeURL((symbols)));
+
+        auto res = createRequestByGetWithSignature<std::vector < FeeRate >> ("/v1/fee/fee-rate/get", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::vector<FeeRate> feeRatelList;
+            JsonWrapper dataArray = json.getJsonObjectOrArray("data");
+
+            for (int i = 0; i < dataArray.size(); i++) {
+                JsonWrapper itemInData = dataArray.getJsonObjectAt(i);
+                FeeRate feeRate;
+                feeRate.symbol = itemInData.getString("symbol");
+                feeRate.maker_fee = itemInData.getDecimal("maker-fee");
+                feeRate.taker_fee = itemInData.getDecimal("taker-fee");
+                feeRatelList.push_back(feeRate);
+            }
+            return feeRatelList;
+        };
+        return res;
+    }
+
+    RestApi<long>* RestApiImpl::transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest) {
+        InputChecker::checker()
+                ->checkCurrency(transferRequest.currency)
+                ->shouldBiggerThanZero(transferRequest.amount, "amount");
+
+        UrlParamsBuilder builder;
+        builder.putPost("currency", transferRequest.currency)
+                .putPost("type", transferRequest.type.getValue())
+                .putPost("amount", transferRequest.amount);
+        auto res = createRequestByPostWithSignature<long>("/v1/futures/transfer", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            if (!strcmp(json.getString("status"), "ok")) {
+                return json.getLong("data");
+            }
+            return (long) - 1;
+        };
+        return res;
+
+    }
+
+    RestApi<std::vector<Order>>*RestApiImpl::getOrderHistory(OrdersHistoryRequest& req) {
+
+        UrlParamsBuilder builder;
+        builder.putUrl("symbol", req.symbol)
+                .putUrl("start-time", req.startTime)
+                .putUrl("end-time", req.endTime)
+                .putUrl("direct", req.direct.getValue())
+                .putUrl("size", req.size);
+        auto res = createRequestByGetWithSignature<std::vector < Order >> ("/v1/order/history", builder);
+        res->jsonParser = [this] (const JsonWrapper & json) {
+            std::vector<Order> orderList;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                Order order;
+                order.accountType =
+                        AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
+                order.amount = item.getDecimal("amount");
+                order.canceledTimestamp =
+                        TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("canceled-at", 0));
+                order.finishedTimestamp =
+                        TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("finished-at", 0));
+                order.orderId = item.getLong("id");
+                order.symbol = item.getString("symbol");
+                order.price = item.getDecimal("price");
+                order.createdTimestamp =
+                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                order.type = OrderType::lookup(item.getString("type"));
+                order.filledAmount = item.getDecimal("field-amount");
+                order.filledCashAmount = item.getDecimal("field-cash-amount");
+                order.filledFees = item.getDecimal("field-fees");
+                order.source = OrderSource::lookup(item.getString("source"));
+                order.state = OrderState::lookup(item.getString("state"));
+                order.stopPrice = item.getDecimalOrDefault("stop-price", Decimal());
+                if (item.containKey("operator")) {
+                    order.stopOrderOperator = StopOrderOperator::lookup(item.getString("operator"));
+                }
+                order.nextTime = TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("next-time", 0));
+                orderList.push_back(order);
+            }
+            return orderList;
+        };
+        return res;
+    }
+
+    RestApi<Trade>*RestApiImpl::getMarketTrade(const char* symbol) {
+        InputChecker::checker()
+                ->checkSymbol(symbol);
+        UrlParamsBuilder builder;
+        builder.putUrl("symbol", symbol);
+        auto res = createRequestByGet<Trade> ("/market/trade", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper tick = json.getJsonObjectOrArray("tick");          
+            JsonWrapper data = tick.getJsonObjectOrArray("data");
+            JsonWrapper item = data.getJsonObjectAt(0);
+            Trade trade;
+            trade.price = item.getDecimal("price");
+            trade.amount = item.getDecimal("amount");
+            trade.tradeId = item.getString("id");
+            trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
+            trade.direction = TradeDirection::lookup(item.getString("direction"));
+            return trade;
+        };
+        return res;
+    }
+
     template <typename T>
     RestApi<T>* RestApiImpl::createRequestByPostWithSignature(const char* adress, UrlParamsBuilder& builder) {
         RestApi<T>* res = new RestApi<T>;

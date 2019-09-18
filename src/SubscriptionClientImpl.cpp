@@ -29,8 +29,8 @@ namespace Huobi {
             case LWS_CALLBACK_CLIENT_RECEIVE:
             {
                 // lwsl_user("receive");
-                char buf[4096*4] = {0};
-                unsigned int l = 4096*4;
+                char buf[4096 * 4] = {0};
+                unsigned int l = 4096 * 4;
                 l = gzDecompress((char*) in, len, buf, l);
                 //lwsl_user("RX %d: %s\n", l, (const char *) buf);
                 connection->onMessage(buf);
@@ -69,21 +69,24 @@ namespace Huobi {
     static void init_context() {
         if (context == nullptr) {
 
-        int logs =  LLL_ERR | LLL_WARN  ;
+            int logs = LLL_ERR | LLL_WARN ;
 
-        lws_set_log_level(logs, NULL);
-        struct lws_context_creation_info info;
-        memset(&info, 0, sizeof (info));
-        info.port = CONTEXT_PORT_NO_LISTEN;
-        info.protocols = protocols;
-        info.gid = -1;
-        info.uid = -1;
-        info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
-        info.client_ssl_ca_filepath = "/etc/huobi_cert/cert.pem";
-        context = lws_create_context(&info);
+            lws_set_log_level(logs, NULL);
+            struct lws_context_creation_info info;
+            memset(&info, 0, sizeof (info));
+            info.port = CONTEXT_PORT_NO_LISTEN;
+            info.protocols = protocols;
+            info.gid = -1;
+            info.uid = -1;
+            info.options |= LWS_SERVER_OPTION_DO_SSL_GLOBAL_INIT;
+            info.client_ssl_ca_filepath = "/etc/huobi_cert/cert.pem";
+            context = lws_create_context(&info);
         }
     }
+
     void SubscriptionClientImpl::startService() {
+        
+       
         std::list<WebSocketConnection*>::iterator it = connectionList.begin();
         for (; it != connectionList.end(); ++it) {
             (*it)->connect(context);
@@ -96,6 +99,7 @@ namespace Huobi {
                 break;
             }
         }
+      
         lwsl_user("enter_event_loop END\n");
         lws_context_destroy(context);
     }
@@ -107,7 +111,7 @@ namespace Huobi {
         }
         init_context();
         WebSocketConnection* connection = new WebSocketConnection(
-                this->apiKey, this->secretKey, request, dog,host);
+                this->apiKey, this->secretKey, request, dog, host);
         connectionList.push_back(connection);
     }
 
@@ -167,6 +171,12 @@ namespace Huobi {
         createConnection(impl->subscribeAccountEvent(mode, callback, errorHandler));
     }
 
+    void SubscriptionClientImpl::subscribeOrderUpdateNewEvent(
+            const char* symbols,
+            const std::function<void(const OrderUpdateEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribeOrderUpdateNewEvent(parseSymbols(symbols), callback, errorHandler));
+    }
 
 
 }

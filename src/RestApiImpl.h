@@ -38,6 +38,11 @@
 #include "Huobi/Logger.h"
 #include "Huobi/RequestOptions.h"
 #include "Huobi/MarginBalanceDetail.h"
+#include "Huobi/FeeRate.h"
+#include "Huobi/WithdrawRecordRequest.h"
+#include "Huobi/DepositRecordRequest.h"
+#include "Huobi/TransferFuturesRequest.h"
+#include "Huobi/OrdersHistoryRequest.h"
 #include "GetHost.h"
 
 namespace Huobi {
@@ -45,14 +50,15 @@ namespace Huobi {
     class RestApiImpl {
     private:
 
-        std::string TradingUrl = "https://api.huobi.pro:443";
+        std::string TradingUrl = "https://api.huobi.so";
         std::string MarketQueryUrl = "https://api.huobi.pro:443";
 
         std::string subscriptionMarketUrl = "wss://api.huobi.pro:443/ws";
         std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         std::string accessKey;
         std::string secretKey;
-        std::string host = "api.huobi.pro";
+        std::string host = "api.huobi.so";
+        // std::string host = "api.huobi.br.com";
     public:
 
         RestApiImpl() {
@@ -128,8 +134,8 @@ namespace Huobi {
         RestApi<std::vector<Account>>*getAccounts();
         RestApi<std::vector<Balance>>*getBalance(Account& account);
         RestApi<BestQuote>* getBestQuote(const char* symbol);
-        RestApi<std::vector<Withdraw>>*getWithdrawHistory(const char* currency, long fromId, int size);
-        RestApi<std::vector<Deposit>>*getDepositHistory(const char* currency, long fromId, int size);
+        RestApi<std::vector<Withdraw>>*getWithdrawHistory(WithdrawRecordRequest& request);
+        RestApi<std::vector<Deposit>>*getDepositHistory(DepositRecordRequest& request);
         RestApi<long>* transfer(TransferRequest& transferRequest);
         RestApi<long>* applyLoan(const char* symbol, const char* currency, Decimal amount);
         RestApi<long>* repayLoan(long loadId, Decimal amount);
@@ -154,6 +160,12 @@ namespace Huobi {
         RestApi<std::vector<Candlestick>>*getETFCandlestick(
                 const char* symbol, CandlestickInterval interval, int size);
         RestApi<std::vector<MarginBalanceDetail>>*getMarginBalanceDetail(const char* symbol);
+        RestApi<long>* cancelOrderByClientOrderId(const char* client_order_id);
+        RestApi<Order>* getOrderByClientOrderId(const char* client_order_id);
+        RestApi<std::vector<FeeRate>>*getFeeRate(const char* symbols);
+        RestApi<long>* transferBetweenFuturesAndPro(TransferFuturesRequest& req);
+        RestApi<std::vector<Order>>*getOrderHistory(OrdersHistoryRequest& req);
+        RestApi<Trade>*getMarketTrade(const char* symbol);
     };
 }
 #endif /* RESTAPIIMPL_H */

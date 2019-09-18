@@ -87,13 +87,13 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->get24HTradeStatistics(symbol));
     }
 
-    std::vector<Withdraw> SyncClientImpl::getWithdrawHistory(const char* currency, long fromId, int size) {
-        return RestApiInvoke::callSync(impl->getWithdrawHistory(currency, fromId, size));
+    std::vector<Withdraw> SyncClientImpl::getWithdrawHistory(WithdrawRecordRequest& request) {
+        return RestApiInvoke::callSync(impl->getWithdrawHistory(request));
 
     }
 
-    std::vector<Deposit> SyncClientImpl::getDepositHistory(const char* currency, long fromId, int size) {
-        return RestApiInvoke::callSync(impl->getDepositHistory(currency, fromId, size));
+    std::vector<Deposit> SyncClientImpl::getDepositHistory(DepositRecordRequest& request) {
+        return RestApiInvoke::callSync(impl->getDepositHistory(request));
 
     }
 
@@ -223,8 +223,41 @@ namespace Huobi {
             int limit) {
         return RestApiInvoke::callSync(impl->getETFCandlestick(etfSymbol, interval, limit));
     }
-    
+
     std::vector<MarginBalanceDetail> SyncClientImpl::getMarginBalanceDetail(const char* symbol) {
         return RestApiInvoke::callSync(impl->getMarginBalanceDetail(symbol));
     }
+
+    long SyncClientImpl::cancelOrderByClientOrderId(const char* client_order_id) {
+        return RestApiInvoke::callSync(impl->cancelOrderByClientOrderId(client_order_id));
+    }
+
+    Order SyncClientImpl::getOrderByClientOrderId(const char* client_order_id) {
+        return RestApiInvoke::callSync(impl->getOrderByClientOrderId(client_order_id));
+    }
+
+    std::vector<FeeRate> SyncClientImpl::getFeeRate(const char* symbols) {
+        return RestApiInvoke::callSync(impl->getFeeRate(symbols));
+    }
+
+    std::vector<Symbols> SyncClientImpl::getSymbols() {
+        return RestApiInvoke::callSync(impl->getSymbols());
+    }
+
+    std::vector<std::string> SyncClientImpl::getCurrencies() {
+        return RestApiInvoke::callSync(impl->getCurrencies());
+    }
+
+    long SyncClientImpl::transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest) {
+        return RestApiInvoke::callSync(impl->transferBetweenFuturesAndPro(transferRequest));
+    }
+
+    std::vector<Order> SyncClientImpl::getOrderHistory(OrdersHistoryRequest& req) {
+        return RestApiInvoke::callSync(impl->getOrderHistory(req));
+    }
+
+    Trade SyncClientImpl::getMarketTrade(const char* symbol) {
+         return RestApiInvoke::callSync(impl->getMarketTrade(symbol));
+    }
+
 }

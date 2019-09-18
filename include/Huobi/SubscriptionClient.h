@@ -112,6 +112,23 @@ namespace Huobi {
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        /**
+         * Subscribe order changing event. If a order is created, canceled etc, server will send the data
+         * to client and onReceive in callback will be called. It is faster than subscribeOrderUpdateEvent
+         *
+         * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt".
+         * \param errorHandler The error handler will be called if subscription failed or error happen
+         * between client and Huobi server.
+         */
+
+        virtual void subscribeOrderUpdateNewEvent(
+                const char* symbols,
+                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+
         /*
          * start sub,must excute after sub-function.
          */

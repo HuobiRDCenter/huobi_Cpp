@@ -14,7 +14,7 @@ namespace Huobi {
         const char* accesssKey;
         const char* secretKey;
         RestApiImpl *impl;
-        
+
     public:
         SyncClientImpl(const char* accesssKey, const char* secretKey);
         SyncClientImpl(const char* accesssKey, const char* secretKey, RequestOptions& op);
@@ -30,8 +30,8 @@ namespace Huobi {
         TradeStatistics get24HTradeStatistics(const char* symbol);
         ExchangeInfo getExchangeInfo();
         BestQuote getBestQuote(const char* symbol);
-        std::vector<Withdraw> getWithdrawHistory(const char* currency, long fromId, int size);
-        std::vector<Deposit> getDepositHistory(const char* currency, long fromId, int size);
+        std::vector<Withdraw> getWithdrawHistory(WithdrawRecordRequest& request);
+        std::vector<Deposit> getDepositHistory(DepositRecordRequest& request);
         long transfer(TransferRequest& transferRequest);
         long applyLoan(const char* symbol, const char* currency, Decimal amount);
         long repayLoan(long loadId, Decimal amount);
@@ -59,6 +59,14 @@ namespace Huobi {
         std::vector<Candlestick> getEtfCandlestick(const char* etfSymbol, CandlestickInterval interval,
                 int limit = 150);
         std::vector<MarginBalanceDetail> getMarginBalanceDetail(const char* symbol);
+        long cancelOrderByClientOrderId(const char* client_order_id);
+        Order getOrderByClientOrderId(const char* client_order_id);
+        std::vector<FeeRate> getFeeRate(const char* symbols);
+        std::vector<Symbols> getSymbols();
+        std::vector<std::string> getCurrencies();
+        long transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest);
+        std::vector<Order> getOrderHistory(OrdersHistoryRequest& req);
+        Trade getMarketTrade(const char* symbol);
     };
 }
 

@@ -22,7 +22,8 @@ namespace Huobi {
         WebSocketApiImpl *impl;
         std::list<WebSocketConnection*> connectionList;
         SubscriptionOptions op;
-        std::string host = "api.huobi.pro";
+       // std::string host = "api.huobi.pro";
+        std::string host = "api.huobi.so";
         WebSocketWatchDog* dog;
 
     public:
@@ -97,6 +98,12 @@ namespace Huobi {
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+        void subscribeOrderUpdateNewEvent(
+                const char* symbols,
+                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
 
     private:
         std::list<std::string> parseSymbols(const char* symbols);

@@ -32,6 +32,12 @@
 #include "Huobi/EtfSwapConfig.h"
 #include "Huobi/EtfSwapHistory.h"
 #include "Huobi/MarginBalanceDetail.h"
+#include "Huobi/FeeRate.h"
+#include "Huobi/WithdrawRecordRequest.h"
+#include "Huobi/DepositRecordRequest.h"
+#include "Huobi/TransferFuturesRequest.h"
+#include "Huobi/OrdersHistoryRequest.h"
+
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -160,25 +166,22 @@ namespace Huobi {
         /**
          * Get the withdraw records of an account
          *
-         * \param currency The currency, like "btc". (mandatory)
-         * \param fromId   The beginning withdraw record id. (mandatory)
-         * \param size     The size of record. (mandatory)
+         * \param request The request for withdraw records.
          * \return The list of withdraw records.
          */
-        virtual std::vector<Withdraw> getWithdrawHistory(const char* currency, long fromId, int size) = 0;
+        virtual std::vector<Withdraw> getWithdrawHistory(WithdrawRecordRequest& request) = 0;
         /**
          * Get the deposit records of an account
          *
          * \param currency The currency, like "btc". (mandatory)
-         * \param fromId   The beginning deposit record id. (mandatory)
-         * \param size     The size of record. (mandatory)
+         * \param request The request for deposit records.
          * \return The list of deposit records.
          */
-        virtual std::vector<Deposit> getDepositHistory(const char* currency, long fromId, int size) = 0;
+        virtual std::vector<Deposit> getDepositHistory(DepositRecordRequest& request) = 0;
         /**
          * Transfer asset from specified account to another account.
          *
-         * \param transferRequest The symbol, like "btcusdt"
+         * \param transferRequest The request for transfer . 
          * \return The transfer id.
          */
         virtual long transfer(TransferRequest& transferRequest) = 0; //todo
@@ -337,15 +340,69 @@ namespace Huobi {
          * @return The margin loan account detail.
          */
         virtual std::vector<MarginBalanceDetail> getMarginBalanceDetail(const char* symbol) = 0;
+        /**
+         * Submit cancel request for cancelling an order by client-order-id
+         * 
+         * @param client_order_id: client defined order id. (mandatory)
+         * @return The order id.
+         */
+        virtual long cancelOrderByClientOrderId(const char* client_order_id) = 0;
+        /**
+         * Get the details of an order by client_order_id  
+         * \param client_order_id: client defined order id. (mandatory)
+         * \return The information of order
+         */
+        virtual Order getOrderByClientOrderId(const char* client_order_id) = 0;
+
+        /**
+         * Get the fee of symbols, support less than 10
+         * \param : The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt". (mandatory)
+         * \return The information of fee.
+         */
+        virtual std::vector<FeeRate> getFeeRate(const char* symbols) = 0;
+        /**
+         * Get all Huobi support symbols
+         * \return The information of symbols.
+         */
+        virtual std::vector<Symbols> getSymbols() = 0;
+        /**
+         * Get all Huobi support currencies.
+         * \return The list of currencies.
+         */
+        virtual std::vector<std::string> getCurrencies() = 0;
+
+        /**
+         * Transfer asset between futures account to pro account.
+         *
+         * \param transferRequest The request for transfer . 
+         * \return The transfer id.
+         */
+        virtual long transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest) = 0;
+        /**
+         * Get historical orders in 48 hours.
+         *
+         * \param req The request for getting historial orders in 48 hours.
+         * \return The order list.
+         */
+        virtual std::vector<Order> getOrderHistory(OrdersHistoryRequest& req) = 0;
+
+        /**
+         * Get the lastest trade with their price, volume and direction.
+         *
+         * \param symbol The symbol, like "btcusdt". (mandatory)
+         * \return The last trade with price and amount.
+         */
+        virtual Trade getMarketTrade(const char* symbol) = 0;
     };
-    
+
     RequestClient* createRequestClient();
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey);
 
-    RequestClient* createRequestClient(RequestOptions& op) ;
+    RequestClient* createRequestClient(RequestOptions& op);
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey, RequestOptions& op);
-    
+
 }
 #endif /* SYNCCLIENT_H */

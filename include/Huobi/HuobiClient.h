@@ -60,6 +60,10 @@
 #include "Huobi/Withdraw.h"
 #include "Huobi/WithdrawRequest.h"
 #include "Huobi/MarginBalanceDetail.h"
+#include "Huobi/FeeRate.h"
+#include "Huobi/WithdrawRecordRequest.h"
+#include "Huobi/DepositRecordRequest.h"
+#include "Huobi/OrdersHistoryRequest.h"
 
 #endif /* HUOBICLIENT_H */
 

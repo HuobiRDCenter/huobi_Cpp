@@ -49,44 +49,50 @@ TEST(TestGetMatchResults, request2) {
 }
 
 TEST(TestGetMatchResults, result) {
-    std::string data  = "{\n"
-      "    \"status\":\"ok\",\n"
-      "    \"data\":[\n"
-      "        {\n"
-      "            \"symbol\":\"htbtc\",\n" 
-      "            \"created-at\":1550642185237,\n"
-      "            \"price\":\"0.00030503\",\n"
-      "            \"source\":\"spot-api\",\n"
-      "            \"filled-points\":\"0\",\n"
-      "            \"filled-fees\":\"0.00000061006\",\n"
-      "            \"order-id\":24976625673,\n"
-      "            \"filled-amount\":\"1\",\n"
-      "            \"match-id\":100047439757,\n"
-      "            \"id\":4192759683,\n"
-      "            \"type\":\"sell-market\"\n"
-      "        },\n"
-      "        {\n"
-      "            \"symbol\":\"htbtc\",\n"
-      "            \"created-at\":1550632074577,\n"
-      "            \"price\":\"0.00030754\",\n"
-      "            \"source\":\"spot-api\",\n"
-      "            \"filled-points\":\"0.77\",\n"
-      "            \"filled-fees\":\"0.00000061508\",\n"
-      "            \"order-id\":24966984923,\n"
-      "            \"filled-amount\":\"1.89\",\n"
-      "            \"match-id\":100047251154,\n"
-      "            \"id\":4191225853,\n"
-      "            \"type\":\"sell-market\"\n"
-      "        }\n"
-      "    ]\n"
-      "}\n"
-      "\n";
+    std::string data = "{\n"
+            "    \"status\":\"ok\",\n"
+            "    \"data\":[\n"
+            "        {\n"
+            "            \"symbol\":\"htbtc\",\n"
+            "            \"created-at\":1550642185237,\n"
+            "            \"price\":\"0.00030503\",\n"
+            "            \"source\":\"spot-api\",\n"
+            "            \"filled-points\":\"0\",\n"
+            "            \"filled-fees\":\"0.00000061006\",\n"
+            "            \"order-id\":24976625673,\n"
+            "            \"filled-amount\":\"1\",\n"
+            "            \"match-id\":100047439757,\n"
+            "            \"id\":4192759683,\n"
+            "            \"type\":\"sell-market\",\n"
+            "             \"role\": \"taker\",\n"
+            "             \"filled-points\": \"0.0\",\n"
+            "             \"fee-deduct-currency\": \"\"\n"
+            "        },\n"
+            "        {\n"
+            "            \"symbol\":\"htbtc\",\n"
+            "            \"created-at\":1550632074577,\n"
+            "            \"price\":\"0.00030754\",\n"
+            "            \"source\":\"spot-api\",\n"
+            "            \"filled-points\":\"0.77\",\n"
+            "            \"filled-fees\":\"0.00000061508\",\n"
+            "            \"order-id\":24966984923,\n"
+            "            \"filled-amount\":\"1.89\",\n"
+            "            \"match-id\":100047251154,\n"
+            "            \"id\":4191225853,\n"
+            "            \"type\":\"sell-market\",\n"
+            "             \"role\": \"taker\",\n"
+            "             \"filled-points\": \"0.0\",\n"
+            "             \"fee-deduct-currency\": \"\"\n"
+            "        }\n"
+            "    ]\n"
+            "}\n"
+            "\n";
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     MatchResultRequest req = MatchResultRequest("btcht");
     auto request = impl->getMatchResults(req);
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto matchResults = request->jsonParser(json);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550632074577),matchResults[1].createdTimestamp);
+    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550632074577), matchResults[1].createdTimestamp);
     ASSERT_EQ(4191225853L, matchResults[1].id);
     ASSERT_EQ(100047251154l, matchResults[1].matchId);
     ASSERT_EQ(24966984923l, matchResults[1].orderId);
@@ -96,6 +102,8 @@ TEST(TestGetMatchResults, result) {
     ASSERT_EQ(OrderSource::spot_api, matchResults[1].source);
     ASSERT_EQ("htbtc", matchResults[1].symbol);
     ASSERT_EQ(OrderType::sell_market, matchResults[1].type);
+    ASSERT_EQ(DealRole::taker, matchResults[0].role);
+    ASSERT_EQ(Decimal("0.0"), matchResults[0].filled_points);
 }
 
 #endif /* TESTGETMATCHRESULTS_H */

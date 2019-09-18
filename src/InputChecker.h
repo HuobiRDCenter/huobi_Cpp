@@ -11,7 +11,7 @@
 #include <regex>
 
 #include "Huobi/HuobiApiException.h"
-
+#include "Huobi/Enums.h"
 namespace Huobi {
 
     class InputChecker {
@@ -41,7 +41,7 @@ namespace Huobi {
             if (value <= 0) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "[Input] " + name + " should greater than 0");
-            }
+            }          
             return checker();
         }
 
@@ -73,7 +73,7 @@ namespace Huobi {
             }
             return checker();
         }
-        
+
         InputChecker* checkCurrency(const std::string& currency) {
             if (currency.empty()) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
@@ -82,7 +82,7 @@ namespace Huobi {
             if (isSpecialChar(currency.c_str())) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "[Input] " + currency + " is invalid currency");
-            }
+            }       
             return checker();
         }
 
@@ -113,11 +113,12 @@ namespace Huobi {
             return checker();
         }
 
-        InputChecker* greaterOrEqual(int value, int base, std::string name) {
-            if (value < base) {
+        InputChecker* greaterOrEqual(long value, long base, std::string name) {
+            if (value < base) {               
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR,
                         "[Input] " + name + " should be greater than " + std::to_string(base));
             }
+
             return checker();
         }
 
@@ -146,15 +147,24 @@ namespace Huobi {
             }
             throw HuobiApiException(HuobiApiException::INPUT_ERROR, "no callback");
         }
-        
+
         InputChecker* checkDate(const std::string& value, std::string name) {
             if (value.empty()) {
                 return checker();
             }
             std::regex e("^\\d{4}\\-(0?[1-9]|[1][012])\\-(0?[1-9]|[12][0-9]|3[01])$");
-            if (!std::regex_match (value.begin(), value.end(), e)) {
+            if (!std::regex_match(value.begin(), value.end(), e)) {
                 throw HuobiApiException(HuobiApiException::INPUT_ERROR, "The " + name + "is not correct data format");
                 return checker();
+            }
+            return checker();
+        }
+
+        template <typename T>
+        InputChecker* checkEnumNull(const BaseEnumClass<T>& enumValue) {
+            if (enumValue.isNull()) {
+                throw HuobiApiException(HuobiApiException::INPUT_ERROR,
+                        "lack enum value ");
             }
             return checker();
         }
