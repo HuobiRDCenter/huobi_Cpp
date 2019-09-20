@@ -26,23 +26,31 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
   - [Reference data](#Reference-data)
     - [Exchange timestamp](#Exchange-timestamp)
     - [Symbol and currencies](#symbol-and-currencies)
+    - [Symbols](#symbols)
+    - [Currencies](#Currencies)
   - [Market data](#Market-data)
     - [Candlestick/KLine](#Candlestick/KLine)
     - [Depth](#Depth)
     - [Latest trade](#latest-trade)
     - [Best bid/ask](#best-bid/ask)
-    - [Historical Trade](#historical)
+    - [Historical Trade](#Historical  Trade)
     - [24H Statistics](#24h-statistics)
+    - [Market Trade](#Market Trade)
   - [Account](#account)
   - [Wallet](#wallet)
-    - [Withdraw](@Withdraw)
-    - [Cancel withdraw](@cancel-withdraw)
+    - [Withdraw](#Withdraw)
+    - [Cancel withdraw](#cancel-withdraw)
     - [Withdraw and deposit history](#withdraw-and-deposit-history)
   - [Trading](#trading)
     - [Create order](#create-order)
     - [Cancel order](#cancel-order)
     - [Cancel open orders](#cancel-open-orders)
     - [Get order info](#get-order-info)
+    - [Historical orders](#Historical orders)
+    - [Get order info by client order id](#Get order info by client order id)
+    - [Cancel order by client order id](#Cancel order by client order id)
+    - [FeeRate](#FeeRate)
+    - [Order history](#Order history)
   - [Margin Loan](#margin-loan)
     - [Apply loan](#apply-loan)
     - [Reply loan](#reply-loan)
@@ -53,8 +61,9 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
   - [Subscribe market data](#Subscribe-market-data)
   - [Subscribe order update](#subscribe-order-update)
   - [Subscribe account change](#subscribe-account-change)
+  - [Subscribe order update (new)](#Subscribe order update  (new))
   - [Start subscription](#Start-subscription)
-
+  
   
 
 ## Beginning
@@ -459,7 +468,26 @@ for (std::string currency : exchangeInfo.currencies) {
   std::cout << currency << std::endl;
 }
 ```
+#### Symbols
 
+```c++
+RequestClient* request = createRequestClient();
+std::vector<Symbols> symbolsList = request->getSymbols();
+for (Symbols symbols : symbolsList) {
+  std::cout << symbols.symbol << std::endl;
+  std::cout << symbols.pricePrecision << std::endl;  
+}
+```
+#### Currencies
+
+```c++
+RequestClient* request = createRequestClient();
+std::vector<std::string> stringList =request->getCurrencies();
+for (std::string currency : stringList) {
+  std::cout << currency << std::endl;
+}
+
+```
 ### Market data
 
 #### Candlestick/KLine
@@ -517,7 +545,12 @@ RequestClient* request = createRequestClient();
 TradeStatistics tradeStatistics = request->get24HTradeStatistics("ethusdt");
 std::cout << trade_statistics.open << std::endl;
 ```
-
+#### Market Trade
+```c++
+RequestClient* request = createRequestClient();
+Trade trade = request->getMarketTrade("ethusdt");
+std::cout << trade.price << std::endl;
+```
 ### Account
 
 *Authentication is required.*
@@ -610,6 +643,49 @@ std::cout << order.price << std::endl;
  std::cout << orderVes[0].price << std::endl;
 ```
 
+
+#### Get order info by client order id
+
+*Authentication is required.*
+
+```c++
+Order order = request->getOrderByClientOrderId(clientOrderId);
+std::cout << order.price << std::endl;
+```
+
+#### Cancel order by client order id
+
+*Authentication is required.*
+
+```c++
+request->cancelOrderByClientOrderId(clientOrderId);
+```
+
+#### FeeRate
+
+*Authentication is required.*
+
+```c++
+std::vector<FeeRate> feeRates = request->getFeeRate("btcusdt");
+for (FeeRate feeRate : feeRates) {
+  std::cout << feeRate.symbol << std::endl;
+  std::cout << feeRate.maker_fee << std::endl;  
+  std::cout << feeRate.taker_fee << std::endl;  
+} 
+```
+
+#### Order history
+
+*Authentication is required.*
+
+*Get historical orders in the last 48 hours.*
+
+```c++
+ OrdersHistoryRequest ordersHistory;
+ std::vector<Order> orderVes = request->getOrderHistory(ordersHistory);
+ std::cout << orderVes[0].price << std::endl;
+```
+
 ### Margin Loan
 
 ####Apply loan
@@ -693,6 +769,19 @@ subscriptionClient->subscribeAccountEvent(
     }
 });
 ```
+### Subscribe order update  (new)
+
+*Authentication is required.*
+*Recommend to use this new sub ,lower data latency and more accurate message order.*
+
+```c++
+subscriptionClient->subscribeOrderUpdateNewEvent(
+  "btcusdt",
+  [](const OrderUpdateEvent& orderEvent) {
+    std::cout << orderEvent.data.price << std::endl;
+});
+```
+
 
 ### Start subscription
 
@@ -731,6 +820,7 @@ $ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdkcentos
 ````
 $ docker exec -it $(docker ps -qa | head -1) /bin/bash
 ````
+
 
 
 
