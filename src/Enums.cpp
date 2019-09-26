@@ -88,8 +88,8 @@ namespace Huobi {
     OrderSource OrderSource::margin_web = OrderSource("margin-web");
     OrderSource OrderSource::margin_app = OrderSource("margin-app");
     OrderSource OrderSource::spot_api = OrderSource("spot-api");
-    OrderSource OrderSource::spot_web = OrderSource("spot-api");
-    OrderSource OrderSource::spot_app = OrderSource("spot-api");
+    OrderSource OrderSource::spot_web = OrderSource("spot-web");
+    OrderSource OrderSource::spot_app = OrderSource("spot-app");
     OrderSource OrderSource::fl_sys = OrderSource("fl-sys");
     OrderSource OrderSource::fl_mgt = OrderSource("fl-mgt");
     OrderSource OrderSource::invalid = OrderSource("invalid");
@@ -138,5 +138,14 @@ namespace Huobi {
 
     TransferFuturesType TransferFuturesType::futures_to_pro = TransferFuturesType("futures-to-pro");
     TransferFuturesType TransferFuturesType::pro_to_futures = TransferFuturesType("pro-to-futures");
+
+    DepthStep DepthStep::step0 = DepthStep("step0");
+    DepthStep DepthStep::step1 = DepthStep("step1");
+    DepthStep DepthStep::step2 = DepthStep("step2");
+    DepthStep DepthStep::step3 = DepthStep("step3");
+    DepthStep DepthStep::step4 = DepthStep("step4");
+    DepthStep DepthStep::step5 = DepthStep("step5");
+
+
 }
 

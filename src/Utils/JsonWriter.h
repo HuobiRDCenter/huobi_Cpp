@@ -14,7 +14,12 @@ namespace Huobi {
 
         void put(const char* key, const std::string& value) {
             writer.Key(key);
-            writer.String(value.c_str());
+            writer.String(value.c_str());           
+        }
+        
+        void put(const char* key, int value) {
+            writer.Key(key);
+            writer.Int(value);           
         }
         
         void putArray(const char* key, const std::list<std::string>& array) {

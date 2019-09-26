@@ -13,7 +13,9 @@ namespace Huobi {
             size_t len) {
         static int i = 10;
         WebSocketConnection* connection = reinterpret_cast<WebSocketConnection*> (user);
+
         switch (reason) {
+
             case LWS_CALLBACK_CLIENT_ESTABLISHED:
                 connection->onOpen(wsi);
                 break;
@@ -29,11 +31,12 @@ namespace Huobi {
             case LWS_CALLBACK_CLIENT_RECEIVE:
             {
                 // lwsl_user("receive");
-                char buf[4096 * 4] = {0};
-                unsigned int l = 4096 * 4;
+                char buf[4096 * 100] = {0};
+                unsigned int l = 4096 * 100;
                 l = gzDecompress((char*) in, len, buf, l);
                 //lwsl_user("RX %d: %s\n", l, (const char *) buf);
                 connection->onMessage(buf);
+
                 break;
             }
             case LWS_CALLBACK_CLIENT_CLOSED:
@@ -41,6 +44,7 @@ namespace Huobi {
                 //connection->close();
                 lwsl_user("afer canceled.....\n");
                 connection->disconnect();
+
                 return 1;
                 //case LWS_CALLBACK_WSI_DESTROY:
             case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
@@ -60,7 +64,7 @@ namespace Huobi {
             "example-protocol",
             event_cb,
             0,
-            0
+            4096 * 100
         },
         { NULL, NULL, 0, 0}
     };
@@ -69,7 +73,7 @@ namespace Huobi {
     static void init_context() {
         if (context == nullptr) {
 
-            int logs = LLL_ERR | LLL_WARN ;
+            int logs = LLL_ERR | LLL_WARN | LLL_USER;
 
             lws_set_log_level(logs, NULL);
             struct lws_context_creation_info info;
@@ -85,8 +89,7 @@ namespace Huobi {
     }
 
     void SubscriptionClientImpl::startService() {
-        
-       
+
         std::list<WebSocketConnection*>::iterator it = connectionList.begin();
         for (; it != connectionList.end(); ++it) {
             (*it)->connect(context);
@@ -99,7 +102,27 @@ namespace Huobi {
                 break;
             }
         }
-      
+
+        lwsl_user("enter_event_loop END\n");
+        lws_context_destroy(context);
+    }
+
+    void SubscriptionClientImpl::startReq(WebSocketRequest* request) {
+
+        std::list<WebSocketConnection*>::iterator it = connectionList.begin();
+        for (; it != connectionList.end(); ++it) {
+            (*it)->connect(context);
+        }
+        lwsl_user("enter_event_loop\n");
+
+        while (!request->autoClose || request->time) {
+            try {
+                lws_service(context, 100);
+
+            } catch (...) {
+                break;
+            }
+        }
         lwsl_user("enter_event_loop END\n");
         lws_context_destroy(context);
     }
@@ -147,7 +170,8 @@ namespace Huobi {
             const char* symbols,
             const std::function<void(const PriceDepthEvent&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
-        createConnection(impl->subscribePriceDepthEvent(parseSymbols(symbols), callback, errorHandler));
+        //        createConnection(impl->subscribePriceDepthEvent(parseSymbols(symbols), callback, errorHandler));
+        subscribePriceDepthEvent(symbols, DepthStep::step0, callback, errorHandler);
     }
 
     void SubscriptionClientImpl::subscribe24HTradeStatisticsEvent(
@@ -178,6 +202,110 @@ namespace Huobi {
         createConnection(impl->subscribeOrderUpdateNewEvent(parseSymbols(symbols), callback, errorHandler));
     }
 
+    void SubscriptionClientImpl::subscribePriceDepthEvent(
+            const char* symbols,
+            DepthStep step,
+            const std::function<void(const PriceDepthEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribePriceDepthEvent(parseSymbols(symbols), step, callback, errorHandler));
+    }
+
+    void SubscriptionClientImpl::subscribeMarketBBOEvent(
+            const char* symbols,
+            const std::function<void(const MarketBBOEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribeMarketBBOEvent(parseSymbols(symbols), callback, errorHandler));
+
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::requestCandlestickEvent(
+            bool autoClose,
+            const char* symbols,
+            CandlestickInterval interval,
+            long startTime,
+            long endTime,
+            const std::function<void(const std::vector<CandlestickEvent>&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->requestCandlestickEvent(autoClose, parseSymbols(symbols), interval, startTime, endTime, callback, errorHandler);
+        createConnection(req);
+        return req;
+
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::requestPriceDepthEvent(
+            bool autoClose,
+            const char* symbols,
+            DepthStep step,
+            const std::function<void(const PriceDepthEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->requestPriceDepthEvent(autoClose, parseSymbols(symbols), step, callback, errorHandler);
+        createConnection(req);
+        return req;
+
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::requestTradeEvent(
+            bool autoClose,
+            const char* symbols,
+            const std::function<void(const TradeEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->requestTradeEvent(autoClose, parseSymbols(symbols), callback, errorHandler);
+        createConnection(req);
+        return req;
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::request24HTradeStatisticsEvent(
+            bool autoClose,
+            const char* symbols,
+            const std::function<void(const TradeStatisticsEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->request24HTradeStatistics(autoClose, parseSymbols(symbols), callback, errorHandler);
+        createConnection(req);
+        return req;
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::requestAccountList(
+            bool autoClose,
+            const std::function<void(const AccountListEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->requestAccountList(autoClose, callback, errorHandler);
+        createConnection(req);
+        return req;
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::requestOrdertListEvent(
+            bool autoClose,
+            OrderListEventRequest req,
+            const std::function<void(const OrderListEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* request = impl->requestOrdertListEvent(
+                autoClose,
+                req.accountId,
+                parseSymbols(req.symbols),
+                req.types,
+                req.states,
+                req.startTime,
+                req.endTime,
+                req.fromId,
+                req.direction,
+                req.size,
+                callback,
+                errorHandler);
+        createConnection(request);
+        return request;
+
+    }
+
+    WebSocketRequest* SubscriptionClientImpl::requestOrdertDetailEvent(
+            bool autoClose,
+            long orderId,
+            const std::function<void(const OrderDetailEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->requestOrdertDetailEvent(autoClose, orderId, callback, errorHandler);
+        createConnection(req);
+        return req;
+
+    }
 
 }
 
