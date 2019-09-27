@@ -23,7 +23,7 @@ namespace Huobi {
     };
 
     int WebSocketConnection::connectionCounter = 0;
-    
+
     WebSocketConnection::WebSocketConnection(
             const std::string& apiKey,
             const std::string& secretKey,
@@ -101,8 +101,8 @@ namespace Huobi {
                 lwsl_user("Get close message\n");
                 sendBufferList.clear();
                 return false;
-            } 
-            
+            }
+
             uint8_t buf[LWS_PRE + 1024] = {0};
             int m;
             int n = lws_snprintf((char *) buf + LWS_PRE, 1024,
@@ -133,20 +133,21 @@ namespace Huobi {
         if (request->isNeedSignature) {
             send(createSignature());
         } else {
-            if (request->connectionHandler) {                
+            if (request->connectionHandler) {
                 request->connectionHandler(this);
             }
         }
     }
 
     void WebSocketConnection::onMessage(const char* message) {
-        lwsl_user("RX: %s \n", message);
+        lwsl_user("RX: %s \n", message);   
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
         JsonDocument doc;
-        JsonWrapper json = doc.parseFromString(message);          
-        if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0)||      
-              (json.containKey("err-code")&&json.getInt("err-code")!=0) ) {
+        JsonWrapper json = doc.parseFromString(message);
+
+        if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0) ||
+                (json.containKey("err-code") && json.getInt("err-code") != 0)) {
             std::string errorCode = json.getStringOrDefault("err-code", "Unknown error code");
             std::string errorMsg = json.getStringOrDefault("err-msg", "Unknown error message");
             HuobiApiException ex;
@@ -162,24 +163,29 @@ namespace Huobi {
             } else if (op == "ping") {
                 processPingOnTradingLine(json);
             } else if (op == "auth") {
-                if (request->connectionHandler) {                   
+                if (request->connectionHandler) {
                     request->connectionHandler(this);
                 }
+            } else if (op == "req") {
+                onReceive(json);
             }
-        } else if (json.containKey("ch")) {       
+        } else if (json.containKey("ch")) {
             onReceive(json);
         } else if (json.containKey("ping")) {
             processPingOnMarketLine(json);
         } else if (json.containKey("subbed")) {
 
-        }else {           
-            Logger::WriteLog("parse failed！：%s",message);
+        } else if (json.containKey("rep")) {
+            onReceive(json);
+        } else {
+            std::cout << "parse failed" << std::endl;
+            Logger::WriteLog("parse failed！：%s", message);
         }
     }
 
     void WebSocketConnection::onReceive(JsonWrapper& json) {
-        
         request->implCallback(json);
+
     }
 
     void WebSocketConnection::processPingOnTradingLine(JsonWrapper& json) {
@@ -256,11 +262,11 @@ namespace Huobi {
             lwsl_user("closing client\n");
             send("*");
             //lws_set_timeout(client, NO_PENDING_TIMEOUT, LWS_TO_KILL_ASYNC);
-            
+
         } else {
             lwsl_user("client is null\n");
         }
-        
+
         client = nullptr;
         this->delayInSecond = delayInSecond;
         lineStatus = LineStatus::LINE_DELAY;
@@ -270,6 +276,7 @@ namespace Huobi {
         Logger::WriteLog("[Sub][%d] Disconnected", connectionId);
         connectStatus = ConnectionStatus::CLOSED;
         client = nullptr;
+
     }
 
     void WebSocketConnection::close() {

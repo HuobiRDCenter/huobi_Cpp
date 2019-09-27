@@ -343,6 +343,17 @@ private:
         static TransferFuturesType futures_to_pro;
         static TransferFuturesType pro_to_futures;
     };
+    
+    class DepthStep : public BaseEnumClass<DepthStep> {
+        DEFINE_ENUM_CLASS(DepthStep);
+    public:
+        static DepthStep step0;
+        static DepthStep step1;
+        static DepthStep step2;
+        static DepthStep step3;
+        static DepthStep step4;
+        static DepthStep step5;
+    };
 
 }
 #endif /* TYPEDEFINE_H */

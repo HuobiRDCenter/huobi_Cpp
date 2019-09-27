@@ -53,6 +53,7 @@ namespace Huobi {
                 Candlestick candlestick;
                 candlestick.timestamp =
                         TimeService::convertCSTInSecondToUTC(item.getLong("id"));
+                candlestick.id = item.getLong("id");
                 candlestick.open = item.getDecimal("open");
                 candlestick.close = item.getDecimal("close");
                 candlestick.low = item.getDecimal("low");
@@ -978,6 +979,7 @@ namespace Huobi {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Candlestick candlestick;
                 candlestick.timestamp = TimeService::convertCSTInSecondToUTC(item.getLong("id"));
+                candlestick.id = item.getLong("id");
                 candlestick.open = item.getDecimal("open");
                 candlestick.close = item.getDecimal("close");
                 candlestick.low = item.getDecimal("low");
@@ -1171,7 +1173,7 @@ namespace Huobi {
         builder.putUrl("symbol", symbol);
         auto res = createRequestByGet<Trade> ("/market/trade", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
-            JsonWrapper tick = json.getJsonObjectOrArray("tick");          
+            JsonWrapper tick = json.getJsonObjectOrArray("tick");
             JsonWrapper data = tick.getJsonObjectOrArray("data");
             JsonWrapper item = data.getJsonObjectAt(0);
             Trade trade;

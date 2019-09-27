@@ -4,6 +4,7 @@
 #include "Huobi/Decimal.h"
 
 namespace Huobi {
+
     struct UnitPrice {
         std::string currency;
         Decimal amount;

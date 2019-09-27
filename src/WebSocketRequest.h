@@ -16,6 +16,8 @@ namespace Huobi {
         virtual void implCallback(const JsonWrapper& json) = 0;
         std::function<void(HuobiApiException&)> errorHandler;
         bool isNeedSignature;
+        int time =0;
+        bool autoClose=true;
     };
 
     template <typename T>
@@ -29,6 +31,7 @@ namespace Huobi {
             T value = JsonParser(json);
             if (Callback != nullptr) {
                 Callback(value);
+                time--;
             }
         }
         std::function<T(const JsonWrapper&) > JsonParser;

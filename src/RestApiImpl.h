@@ -52,12 +52,13 @@ namespace Huobi {
 
         std::string TradingUrl = "https://api.huobi.pro";
         std::string MarketQueryUrl = "https://api.huobi.pro:443";
-
+   
         std::string subscriptionMarketUrl = "wss://api.huobi.pro:443/ws";
         std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         std::string accessKey;
         std::string secretKey;
         std::string host = "api.huobi.pro";
+       
      
     public:
 

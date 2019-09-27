@@ -64,6 +64,12 @@
 #include "Huobi/WithdrawRecordRequest.h"
 #include "Huobi/DepositRecordRequest.h"
 #include "Huobi/OrdersHistoryRequest.h"
+#include "Huobi/WsRequestClient.h"
+#include "Huobi/AccountListEvent.h" 
+#include "Huobi/OrderListEvent.h"
+#include "Huobi/OrderListEventRequest.h"
+#include "Huobi/OrderDetailEvent.h"
+#include "Huobi/MarketBBOEvent.h"
 
 #endif /* HUOBICLIENT_H */
 

@@ -10,6 +10,11 @@
 #include "Huobi/TradeStatisticsEvent.h"
 #include "Huobi/PriceDepthEvent.h"
 #include "Huobi/OrderUpdateEvent.h"
+#include "Huobi/AccountListEvent.h"
+#include "Huobi/OrderListEventRequest.h"
+#include "Huobi/OrderListEvent.h"
+#include "Huobi/OrderDetailEvent.h"
+#include "Huobi/MarketBBOEvent.h"
 #include "Huobi/Enums.h"
 
 namespace Huobi {
@@ -47,6 +52,7 @@ namespace Huobi {
 
         WebSocketRequest* subscribePriceDepthEvent(
                 const std::list<std::string>& symbols,
+                DepthStep step,
                 const std::function<void(const PriceDepthEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
 
@@ -69,8 +75,67 @@ namespace Huobi {
                 const std::list<std::string>& symbols,
                 const std::function<void(const OrderUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
+        
+        WebSocketRequest* subscribeMarketBBOEvent(
+                const std::list<std::string>& symbols,
+                const std::function<void(const MarketBBOEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestCandlestickEvent(
+                bool autoClose,
+                const std::list<std::string>& symbols,
+                CandlestickInterval interval,
+                long startTime,
+                long endTime,
+                const std::function<void(const std::vector<CandlestickEvent>&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestPriceDepthEvent(
+                bool autoClose,
+                const std::list<std::string>& symbols,
+                DepthStep step,
+                const std::function<void(const PriceDepthEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestTradeEvent(
+                bool autoClose,
+                const std::list<std::string>& symbols,
+                const std::function<void(const TradeEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* request24HTradeStatistics(
+                bool autoClose,
+                const std::list<std::string>& symbols,
+                const std::function<void(const TradeStatisticsEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestAccountList(
+                bool autoClose,
+                const std::function<void(const AccountListEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestOrdertListEvent(
+                bool autoClose,
+                long accountId,
+                const std::list<std::string>& symbols,
+                OrderType types,
+                OrderState states,
+                long startTime,
+                long endTime,
+                long fromId,
+                QueryDirection direction,
+                int size,
+                const std::function<void(const OrderListEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestOrdertDetailEvent(
+                bool autoClose,
+                long orderId,
+                const std::function<void(const OrderDetailEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
 
     };
+
 
 
 }
