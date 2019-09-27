@@ -22,7 +22,7 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 
 
-## Huobi Global API Python SDK version 1.0.2
+## Huobi Global API C++ SDK version 1.0.2
 
 [***version 1.0.2***](https://github.com/HuobiRDCenter/huobi_Cpp/releases)
 
