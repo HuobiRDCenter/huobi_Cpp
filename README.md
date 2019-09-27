@@ -4,7 +4,9 @@ This is Huobi C++ SDK, This is a lightweight c++ library, you can import to your
 
 The SDK supports both synchronous RESTful API invoking, and subscribe the market data from the Websocket connection.
 
+## Huobi C++ SDK (change log)
 
+[C++ SDK Change Log](https://github.com/HuobiRDCenter/huobi_Cpp/blob/master/CHANGE_LOG.md)
 
 ## Table of Contents
 
