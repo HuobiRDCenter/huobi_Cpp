@@ -53,7 +53,7 @@ MESSAGE(STATUS "operation system is ${CMAKE_SYSTEM}")
 
 PROJECT(HuobiClient)
 
-set(CURRENT_VERSION 1.0.1)
+set(CURRENT_VERSION 1.0.2)
 
 configure_file("${PROJECT_SOURCE_DIR}/config.h.in"
         "${PROJECT_BINARY_DIR}/config.h")
