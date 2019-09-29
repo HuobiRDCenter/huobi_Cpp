@@ -73,7 +73,7 @@ namespace Huobi {
     static void init_context() {
         if (context == nullptr) {
 
-            int logs = LLL_ERR | LLL_WARN | LLL_USER;
+            int logs = LLL_ERR | LLL_WARN ;
 
             lws_set_log_level(logs, NULL);
             struct lws_context_creation_info info;
