@@ -101,6 +101,10 @@ private:
         static AccountType margin;
         static AccountType otc;
         static AccountType point;
+        static AccountType minepool;
+        static AccountType etf;
+        static AccountType agency;
+        static AccountType super-margin;
         static AccountType unknown;
     };
 
