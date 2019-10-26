@@ -104,7 +104,7 @@ private:
         static AccountType minepool;
         static AccountType etf;
         static AccountType agency;
-        static AccountType super-margin;
+        static AccountType super_margin;
         static AccountType unknown;
     };
 
