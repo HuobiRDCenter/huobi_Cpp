@@ -21,7 +21,7 @@ namespace Huobi {
     AccountType AccountType::spot = AccountType("spot");
     AccountType AccountType::minepool = AccountType ("minepool");
     AccountType AccountType::etf = AccountType("etf");
-    AccountType AccountType::agency = AccountType("agency);
+    AccountType AccountType::agency = AccountType("agency”);
     AccountType AccountType::super_margin = AccountType("super-margin");
     AccountType AccountType::unknown = AccountType("unknown");
 
