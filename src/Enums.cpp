@@ -19,6 +19,10 @@ namespace Huobi {
     AccountType AccountType::otc = AccountType("otc");
     AccountType AccountType::point = AccountType("point");
     AccountType AccountType::spot = AccountType("spot");
+    AccountType AccountType::minepool = AccountType ("minepool");
+    AccountType AccountType::etf = AccountType("etf");
+    AccountType AccountType::agency = AccountType("agency);
+    AccountType AccountType::super_margin = AccountType("super-margin");
     AccountType AccountType::unknown = AccountType("unknown");
 
     AccountState AccountState::working = AccountState("working");
