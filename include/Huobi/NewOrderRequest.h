@@ -45,8 +45,14 @@ namespace Huobi {
                 Decimal price=Decimal()               
                 ) : symbol(symbol), accountType(accountType), type(type), amount(amount), price(price) {
         }
+        
+        
+        NewOrderRequest() {
+        }
+        
         std::string symbol;
         AccountType accountType;
+        std::string subtype;
         OrderType type;
         Decimal amount;
         Decimal price;

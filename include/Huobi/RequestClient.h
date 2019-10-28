@@ -231,12 +231,21 @@ namespace Huobi {
          */
         virtual Account getAccountBalance(AccountType accountType) = 0;
         /**
+         * Get the account of the  isolated margin by subtype.
+         *
+         * \param accountType The specified account  type
+         * \param accountType The specified subtype  
+         * \return The information of the account that is specified type.
+         */
+        virtual Account getAccountBalance(AccountType accountType, std::string subtype) = 0;
+        /**
          * Provide open orders of a symbol for an account<br> When neither account-id nor symbol defined
          * in the request, the system will return all open orders (max 500) for all symbols and all
          * accounts of the user, sorted by order ID in descending.
          *
          * \param openOrderRequest open order request
          */
+
         virtual std::vector<Order> getOpenOrders(OpenOrderRequest& openOrderRequest) = 0;
         /**
          * Get detail match results of an order

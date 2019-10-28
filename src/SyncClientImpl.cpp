@@ -129,23 +129,48 @@ namespace Huobi {
 
     std::vector<Account> SyncClientImpl::getAccountBalance() {
         std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
-        for (Account account : accounts) {
-            std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
-            account.balances = balances;
+        //        for (Account account : accounts) {
+        //            std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
+        //            account.balances = balances;
+        //        }
+
+        for (int i = 0; i < accounts.size(); i++) {
+            std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
+            accounts[i].balances = balances;
         }
         return accounts;
     }
 
     Account SyncClientImpl::getAccountBalance(AccountType accountType) {
         std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
-        for (Account account : accounts) {
-            if (account.type == accountType) {
-                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
-                account.balances = balances;
-                return account;
+        //        for (Account account : accounts) {
+        //            if (account.type == accountType) {
+        //                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
+        //                account.balances = balances;
+        //                return account;
+        //            }
+        //        }
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts[i].type == accountType) {
+                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
+                accounts[i].balances = balances;
+                return accounts[i];
             }
         }
-        // return NULL;
+
+    }
+
+    Account SyncClientImpl::getAccountBalance(AccountType accountType, std::string subtype) {
+        std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
+
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts[i].type == accountType && accounts[i].subtype == subtype) {
+                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
+                accounts[i].balances = balances;
+                return accounts[i];
+            }
+        }
+       throw HuobiApiException("cannot found account", "type error or margin account loss subtype");
     }
 
     std::vector<Order> SyncClientImpl::getOpenOrders(OpenOrderRequest& openOrderRequest) {
@@ -257,7 +282,7 @@ namespace Huobi {
     }
 
     Trade SyncClientImpl::getMarketTrade(const char* symbol) {
-         return RestApiInvoke::callSync(impl->getMarketTrade(symbol));
+        return RestApiInvoke::callSync(impl->getMarketTrade(symbol));
     }
 
 }

@@ -39,6 +39,7 @@ namespace Huobi {
         LastTradeAndBestQuote getLastTradeAndBestQuote(const char* symbol);
         std::vector<Account> getAccountBalance();
         Account getAccountBalance(AccountType accountType);
+        Account getAccountBalance(AccountType accountType, std::string subtype);
         std::vector<Order> getOpenOrders(OpenOrderRequest& openOrderRequest);
         Order getOrder(const char* symbol, long orderId);
         long createOrder(NewOrderRequest& newOrderRequest);

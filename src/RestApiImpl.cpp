@@ -174,6 +174,7 @@ namespace Huobi {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Account account;
                 account.id = item.getLong("id");
+                account.subtype = item.getStringOrDefault("subtype", "");
                 account.type = AccountType::lookup(item.getString("type"));
                 account.state = AccountState::lookup(item.getString("state"));
                 accounts.push_back(account);
@@ -451,7 +452,7 @@ namespace Huobi {
 
         AccountType accountType = openOrderRequest.accountType;
 
-        Account account = AccountsInfoMap::getUser(accessKey)->getAccount(accountType);
+        Account account = AccountsInfoMap::getUser(accessKey)->getAccount(accountType, openOrderRequest.subtype);
         UrlParamsBuilder builder;
         builder.putUrl("account-id", account.id)
                 .putUrl("symbol", openOrderRequest.symbol)
@@ -510,13 +511,15 @@ namespace Huobi {
                     ->shouldBiggerThanZero(newOrderRequest.stop_price, "stop_price")
                     ->checkEnumNull(newOrderRequest.orderOperator);
         }
-        Account account = AccountsInfoMap::getUser(accessKey)->getAccount(newOrderRequest.accountType);
+        Account account = AccountsInfoMap::getUser(accessKey)->getAccount(newOrderRequest.accountType, newOrderRequest.subtype);
 
         const char* source = "api";
         if (newOrderRequest.accountType == AccountType::margin) {
             source = "margin-api";
         }
-
+        if (newOrderRequest.accountType == AccountType::super_margin) {
+            source = "super-margin-api";
+        }
         UrlParamsBuilder builder;
         builder.putPost("account-id", account.id)
                 .putPost("amount", newOrderRequest.amount)
@@ -722,7 +725,7 @@ namespace Huobi {
                 ->checkRange(cancelOpenOrderRequest.size, 0, 100, "size")
                 ->checkSymbol(cancelOpenOrderRequest.symbol);
         Account account = AccountsInfoMap::getUser(accessKey)
-                ->getAccount(cancelOpenOrderRequest.accountType);
+                ->getAccount(cancelOpenOrderRequest.accountType,cancelOpenOrderRequest.subtype);
         UrlParamsBuilder builder;
         builder.putPost("account-id", account.id)
                 .putPost("symbol", cancelOpenOrderRequest.symbol)

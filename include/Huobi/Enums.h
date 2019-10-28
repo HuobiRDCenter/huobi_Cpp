@@ -28,7 +28,9 @@ namespace Huobi {
             if (it != m_lookupMap.end()) {
                 return *((T *) (it->second));
             }
-            throw "error";
+            //  throw "error";
+            auto notFound = m_lookupMap.rbegin();
+            return *((T *) (notFound->second));
         }
 
         bool operator==(const BaseEnumClass &obj) const {
@@ -74,11 +76,12 @@ private:
         static CandlestickInterval min15;
         static CandlestickInterval min30;
         static CandlestickInterval min60;
+        static CandlestickInterval hour4;
         static CandlestickInterval day1;
         static CandlestickInterval mon1;
         static CandlestickInterval week1;
         static CandlestickInterval year1;
-
+        static CandlestickInterval SDK_NOTSUPPORT;
     };
 
     /**
@@ -89,6 +92,7 @@ private:
     public:
         static OrderSide buy;
         static OrderSide sell;
+        static OrderSide SDK_NOTSUPPORT;
     };
 
     /**
@@ -105,7 +109,7 @@ private:
         static AccountType etf;
         static AccountType agency;
         static AccountType super_margin;
-        static AccountType unknown;
+        static AccountType SDK_NOTSUPPORT;
     };
 
     /**
@@ -116,6 +120,7 @@ private:
     public:
         static AccountState working;
         static AccountState lock;
+        static AccountState SDK_NOTSUPPORT;
     };
 
     /*
@@ -130,6 +135,7 @@ private:
         static BalanceType interest;
         static BalanceType loan_available;
         static BalanceType transfer_out_available;
+        static BalanceType SDK_NOTSUPPORT;
     };
 
     /**
@@ -140,6 +146,7 @@ private:
     public:
         static BalanceMode available;
         static BalanceMode total;
+        static BalanceMode SDK_NOTSUPPORT;
     };
 
     /**
@@ -163,6 +170,7 @@ private:
         static AccountChangeType other;
         static AccountChangeType repay;
         static AccountChangeType invalid;
+        static AccountChangeType SDK_NOTSUPPORT;
     };
 
     /**
@@ -176,6 +184,7 @@ private:
         static DepositState safe;
         static DepositState confirmed;
         static DepositState orphan;
+        static DepositState SDK_NOTSUPPORT;
     };
 
     /*
@@ -189,6 +198,7 @@ private:
         static EtfStatus creation_and_redemption_suspend;
         static EtfStatus creation_suspend;
         static EtfStatus redemption_suspend;
+        static EtfStatus SDK_NOTSUPPORT;
     };
 
     /*
@@ -199,6 +209,7 @@ private:
     public:
         static EtfSwapType etf_swap_in;
         static EtfSwapType etf_swap_out;
+        static EtfSwapType SDK_NOTSUPPORT;
     };
 
     /**
@@ -218,6 +229,7 @@ private:
         static OrderType buy_stop_limit;
         static OrderType sell_stop_limit;
         static OrderType invalid;
+        static OrderType SDK_NOTSUPPORT;
     };
 
     /**
@@ -230,6 +242,8 @@ private:
         static LoanOrderStates accrual;
         static LoanOrderStates cleared;
         static LoanOrderStates invalid;
+        static LoanOrderStates failed;
+        static LoanOrderStates SDK_NOTSUPPORT;
     };
 
     /**
@@ -250,7 +264,12 @@ private:
         static OrderSource spot_app;
         static OrderSource fl_sys;
         static OrderSource fl_mgt;
-        static OrderSource invalid;
+        static OrderSource super_margin_api;
+        static OrderSource super_margin_app;
+        static OrderSource super_margin_web;
+        static OrderSource super_margin_fl_sys;
+        static OrderSource super_margin_fl_mgt;
+        static OrderSource SDK_NOTSUPPORT;
     };
 
     /**
@@ -265,7 +284,8 @@ private:
         static OrderState partial_canceled;
         static OrderState filled;
         static OrderState canceled;
-        static OrderState created;
+        static OrderState created;     
+        static OrderState SDK_NOTSUPPORT;
     };
 
     /**
@@ -276,6 +296,7 @@ private:
     public:
         static TradeDirection buy;
         static TradeDirection sell;
+        static TradeDirection SDK_NOTSUPPORT;
     };
 
     /*
@@ -288,6 +309,7 @@ private:
         static TransferMasterType master_transfer_out;
         static TransferMasterType master_point_transfer_in;
         static TransferMasterType master_point_transfer_out;
+        static TransferMasterType SDK_NOTSUPPORT;
     };
 
     /**
@@ -307,6 +329,7 @@ private:
         static WithdrawState confirmed;
         static WithdrawState confirm_error;
         static WithdrawState repealed;
+        static WithdrawState SDK_NOTSUPPORT;
     };
 
     class QueryDirection : public BaseEnumClass<QueryDirection> {
@@ -314,6 +337,7 @@ private:
     public:
         static QueryDirection PREV;
         static QueryDirection NEXT;
+        static QueryDirection SDK_NOTSUPPORT;
     };
 
     /** 
@@ -324,6 +348,7 @@ private:
     public:
         static StopOrderOperator greater_than_and_equal;
         static StopOrderOperator less_than_and_equal;
+        static StopOrderOperator SDK_NOTSUPPORT;
     };
 
     class DealRole : public BaseEnumClass<DealRole> {
@@ -331,6 +356,7 @@ private:
     public:
         static DealRole taker;
         static DealRole maker;
+        static DealRole SDK_NOTSUPPORT;
     };
 
     class SymbolState : public BaseEnumClass<SymbolState> {
@@ -339,6 +365,7 @@ private:
         static SymbolState online;
         static SymbolState offline;
         static SymbolState suspend;
+        static SymbolState SDK_NOTSUPPORT;
     };
 
     class TransferFuturesType : public BaseEnumClass<TransferFuturesType> {
@@ -346,8 +373,9 @@ private:
     public:
         static TransferFuturesType futures_to_pro;
         static TransferFuturesType pro_to_futures;
+        static TransferFuturesType SDK_NOTSUPPORT;
     };
-    
+
     class DepthStep : public BaseEnumClass<DepthStep> {
         DEFINE_ENUM_CLASS(DepthStep);
     public:
@@ -357,6 +385,7 @@ private:
         static DepthStep step3;
         static DepthStep step4;
         static DepthStep step5;
+        static DepthStep SDK_NOTSUPPORT;
     };
 
 }

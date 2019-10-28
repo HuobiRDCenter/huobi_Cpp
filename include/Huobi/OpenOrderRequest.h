@@ -40,6 +40,8 @@ namespace Huobi {
         std::string symbol;
 
         AccountType accountType;
+        
+        std::string subtype;
 
         int size = 100;
 

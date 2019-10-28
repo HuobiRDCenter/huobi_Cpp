@@ -69,9 +69,11 @@ namespace Huobi {
             if (accessKey.empty() || secretKey.empty()) {
                 throw HuobiApiException(HuobiApiException::KEY_MISSING, "API key and secret key are required");
             }
+            
             std::string cre = method + "\n" + host + "\n" + adress + "\n"
                               + "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
-                              + "&SignatureVersion=2&Timestamp=" + timeBuf;
+                              + "&SignatureVersion=2&Timestamp=" + timeBuf;       
+            
             if (strcmp(param, "")) {
                 cre = cre + "&" + param;
             }

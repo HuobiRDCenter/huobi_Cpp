@@ -32,8 +32,11 @@ namespace Huobi {
         : symbol(symbol), accountType(accountType), side(side), size(size) {
         }
 
+        CancelOpenOrderRequest() {
+        }
         std::string symbol;
         AccountType accountType;
+        std::string subtype;
         OrderSide side;
         int size = 100;
     };
