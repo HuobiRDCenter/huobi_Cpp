@@ -725,7 +725,7 @@ namespace Huobi {
                 ->checkRange(cancelOpenOrderRequest.size, 0, 100, "size")
                 ->checkSymbol(cancelOpenOrderRequest.symbol);
         Account account = AccountsInfoMap::getUser(accessKey)
-                ->getAccount(cancelOpenOrderRequest.accountType,cancelOpenOrderRequest.subtype);
+                ->getAccount(cancelOpenOrderRequest.accountType, cancelOpenOrderRequest.subtype);
         UrlParamsBuilder builder;
         builder.putPost("account-id", account.id)
                 .putPost("symbol", cancelOpenOrderRequest.symbol)
@@ -1188,6 +1188,147 @@ namespace Huobi {
             return trade;
         };
         return res;
+    }
+
+    RestApi<std::vector<CurrencyChain>>*RestApiImpl::getReferenceCurrencies(CurrencyChainsRequest& request) {
+
+        UrlParamsBuilder builder;
+        builder .putUrl("currency", request.currency);
+        builder .putUrl("authorizedUser", request.authorizedUser ? "true" : "false");
+
+        auto res = createRequestByGet<std::vector < CurrencyChain >> ("/v2/reference/currencies", builder);
+
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<CurrencyChain> currencyChains;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper obj = json.getJsonObjectAt(i);
+                CurrencyChain currencyChain;
+                currencyChain.currency = obj.getString("currency");
+                currencyChain.instStatus = obj.getString("instStatus");
+                JsonWrapper chains = obj.getJsonObjectOrArray("chains");
+                std::vector<Chain> chains;
+                for (int i = 0; i < json.size(); i++) {
+                    JsonWrapper item = chains.getJsonObjectAt(i);
+                    Chain chain;
+                    chain.chain = item.getString("chain");
+                    chain.depositStatus = item.getString("depositStatus");
+                    chain.maxTransactFeeWithdraw = item.getDecimal("maxTransactFeeWithdraw");
+                    chain.maxWithdrawAmt = item.getDecimal("maxWithdrawAmt");
+                    chain.minDepositAmt = item.getDecimal("minDepositAmt");
+                    chain.minTransactFeeWithdraw = item.getDecimal("minTransactFeeWithdraw");
+                    chain.minWithdrawAmt = item.getDecimal("minWithdrawAmt");
+                    chain.numOfConfirmations = item.getInt("numOfConfirmations");
+                    chain.numOfFastConfirmations = item.getInt("numOfFastConfirmations");
+                    chain.transactFeeRateWithdraw = item.getDecimal("transactFeeRateWithdraw");
+                    chain.transactFeeWithdraw = item.getDecimal("transactFeeWithdraw");
+                    chain.withdrawFeeType = item.getString("withdrawFeeType");
+                    chain.withdrawPrecision = item.getInt("withdrawPrecision");
+                    chain.withdrawQuotaPerDay = item.getDecimal("withdrawQuotaPerDay");
+                    chain.withdrawQuotaPerYear = item.getDecimal("withdrawQuotaPerYear");
+                    chain.withdrawQuotaTotal = item.getDecimal("withdrawQuotaTotal");
+                    chain.withdrawStatus = item.getString("withdrawStatus");
+                    chains.push_back(chain);
+                }
+                currencyChain.chains = chains;
+                currencyChains.push_back(currencyChain);
+            }
+            return currencyChains;
+        };
+        return res;
+    }
+
+    RestApi<std::vector<DepositAddress>>*RestApiImpl::getDepositAddress(DepositAddressRequest& request) {
+        InputChecker::checker()
+                ->shouldNotNull(request.currency, "currency");
+
+        UrlParamsBuilder builder;
+        builder.putUrl("currency", request.currency);
+
+        auto res = createRequestByGetWithSignature<std::vector < DepositAddress >> ("/v2/account/deposit/address", builder);
+
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<DepositAddress> depositAddressVec;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                DepositAddress depositAddress;
+                depositAddress.address = item.getString("address");
+                depositAddress.addressTag = item.getString("addressTag");
+                depositAddress.chain = item.getString("chain");
+                depositAddress.currency = item.getString("currency");
+                depositAddressVec.push_back(depositAddress);
+            }
+            return depositAddressVec;
+        };
+        return res;
+    }
+
+    RestApi<WithdrawQuota>* RestApiImpl::getWithdrawQuota(WithdrawQuotaRequest& request) {
+
+        InputChecker::checker()
+                ->shouldNotNull(request.currency, "currency");
+
+        UrlParamsBuilder builder;
+        builder.putUrl("currency", request.currency);
+
+        auto res = createRequestByGetWithSignature<WithdrawQuota> ("/v2/account/withdraw/quota", builder);
+
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            WithdrawQuota withdrawQuota;
+            withdrawQuota.currency = data.getString("currency");
+
+            JsonWrapper chains = data.getJsonObjectOrArray("chains");
+            std::vector<WithdrawChainQuota> withdrawChainQuotaVec;
+            for (int i = 0; i < chains.size(); i++) {
+                JsonWrapper item = chains.getJsonObjectAt(i);
+                WithdrawChainQuota withdrawChainQuota;
+                withdrawChainQuota.chain = item.getString("chain");
+                withdrawChainQuota.maxWithdrawAmt = item.getString("maxWithdrawAmt");
+                withdrawChainQuota.remainWithdrawQuotaPerDay = item.getString("remainWithdrawQuotaPerDay");
+                withdrawChainQuota.remainWithdrawQuotaPerYear = item.getString("remainWithdrawQuotaPerYear");
+                withdrawChainQuota.remainWithdrawQuotaTotal = item.getString("remainWithdrawQuotaTotal");
+                withdrawChainQuota.withdrawQuotaPerDay = item.getString("withdrawQuotaPerDay");
+                withdrawChainQuota.withdrawQuotaPerYear = item.getString("withdrawQuotaPerYear");
+                withdrawChainQuota.withdrawQuotaTotal = item.getString("withdrawQuotaTotal");
+                withdrawChainQuotaVec.push_back(withdrawChainQuota);
+            }
+
+            withdrawQuota.chains = withdrawChainQuotaVec;
+            return withdrawQuota;
+        };
+        return res;
+
+    }
+
+    RestApi<std::vector<AccountHistory>>*RestApiImpl::getAccountHistory(AccountHistoryRequest& request) {
+        InputChecker::checker()
+                ->shouldNotNull(request.accountId, "accountId");
+        std::string types = "";
+
+        std::list<TransactType>::iterator typeIte = request.transactTypes.begin();
+        while (typeIte != request.transactTypes.end()) {
+            types += (*typeIte).getValue();
+            types += "%2C";
+            typeIte++;
+        }
+        types.substr(0, states.length() - 3);
+        UrlParamsBuilder builder;
+        builder.putUrl("account-id", request.accountId);
+        builder.putUrl("currency", request.currency);
+        builder.putUrl("transact-types", types);
+        builder.putUrl("start-time", request.accountId);
+        builder.putUrl("end-time", request.accountId);
+        builder.putUrl("sort", request.sort.getValue());
+        builder.putUrl("size", request.size);
+
+
+        auto res = createRequestByGetWithSignature<std::vector < AccountHistory >> ("/v1/account/history", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data=json.
+        };
+
     }
 
     template <typename T>

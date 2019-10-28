@@ -170,7 +170,7 @@ namespace Huobi {
                 return accounts[i];
             }
         }
-       throw HuobiApiException("cannot found account", "type error or margin account loss subtype");
+        throw HuobiApiException("cannot found account", "type error or margin account loss subtype");
     }
 
     std::vector<Order> SyncClientImpl::getOpenOrders(OpenOrderRequest& openOrderRequest) {
@@ -284,5 +284,23 @@ namespace Huobi {
     Trade SyncClientImpl::getMarketTrade(const char* symbol) {
         return RestApiInvoke::callSync(impl->getMarketTrade(symbol));
     }
+
+    std::vector<CurrencyChain> SyncClientImpl::getReferenceCurrencies(CurrencyChainsRequest& request) {
+        return RestApiInvoke::callSync(impl->getReferenceCurrencies(request));
+    }
+
+    std::vector<DepositAddress> SyncClientImpl::getDepositAddress(DepositAddressRequest& request) {
+        return RestApiInvoke::callSync(impl->getDepositAddress(request));
+    }
+
+    WithdrawQuota SyncClientImpl::getWithdrawQuota(WithdrawQuotaRequest& request) {
+        return RestApiInvoke::callSync(impl->getWithdrawQuota(request));
+    }
+
+     std::vector<AccountHistory> SyncClientImpl::getAccountHistory(AccountHistoryRequest& request) {
+        return RestApiInvoke::callSync(impl->getAccountHistory(request));
+    }
+
+
 
 }

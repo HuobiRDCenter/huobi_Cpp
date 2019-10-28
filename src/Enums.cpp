@@ -180,6 +180,26 @@ namespace Huobi {
     DepthStep DepthStep::step5 = DepthStep("step5");
     DepthStep DepthStep::SDK_NOTSUPPORT = DepthStep("sdk_not_support_for_now");
 
+    SortDirection SortDirection::asc = SortDirection("asc");
+    SortDirection SortDirection::desc = SortDirection("desc");
+    SortDirection SortDirection::SDK_NOTSUPPORT = SortDirection("sdk_not_support_for_now");
+
+
+    TransactType TransactType::trade = TransactType("trade");
+    TransactType TransactType::unknown = TransactType("unknown");
+    TransactType TransactType::etf = TransactType("etf");
+    TransactType TransactType::transact_fee = TransactType("transact-fee");
+    TransactType TransactType::fee_deduction = TransactType("fee-deduction");
+    TransactType TransactType::transfer = TransactType("transfer");
+    TransactType TransactType::credit = TransactType("credit");
+    TransactType TransactType::liquidation = TransactType("liquidation");
+    TransactType TransactType::interest = TransactType("interest");
+    TransactType TransactType::deposit = TransactType("deposit");
+    TransactType TransactType::withdraw = TransactType("withdraw");
+    TransactType TransactType::withdraw_fee = TransactType("withdraw_fee");
+    TransactType TransactType::exchange = TransactType("exchange");
+    TransactType TransactType::other_types = TransactType("other-types");
+    TransactType TransactType::SDK_NOTSUPPORT = TransactType("sdk_not_support_for_now");
 
 }
 

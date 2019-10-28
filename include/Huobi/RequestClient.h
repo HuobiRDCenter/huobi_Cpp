@@ -38,6 +38,14 @@
 #include "Huobi/TransferFuturesRequest.h"
 #include "Huobi/OrdersHistoryRequest.h"
 
+#include "Huobi/CurrencyChain.h"
+#include "Huobi/DepositAddress.h"
+#include "Huobi/DepositAddressRequest.h"
+#include "Huobi/WithdrawQuota.h"
+#include "Huobi/WithdrawQuotaRequest.h"
+#include "Huobi/AccountHistory.h"
+#include "Huobi/AccountHistoryRequest.h"
+
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -403,6 +411,30 @@ namespace Huobi {
          * \return The last trade with price and amount.
          */
         virtual Trade getMarketTrade(const char* symbol) = 0;
+        /*
+         * API user could query static reference information for each currency, as well as its corresponding chain(s).
+         * \param  request. The request of reference information.
+         * \return The list of reference information 
+         */
+        virtual std::vector<CurrencyChain> getReferenceCurrencies(CurrencyChainsRequest& request) = 0;
+        /*
+         * API user could query deposit address of corresponding chain, for a specific crypto currency (except IOTA)
+         * \param  request.  The request of deposit address.
+         * \return The list of deposit address
+         */
+        virtual std::vector<DepositAddress> getDepositAddress(DepositAddressRequest& request) = 0;
+        /*
+         * API user could query withdraw quota for currencies.
+         * \param request.  The request of withdraw quota .
+         * \return The withdraw quota .
+         */
+        virtual WithdrawQuota getWithdrawQuota(WithdrawQuotaRequest& request) = 0;
+        /*
+         *API the amount changes of specified user's account.
+         * \param request.  The request of account history .
+         * \return The account history . 
+         */
+        virtual std::vector<AccountHistory> getAccountHistory(AccountHistoryRequest& request) = 0;
     };
 
     RequestClient* createRequestClient();

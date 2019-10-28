@@ -52,14 +52,14 @@ namespace Huobi {
 
         std::string TradingUrl = "https://api.huobi.pro";
         std::string MarketQueryUrl = "https://api.huobi.pro:443";
-   
+
         std::string subscriptionMarketUrl = "wss://api.huobi.pro:443/ws";
         std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         std::string accessKey;
         std::string secretKey;
         std::string host = "api.huobi.pro";
-       
-     
+
+
     public:
 
         RestApiImpl() {
@@ -166,7 +166,15 @@ namespace Huobi {
         RestApi<std::vector<FeeRate>>*getFeeRate(const char* symbols);
         RestApi<long>* transferBetweenFuturesAndPro(TransferFuturesRequest& req);
         RestApi<std::vector<Order>>*getOrderHistory(OrdersHistoryRequest& req);
-        RestApi<Trade>*getMarketTrade(const char* symbol);
-    };
-}
+        RestApi<Trade>* getMarketTrade(const char* symbol);
+
+        RestApi<std::vector<CurrencyChain>>*getReferenceCurrencies(CurrencyChainsRequest& request);
+        RestApi<std::vector<DepositAddress>>*getDepositAddress(DepositAddressRequest& request);
+        RestApi<WithdrawQuota>* getWithdrawQuota(WithdrawQuotaRequest& request);
+        RestApi<std::vector<AccountHistory>>* getAccountHistory(AccountHistoryRequest& request);
+
+
+
+        };
+    }
 #endif /* RESTAPIIMPL_H */

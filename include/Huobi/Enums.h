@@ -284,7 +284,7 @@ private:
         static OrderState partial_canceled;
         static OrderState filled;
         static OrderState canceled;
-        static OrderState created;     
+        static OrderState created;
         static OrderState SDK_NOTSUPPORT;
     };
 
@@ -387,6 +387,37 @@ private:
         static DepthStep step5;
         static DepthStep SDK_NOTSUPPORT;
     };
+
+    class SortDirection : public BaseEnumClass<SortDirection> {
+        DEFINE_ENUM_CLASS(SortDirection);
+    public:
+        static SortDirection asc;
+        static SortDirection desc;
+        static SortDirection SDK_NOTSUPPORT;
+
+    };
+
+    class TransactType : public BaseEnumClass<TransactType> {
+        DEFINE_ENUM_CLASS(TransactType);
+    public:
+        static TransactType trade;
+        static TransactType unknown;
+        static TransactType etf;
+        static TransactType transact_fee;
+        static TransactType fee_deduction;
+        static TransactType transfer;
+        static TransactType credit;
+        static TransactType liquidation;
+        static TransactType interest;
+        static TransactType deposit;
+        static TransactType withdraw;
+        static TransactType withdraw_fee;
+        static TransactType exchange;
+        static TransactType other_types;
+        static TransactType SDK_NOTSUPPORT;
+
+    };
+
 
 }
 #endif /* TYPEDEFINE_H */
