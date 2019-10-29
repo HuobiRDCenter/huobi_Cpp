@@ -16,10 +16,82 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 ## Table of Contents
 
+- [Huobi Global API C++ SDK version 1.0.3](#Huobi-Global-API-c++-SDK-version-1.0.3)
+
 - [Huobi Global API C++ SDK version 1.0.2](#Huobi-Global-API-c++-SDK-version-1.0.2)
 
 - [Huobi Global API C++ SDK version 1.0.1](#Huobi-Global-API-c++-SDK-version-1.0.1)
 
+
+## Huobi Global API C++ SDK version 1.0.3
+
+[***version 1.0.3***](https://github.com/HuobiRDCenter/huobi_Cpp/releases)
+
+***2019-10-28***
+
+修改的点：
+
+- 类中增加字段
+
+  - ```
+    Account 
+    CancelOpenOrderRequest 
+    NewOrderRequest
+    OpenOrderRequest
+    中加入subtype字段
+    ```
+
+- 枚举：
+
+  - lookup方法中找不到对应的枚举时不再抛异常，而是返回`sdk_not_support`，在各个枚举中加入`sdk_not_support`
+
+  - LoanOrderStates 缺少`failed`字段
+
+  - OrderSource 中去掉`invalid`字段，增加以下缺失字段
+
+    ```
+    super_margin_api
+    super_margin_app
+    super_margin_web
+    super_margin_fl_sys
+    super_margin_fl_mgt
+    ```
+
+  - OrderState增加以下缺失字段
+
+    ```
+    pre_submmitted;
+    submitting;
+    failed;
+    place_timeout;
+    canceling;  
+    ```
+
+  - CandlestickInterval 增加`4hour`字段
+
+  - AccountType增加以下缺失字段
+    ```
+  minepool;
+    etf;
+    agency;
+    super_margin;
+    ```
+  
+- 方法重载
+
+  - RequestClient类重载以下方法，增加subtype字段
+
+  ```
+  getAccountBalance 
+  ```
+
+  - User类重载以下方法，增加subtype字段
+
+  ```
+  getAccount
+  ```
+
+- account解析时增加subtype字段
 
 
 ## Huobi Global API C++ SDK version 1.0.2
