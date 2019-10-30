@@ -24,7 +24,7 @@ namespace Huobi {
         Decimal availBalance;
         Decimal acctBalance;
         long transactTime;
-        std::string recordId;
+        long recordId;
 
     };
 }

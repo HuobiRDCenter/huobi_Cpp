@@ -90,6 +90,7 @@ namespace Huobi {
                     trade.price = itemIn.getDecimal("price");
                     trade.amount = itemIn.getDecimal("amount");
                     trade.tradeId = itemIn.getString("id");
+                    trade.uniqueTradeId = item.getString("trade-id");
                     trade.timestamp = TimeService::convertCSTInMillisecondToUTC(itemIn.getLong("ts"));
                     trade.direction = TradeDirection::lookup(itemIn.getString("direction"));
                     trades.push_back(trade);
@@ -275,6 +276,7 @@ namespace Huobi {
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
                 withdraw.updatedTimestamp =
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("updated-at"));
+                withdraw.chain = item.getString("chain");
                 withdraws.push_back(withdraw);
             }
             return withdraws;
@@ -312,6 +314,7 @@ namespace Huobi {
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
                 deposit.updatedTimestamp =
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("updated-at"));
+                deposit.chain = item.getString("chain");
                 lstdeposit.push_back(deposit);
             }
             return lstdeposit;
@@ -437,6 +440,14 @@ namespace Huobi {
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("accrued-at"));
                 loan.createdTimestamp =
                         TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                loan.accountId = item.getLong("account-id");
+                loan.paidPoint = item.getDecimal("paid-point");
+                loan.paidCoin = item.getDecimal("paid-coin");
+                loan.deductCurrency = item.getString("deduct-currency");
+                loan.deductAmount = item.getDecimal("deduct-amount");
+                loan.deductRate = item.getDecimal("deduct-rate");
+                loan.hourInterestRate = item.getDecimal("hour-interest-rate");
+                loan.dayInterestRate = item.getDecimal("hour-interest-rate");
                 loans.push_back(loan);
             }
             return loans;
@@ -1183,6 +1194,7 @@ namespace Huobi {
             trade.price = item.getDecimal("price");
             trade.amount = item.getDecimal("amount");
             trade.tradeId = item.getString("id");
+            trade.uniqueTradeId = item.getString("trade-id");
             trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
             trade.direction = TradeDirection::lookup(item.getString("direction"));
             return trade;
@@ -1202,26 +1214,30 @@ namespace Huobi {
             JsonWrapper data = json.getJsonObjectOrArray("data");
             std::vector<CurrencyChain> currencyChains;
             for (int i = 0; i < data.size(); i++) {
-                JsonWrapper obj = json.getJsonObjectAt(i);
+                JsonWrapper obj = data.getJsonObjectAt(i);
                 CurrencyChain currencyChain;
                 currencyChain.currency = obj.getString("currency");
                 currencyChain.instStatus = obj.getString("instStatus");
-                JsonWrapper chains = obj.getJsonObjectOrArray("chains");
+                JsonWrapper jsonChains = obj.getJsonObjectOrArray("chains");
                 std::vector<Chain> chains;
-                for (int i = 0; i < json.size(); i++) {
-                    JsonWrapper item = chains.getJsonObjectAt(i);
+                for (int i = 0; i < jsonChains.size(); i++) {
+                    JsonWrapper item = jsonChains.getJsonObjectAt(i);
                     Chain chain;
                     chain.chain = item.getString("chain");
                     chain.depositStatus = item.getString("depositStatus");
-                    chain.maxTransactFeeWithdraw = item.getDecimal("maxTransactFeeWithdraw");
+                    if (item.containKey("maxTransactFeeWithdraw"))
+                        chain.maxTransactFeeWithdraw = item.getDecimal("maxTransactFeeWithdraw");
                     chain.maxWithdrawAmt = item.getDecimal("maxWithdrawAmt");
                     chain.minDepositAmt = item.getDecimal("minDepositAmt");
-                    chain.minTransactFeeWithdraw = item.getDecimal("minTransactFeeWithdraw");
+                    if (item.containKey("minTransactFeeWithdraw"))
+                        chain.minTransactFeeWithdraw = item.getDecimal("minTransactFeeWithdraw");
                     chain.minWithdrawAmt = item.getDecimal("minWithdrawAmt");
                     chain.numOfConfirmations = item.getInt("numOfConfirmations");
                     chain.numOfFastConfirmations = item.getInt("numOfFastConfirmations");
-                    chain.transactFeeRateWithdraw = item.getDecimal("transactFeeRateWithdraw");
-                    chain.transactFeeWithdraw = item.getDecimal("transactFeeWithdraw");
+                    if (item.containKey("transactFeeRateWithdraw"))
+                        chain.transactFeeRateWithdraw = item.getDecimal("transactFeeRateWithdraw");
+                    if (item.containKey("transactFeeWithdraw"))
+                        chain.transactFeeWithdraw = item.getDecimal("transactFeeWithdraw");
                     chain.withdrawFeeType = item.getString("withdrawFeeType");
                     chain.withdrawPrecision = item.getInt("withdrawPrecision");
                     chain.withdrawQuotaPerDay = item.getDecimal("withdrawQuotaPerDay");
@@ -1233,6 +1249,7 @@ namespace Huobi {
                 currencyChain.chains = chains;
                 currencyChains.push_back(currencyChain);
             }
+
             return currencyChains;
         };
         return res;
@@ -1313,22 +1330,187 @@ namespace Huobi {
             types += "%2C";
             typeIte++;
         }
-        types.substr(0, states.length() - 3);
+        types.substr(0, types.length() - 3);
         UrlParamsBuilder builder;
         builder.putUrl("account-id", request.accountId);
         builder.putUrl("currency", request.currency);
         builder.putUrl("transact-types", types);
-        builder.putUrl("start-time", request.accountId);
-        builder.putUrl("end-time", request.accountId);
+        builder.putUrl("start-time", request.startTime);
+        builder.putUrl("end-time", request.endTime);
         builder.putUrl("sort", request.sort.getValue());
         builder.putUrl("size", request.size);
 
 
         auto res = createRequestByGetWithSignature<std::vector < AccountHistory >> ("/v1/account/history", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
-            JsonWrapper data=json.
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<AccountHistory> accountHistories;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                AccountHistory accountHistory;
+                accountHistory.accountId = item.getLong("account-id");
+                accountHistory.currency = item.getString("currency");
+                accountHistory.transactAmt = item.getString("transact-amt");
+                accountHistory.type = TransactType::lookup(item.getString("transact-type"));
+                accountHistory.availBalance = item.getDecimal("avail-balance");
+                accountHistory.acctBalance = item.getDecimal("acct-balance");
+                accountHistory.transactTime = item.getLong("transact-time");
+                accountHistory.recordId = item.getLong("record-id");
+                accountHistories.push_back(accountHistory);
+            }
+            return accountHistories;
         };
+        return res;
+    }
 
+    RestApi<long>*RestApiImpl::crossMaginTransferIn(CrossMarginTransferRequest& request) {
+        InputChecker::checker()
+                ->checkCurrency(request.currency)
+                ->shouldBiggerThanZero(request.amount, "amount");
+
+        UrlParamsBuilder builder;
+        builder.putPost("currency", request.currency);
+        builder.putPost("amount", request.amount);
+
+        auto res = createRequestByPostWithSignature<long>("/v1/cross-margin/transfer-in", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            return json.getLong("data");
+        };
+        return res;
+    }
+
+    RestApi<long>* RestApiImpl::crossMaginTransferOut(CrossMarginTransferRequest& request) {
+
+        InputChecker::checker()
+                ->checkCurrency(request.currency)
+                ->shouldBiggerThanZero(request.amount, "amount");
+
+        UrlParamsBuilder builder;
+        builder.putPost("currency", request.currency);
+        builder.putPost("amount", request.amount);
+
+        auto res = createRequestByPostWithSignature<long>("/v1/cross-margin/transfer-out", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            return json.getLong("data");
+        };
+        return res;
+    }
+
+    RestApi<long>* RestApiImpl::crossMaginApplyLoan(CrossMarginApplyLoanRequest& request) {
+        InputChecker::checker()
+                ->checkCurrency(request.currency)
+                ->shouldBiggerThanZero(request.amount, "amount");
+
+        UrlParamsBuilder builder;
+        builder.putPost("currency", request.currency);
+        builder.putPost("amount", request.amount);
+
+        auto res = createRequestByPostWithSignature<long>("/v1/cross-margin/orders", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            return json.getLong("data");
+        };
+        return res;
+    }
+
+    RestApi<void*>* RestApiImpl::crossMaginRepayLoan(CrossMarginRepayLoanRequest& request) {
+        InputChecker::checker()
+                ->shouldNotNull(request.orderId, "order-id")
+                ->shouldBiggerThanZero(request.amount, "amount");
+
+        UrlParamsBuilder builder;
+        builder.putPost("amount", request.amount);
+        char buf[100];
+        sprintf(buf, "/v1/cross-margin/orders/%s/repay", request.orderId.c_str());
+
+        auto res = createRequestByPostWithSignature<void*>(buf, builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            return nullptr;
+        };
+        return res;
+    }
+
+    RestApi<std::vector<CrossMarginLoadOrder>>*RestApiImpl::crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request) {
+
+        InputChecker::checker()
+                ->checkDate(request.startDate, "startDate")
+                ->checkDate(request.endDate, "endDate");
+
+        std::string states = "";
+        std::list<LoanOrderStates>::const_iterator stateIte = request.states.begin();
+        while (stateIte != request.states.end()) {
+            states += (*stateIte).getValue();
+            states += "%2C";
+            stateIte++;
+        }
+        states.substr(0, states.length() - 3);
+
+        UrlParamsBuilder builder;
+        builder.putUrl("currency", request.currency);
+        builder.putUrl("start-date", request.startDate);
+        builder.putUrl("end-date", request.endDate);
+        builder.putUrl("states", states);
+        builder.putUrl("from", request.from);
+        builder.putUrl("size", request.size);
+        builder.putUrl("direct", request.direction.getValue());
+
+        auto res = createRequestByGetWithSignature<std::vector < CrossMarginLoadOrder >> ("/v1/cross-margin/loan-orders", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<CrossMarginLoadOrder> crossMarginLoadOrders;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                CrossMarginLoadOrder crossMarginLoadOrder;
+                crossMarginLoadOrder.currency = item.getString("currency");
+                crossMarginLoadOrder.accountId = item.getLong("account-id");
+                crossMarginLoadOrder.accruedAt = item.getLong("accrued-at");
+                crossMarginLoadOrder.createdAt = item.getLong("created-at");
+                crossMarginLoadOrder.filledHt = item.getDecimal("filled-ht");
+                crossMarginLoadOrder.filledPoints = item.getDecimal("filled-points");
+                crossMarginLoadOrder.id = item.getLong("id");
+                crossMarginLoadOrder.interestAmount = item.getDecimal("interest-amount");
+                crossMarginLoadOrder.interestBalance = item.getDecimal("interest-balance");
+                crossMarginLoadOrder.loanAmount = item.getDecimal("loan-amount");
+                crossMarginLoadOrder.loanBalance = item.getDecimal("loan-balance");
+                crossMarginLoadOrder.state = LoanOrderStates::lookup(item.getString("state"));
+                crossMarginLoadOrder.userId = item.getLong("user-id");
+                crossMarginLoadOrders.push_back(crossMarginLoadOrder);
+            }
+            return crossMarginLoadOrders;
+        };
+        return res;
+
+    }
+
+    RestApi<CrossMarginAccount>* RestApiImpl::crossMaginGetLoanBalance() {
+
+        UrlParamsBuilder buildler;
+        auto res = createRequestByGetWithSignature<CrossMarginAccount>("/v1/cross-margin/accounts/balance", buildler);
+
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper item = json.getJsonObjectOrArray("data");
+            CrossMarginAccount crossMarginAccount;
+            crossMarginAccount.acctBalanceSum = item.getDecimal("acct-balance-sum");
+            crossMarginAccount.debtBalanceSum = item.getDecimal("debt-balance-sum");
+            crossMarginAccount.id = item.getLong("id");
+            crossMarginAccount.riskRate = item.getDecimal("risk-rate");
+            crossMarginAccount.state = CrossMarginAccountState::lookup(item.getString("state"));
+            crossMarginAccount.type = AccountType::lookup(item.getString("type"));
+            JsonWrapper list = item.getJsonObjectOrArray("list");
+            std::vector<Balance> balances;
+            for (int i = 0; i < list.size(); i++) {
+                JsonWrapper jw = list.getJsonObjectAt(i);
+                Balance balance;
+                balance.balance = jw.getDecimal("balance");
+                balance.currency = jw.getString("currency");
+                balance.type = BalanceType::lookup(jw.getString("type"));
+                balances.push_back(balance);
+            }
+
+            crossMarginAccount.balanceList = balances;
+            return crossMarginAccount;
+
+        };
+        return res;
     }
 
     template <typename T>

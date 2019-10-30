@@ -81,6 +81,7 @@ namespace Huobi {
                 trade.amount = item.getDecimal("amount");
                 trade.price = item.getDecimal("price");
                 trade.tradeId = item.getString("id");
+                trade.uniqueTradeId = item.getString("tradeId");
                 trade.direction = TradeDirection::lookup(item.getString("direction"));
                 trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
                 tradeEvent.tradeList.push_back(trade);

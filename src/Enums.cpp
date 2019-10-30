@@ -201,5 +201,12 @@ namespace Huobi {
     TransactType TransactType::other_types = TransactType("other-types");
     TransactType TransactType::SDK_NOTSUPPORT = TransactType("sdk_not_support_for_now");
 
+    CrossMarginAccountState CrossMarginAccountState::working = CrossMarginAccountState("working");
+    CrossMarginAccountState CrossMarginAccountState::fl_end = CrossMarginAccountState("fl-end");
+    CrossMarginAccountState CrossMarginAccountState::fl_negative = CrossMarginAccountState("fl-negative");
+    CrossMarginAccountState CrossMarginAccountState::fl_sys = CrossMarginAccountState("fl-sys");
+    CrossMarginAccountState CrossMarginAccountState::SDK_NOTSUPPORT = CrossMarginAccountState("sdk_not_support_for_now");
+
+
 }
 

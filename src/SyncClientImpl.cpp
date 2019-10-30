@@ -297,8 +297,32 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->getWithdrawQuota(request));
     }
 
-     std::vector<AccountHistory> SyncClientImpl::getAccountHistory(AccountHistoryRequest& request) {
+    std::vector<AccountHistory> SyncClientImpl::getAccountHistory(AccountHistoryRequest& request) {
         return RestApiInvoke::callSync(impl->getAccountHistory(request));
+    }
+
+    long SyncClientImpl::crossMaginTransferIn(CrossMarginTransferRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginTransferIn(request));
+    }
+
+    long SyncClientImpl::crossMaginTransferOut(CrossMarginTransferRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginTransferOut(request));
+    }
+
+    long SyncClientImpl::crossMaginApplyLoan(CrossMarginApplyLoanRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginApplyLoan(request));
+    }
+
+    void* SyncClientImpl::crossMaginRepayLoan(CrossMarginRepayLoanRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginRepayLoan(request));
+    }
+
+    std::vector<CrossMarginLoadOrder> SyncClientImpl::crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginGetLoanOrders(request));
+    }
+
+    CrossMarginAccount SyncClientImpl::crossMaginGetLoanBalance() {
+        return RestApiInvoke::callSync(impl->crossMaginGetLoanBalance());
     }
 
 

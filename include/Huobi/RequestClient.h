@@ -39,12 +39,19 @@
 #include "Huobi/OrdersHistoryRequest.h"
 
 #include "Huobi/CurrencyChain.h"
+#include "Huobi/CurrencyChainsRequest.h"
 #include "Huobi/DepositAddress.h"
 #include "Huobi/DepositAddressRequest.h"
 #include "Huobi/WithdrawQuota.h"
 #include "Huobi/WithdrawQuotaRequest.h"
 #include "Huobi/AccountHistory.h"
 #include "Huobi/AccountHistoryRequest.h"
+#include "Huobi/CrossMarginTransferRequest.h"
+#include "Huobi/CrossMarginApplyLoanRequest.h"
+#include "Huobi/CrossMarginRepayLoanRequest.h"
+#include "Huobi/CrossMarginLoadOrder.h"
+#include "Huobi/CrossMarginLoanOrdersRequest.h"
+#include "Huobi/CrossMarginAccount.h"
 
 #include "RequestOptions.h"
 
@@ -435,6 +442,43 @@ namespace Huobi {
          * \return The account history . 
          */
         virtual std::vector<AccountHistory> getAccountHistory(AccountHistoryRequest& request) = 0;
+
+        /*
+         * This endpoint transfer specific asset from spot trading account to cross margin account.
+         * \param request.  The request of transfer .
+         * \return The order id . 
+         */
+        virtual long crossMaginTransferIn(CrossMarginTransferRequest& request) = 0;
+        /*
+         * This endpoint transfer specific asset from cross margin account to spot trading account.
+         * \param request.  The request of transfer .
+         * \return The order id . 
+         */
+        virtual long crossMaginTransferOut(CrossMarginTransferRequest& request) = 0;
+        /*
+         * This endpoint place an order to apply a margin loan.
+         * \param request.  The request of apply loan .
+         * \return The order id . 
+         */
+        virtual long crossMaginApplyLoan(CrossMarginApplyLoanRequest& request) = 0;
+        /*
+         * This endpoint repays margin loan with you asset in your margin account.
+         * \param request.  The request of repay loan .     
+         */
+        virtual void* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request) = 0;
+        /*
+         *  This endpoint returns margin orders based on a specific searching criteria.
+         * \param request.  The request of query loan order . 
+         * \return The list of loan orders.
+         */
+
+        virtual std::vector<CrossMarginLoadOrder> crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request) = 0;
+        /*
+         *This endpoint returns the balance of the margin loan account.
+         * \param request.  The request of query the balance of the margin loan account . 
+         * \return The the balance of the margin loan account.
+         */
+        virtual CrossMarginAccount crossMaginGetLoanBalance() = 0;
     };
 
     RequestClient* createRequestClient();

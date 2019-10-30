@@ -68,11 +68,17 @@ namespace Huobi {
         long transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest);
         std::vector<Order> getOrderHistory(OrdersHistoryRequest& req);
         Trade getMarketTrade(const char* symbol);
+
         std::vector<CurrencyChain> getReferenceCurrencies(CurrencyChainsRequest& request);
         std::vector<DepositAddress> getDepositAddress(DepositAddressRequest& request);
         WithdrawQuota getWithdrawQuota(WithdrawQuotaRequest& request);
         std::vector<AccountHistory> getAccountHistory(AccountHistoryRequest& request);
-
+        long crossMaginTransferIn(CrossMarginTransferRequest& request);
+        long crossMaginTransferOut(CrossMarginTransferRequest& request);
+        long crossMaginApplyLoan(CrossMarginApplyLoanRequest& request);
+        void* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
+        std::vector<CrossMarginLoadOrder> crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
+        CrossMarginAccount crossMaginGetLoanBalance();
 
     };
 }

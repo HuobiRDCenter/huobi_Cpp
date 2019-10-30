@@ -45,19 +45,33 @@
 #include "Huobi/OrdersHistoryRequest.h"
 #include "GetHost.h"
 
+#include "Huobi/CurrencyChain.h"
+#include "Huobi/CurrencyChainsRequest.h"
+#include "Huobi/DepositAddress.h"
+#include "Huobi/DepositAddressRequest.h"
+#include "Huobi/WithdrawQuota.h"
+#include "Huobi/WithdrawQuotaRequest.h"
+#include "Huobi/AccountHistory.h"
+#include "Huobi/AccountHistoryRequest.h"
+#include "Huobi/CrossMarginTransferRequest.h"
+#include "Huobi/CrossMarginApplyLoanRequest.h"
+#include "Huobi/CrossMarginRepayLoanRequest.h"
+#include "Huobi/CrossMarginLoadOrder.h"
+#include "Huobi/CrossMarginLoanOrdersRequest.h"
+#include "Huobi/CrossMarginAccount.h"
 namespace Huobi {
 
     class RestApiImpl {
     private:
 
-        std::string TradingUrl = "https://api.huobi.pro";
-        std::string MarketQueryUrl = "https://api.huobi.pro:443";
+        std::string TradingUrl = "https://api.huobi.so";
+        std::string MarketQueryUrl = "https://api.huobi.so:443";
 
         std::string subscriptionMarketUrl = "wss://api.huobi.pro:443/ws";
         std::string subscriptionTradingUrl = "wss://api.huobi.pro/ws/v1";
         std::string accessKey;
         std::string secretKey;
-        std::string host = "api.huobi.pro";
+        std::string host = "api.huobi.so";
 
 
     public:
@@ -171,10 +185,16 @@ namespace Huobi {
         RestApi<std::vector<CurrencyChain>>*getReferenceCurrencies(CurrencyChainsRequest& request);
         RestApi<std::vector<DepositAddress>>*getDepositAddress(DepositAddressRequest& request);
         RestApi<WithdrawQuota>* getWithdrawQuota(WithdrawQuotaRequest& request);
-        RestApi<std::vector<AccountHistory>>* getAccountHistory(AccountHistoryRequest& request);
+        RestApi<std::vector<AccountHistory>>*getAccountHistory(AccountHistoryRequest& request);
+        RestApi<long>*crossMaginTransferIn(CrossMarginTransferRequest& request);
+        RestApi<long>* crossMaginTransferOut(CrossMarginTransferRequest& request);
+        RestApi<long>* crossMaginApplyLoan(CrossMarginApplyLoanRequest& request);
+        RestApi<void*>* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
+        RestApi<std::vector<CrossMarginLoadOrder>>*crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
+        RestApi<CrossMarginAccount>* crossMaginGetLoanBalance();
 
 
 
-        };
-    }
+    };
+}
 #endif /* RESTAPIIMPL_H */

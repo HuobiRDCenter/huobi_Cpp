@@ -37,6 +37,13 @@ namespace Huobi {
                                     "[Executing] " + err_code + ": " + err_msg);
                         }
                     }
+                } else if (json.containKey("code")) {
+                    int code = json.getInt("code");
+                    if (code != 200) {
+                        throw HuobiApiException(HuobiApiException::EXEC_ERROR,
+                                "[return] " + std::to_string(code));
+                    }
+
                 } else {
                     throw HuobiApiException(
                             HuobiApiException::RUNTIME_ERROR, "[Invoking] Status cannot be found in response.");
@@ -71,7 +78,7 @@ namespace Huobi {
             }
             std::string sBuffer;
             printf("\n");
-            printf("------request------\n");                            
+            printf("------request------\n");
             printf(ptr->getUrl().c_str());
             printf("\n");
             curl_easy_setopt(pCurl, CURLOPT_SSLKEYTYPE, "PEM");
@@ -108,8 +115,7 @@ namespace Huobi {
             curl_easy_cleanup(pCurl);
             curl_global_cleanup();
 
-            RestApiInvoke::checkResponse(json);
-
+            RestApiInvoke::checkResponse(json);          
             T val = (ptr->jsonParser)(json);
 
             return val;

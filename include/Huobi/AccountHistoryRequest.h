@@ -23,8 +23,8 @@ namespace Huobi {
         std::string accountId;
         std::string currency;
         std::list<TransactType>transactTypes;
-        long startTime;
-        long endTime;
+        long startTime = 0;
+        long endTime = 0;
         SortDirection sort;
         int size = 0;
     };

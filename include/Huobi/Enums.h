@@ -418,6 +418,17 @@ private:
 
     };
 
+    class CrossMarginAccountState : public BaseEnumClass<CrossMarginAccountState> {
+        DEFINE_ENUM_CLASS(CrossMarginAccountState);
+    public:
+        static CrossMarginAccountState working;
+        static CrossMarginAccountState fl_sys;
+        static CrossMarginAccountState fl_end;
+        static CrossMarginAccountState fl_negative;
+        static CrossMarginAccountState SDK_NOTSUPPORT;
+
+
+    };
 
 }
 #endif /* TYPEDEFINE_H */
