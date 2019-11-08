@@ -703,12 +703,14 @@ namespace Huobi {
                 ->checkCurrency(withdrawRequest.currency)
                 ->shouldNotNull(withdrawRequest.address, "address")
                 ->shouldBiggerThanZero(withdrawRequest.amount, "amount");
+
         UrlParamsBuilder builder;
         builder.putPost("address", withdrawRequest.address)
                 .putPost("amount", withdrawRequest.amount)
                 .putPost("currency", withdrawRequest.currency)
                 .putPost("fee", withdrawRequest.fee)
-                .putPost("addr-tag", withdrawRequest.addressTag);
+                .putPost("addr-tag", withdrawRequest.addressTag)
+                .putPost("chian", withdrawRequest.chain);
         auto res = createRequestByPostWithSignature<long>("/v1/dw/withdraw/api/create", builder);
         res->jsonParser = [this] (const JsonWrapper & json) {
             return json.getLong("data");
