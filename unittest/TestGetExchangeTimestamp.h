@@ -36,7 +36,7 @@ TEST(TestGetExchangeTimestamp, test) {
     ASSERT_TRUE(request->getUrl().find("/v1/common/timestamp"));
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto result = request->jsonParser(json);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1494900087029l), result);
+    ASSERT_EQ(1494900087029, result);
 }
 
 #endif /* TESTGETEXCHANGETIMESTAMP_H */

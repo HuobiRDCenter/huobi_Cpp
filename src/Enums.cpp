@@ -207,6 +207,10 @@ namespace Huobi {
     CrossMarginAccountState CrossMarginAccountState::fl_sys = CrossMarginAccountState("fl-sys");
     CrossMarginAccountState CrossMarginAccountState::SDK_NOTSUPPORT = CrossMarginAccountState("sdk_not_support_for_now");
 
+    MBPLevel MBPLevel::LEVEL5 = MBPLevel("5");
+    MBPLevel MBPLevel::LEVEL10 = MBPLevel("10");
+    MBPLevel MBPLevel::LEVEL20 = MBPLevel("20");
+    MBPLevel MBPLevel::LEVEL150 = MBPLevel("150");
 
 }
 

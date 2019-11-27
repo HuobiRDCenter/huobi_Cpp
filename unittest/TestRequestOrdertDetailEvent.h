@@ -66,7 +66,7 @@ TEST(TestRequestOrdertDetailEvent, Receive_Normal) {
     JsonDocument doc;
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto result = request->JsonParser(json);  
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1569404819598l), result.timestamp);
+    ASSERT_EQ(1569404819598l, result.timestamp);
     ASSERT_EQ(Decimal("1"), result.order.amount);
     ASSERT_EQ(Decimal("3.7858"), result.order.price);
 

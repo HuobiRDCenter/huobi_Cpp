@@ -13,6 +13,7 @@
 #include "Huobi/TradeStatisticsEvent.h"
 #include "Huobi/AccountListEvent.h"
 #include "Huobi/MarketBBOEvent.h"
+#include "Huobi/MarketDepthMBPEvent.h"
 #include "SubscriptionOptions.h"
 
 
@@ -136,13 +137,13 @@ namespace Huobi {
          *
          * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
          * "btcusdt,ethusdt".
-          * \param step The aggregation depth type,step0,step1,etc.
+         * \param step The aggregation depth type,step0,step1,etc.
          * \param callback The implementation is required. onReceive will be called if receive server's
          * update.
          * \param errorHandler The error handler will be called if subscription failed or error happen
          * between client and Huobi server.
          */
-        
+
         virtual void subscribePriceDepthEvent(
                 const char* symbols,
                 DepthStep step,
@@ -159,10 +160,16 @@ namespace Huobi {
          * update.
          * \param errorHandler The error handler will be called if subscription failed or error happen
          * between client and Huobi server.
-         */     
+         */
         virtual void subscribeMarketBBOEvent(
-                const char* symbols,            
+                const char* symbols,
                 const std::function<void(const MarketBBOEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void subscribeMarketDepthMBP(
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
 
 

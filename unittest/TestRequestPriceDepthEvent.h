@@ -62,7 +62,7 @@ TEST(TestRequestPriceDepthEvent, Receive_Normal) {
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto event = request->JsonParser(json);
     ASSERT_EQ("btcusdt", event.symbol);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550558788054l), event.timestamp);
+    ASSERT_EQ(1550558788054l, event.timestamp);
     ASSERT_EQ(3, event.data.bids.size());
     ASSERT_EQ(2, event.data.asks.size());
     ASSERT_EQ(Decimal("3891.94"), event.data.bids[0].price);

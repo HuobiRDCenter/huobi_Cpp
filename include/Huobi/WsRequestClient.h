@@ -292,6 +292,22 @@ namespace Huobi {
                 long orderId,
                 const std::function<void(const OrderDetailEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+
+        virtual void requestMarketDepthMBPEvent(
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void requestMarketDepthMBPEvent(
+                bool autoClose,
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+
     };
     WsRequestClient* createWsRequestClient();
     WsRequestClient* createWsRequestClient(const char* apiKey, const char* secretKey);

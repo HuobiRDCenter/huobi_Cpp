@@ -68,11 +68,10 @@ TEST(TestSubscribeOrderUpdateNewEvent, Receive_Normal) {
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto event = request->JsonParser(json);
     ASSERT_EQ("btcusdt", event.symbol);
-    printf(event.data.price.toString().c_str());
     ASSERT_EQ(Decimal("1.6621"), event.data.price);
     ASSERT_EQ(Decimal("5000"), event.data.filledAmount);
     ASSERT_EQ("btcusdt", event.data.symbol);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1522856623232l), event.timestamp); 
+    ASSERT_EQ(1522856623232l, event.timestamp); 
     ASSERT_EQ(2039498445l, event.data.orderId);
     ASSERT_EQ(OrderType::buy_limit, event.data.type);
     ASSERT_EQ(Decimal("8301.35728"), event.data.filledCashAmount);

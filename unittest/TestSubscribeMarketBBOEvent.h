@@ -62,7 +62,7 @@ TEST(TestSubscribeMarketBBOEvent, Receive_Normal) {
     auto event = request->JsonParser(json);
 
     ASSERT_EQ("btcusdt", event.symbol);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1569328928156l), event.timestamp);
+    ASSERT_EQ(1569328928156l, event.timestamp);
     ASSERT_EQ(Decimal("9696.6"), event.bbo.askPrice);
     ASSERT_EQ(Decimal("0.005"), event.bbo.askAmount);
     ASSERT_EQ(Decimal("0.0003"), event.bbo.bidAmount);

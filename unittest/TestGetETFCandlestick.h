@@ -72,7 +72,7 @@ TEST(TestGetETFCandlestick, Result) {
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto candlestickList = request->jsonParser(json);
     ASSERT_EQ(1, candlestickList.size());
-    ASSERT_EQ(TimeService::convertCSTInSecondToUTC(1499184000l), candlestickList[0].timestamp);
+    ASSERT_EQ(1499184000, candlestickList[0].timestamp);
     ASSERT_EQ(Decimal("0.7694"), candlestickList[0].high);
     ASSERT_EQ(Decimal("0.769"), candlestickList[0].low);
     ASSERT_EQ(Decimal("0.7794"), candlestickList[0].open);

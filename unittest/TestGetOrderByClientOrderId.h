@@ -58,9 +58,9 @@ TEST(TestGetOrderByClientOrderId, result) {
     ASSERT_EQ(59378l, order.orderId);
     ASSERT_EQ(AccountType::spot, order.accountType);
     ASSERT_EQ(Decimal("10.1000000000"), order.amount);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1494901162595l), order.createdTimestamp);
+    ASSERT_EQ(1494901162595l, order.createdTimestamp);
     ASSERT_EQ(0l, order.canceledTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1494901400468l), order.finishedTimestamp);
+    ASSERT_EQ(1494901400468l, order.finishedTimestamp);
     ASSERT_EQ(Decimal("10.1000000000"), order.filledAmount);
     ASSERT_EQ(Decimal("1011.0100000000"), order.filledCashAmount);
     ASSERT_EQ(Decimal("0.0202000000"), order.filledFees);

@@ -14,11 +14,7 @@ namespace Huobi {
 
         static std::string klineChannel(
                 const std::string& symbol, const CandlestickInterval& interval) {
-            //            JsonWriter writer;
-            //            writer.put("sub", "market." + symbol + ".kline." + interval.getValue());
-            //            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
-            //             std::cout<<writer.toJsonString()<<std::endl;
-            //            return writer.toJsonString();
+           
             return klineChannel(OP_SUB, symbol, interval, 0, 0);
         }
 
@@ -45,10 +41,7 @@ namespace Huobi {
         }
 
         static std::string tradeChannel(const std::string& symbol) {
-            //            JsonWriter writer;
-            //            writer.put("sub", "market." + symbol + ".trade.detail");
-            //            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
-            //            return writer.toJsonString();
+           
             return tradeChannel(OP_SUB, symbol);
         }
 
@@ -62,10 +55,6 @@ namespace Huobi {
         }
 
         static std::string priceDepthChannel(const std::string& symbol,DepthStep step) {
-            //            JsonWriter writer;
-            //            writer.put("sub", "market." + symbol + ".depth.step0");
-            //            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
-            //            return writer.toJsonString();
             return priceDepthChannel(OP_SUB, symbol, step);
         }
 
@@ -106,10 +95,7 @@ namespace Huobi {
         }
 
         static std::string tradeStatisticsChannel(const std::string& symbol) {
-            //            JsonWriter writer;
-            //            writer.put("sub", "market." + symbol + ".detail");
-            //            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
-            //            return writer.toJsonString();
+           
             return tradeStatisticsChannel(OP_SUB, symbol);
         }
 
@@ -180,7 +166,13 @@ namespace Huobi {
             return writer.toJsonString();
         }
         
-        
+        static std::string MarketDepthMBP(char*& op,const std::string& symbol,const MBPLevel& level) {
+            JsonWriter writer;    
+            writer.put(op, "market." + symbol + ".mbp."+level.getValue());
+            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+            return writer.toJsonString();
+        }
+          
     };
     char* Channels::OP_SUB = "sub";
     char* Channels::OP_REQ = "req";

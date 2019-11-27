@@ -42,8 +42,8 @@ namespace Huobi {
             long endTime,
             const std::function<void(const std::vector<CandlestickEvent>&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
-        WebSocketRequest* req = impl->requestCandlestickEvent(autoClose, symbols, interval, startTime, endTime, callback, errorHandler);
-        impl->startReq(req);
+        WebSocketRequest* req = impl->requestCandlestickEvent(autoClose, symbols, interval, startTime, endTime, callback, errorHandler);       
+        
     }
 
     void WsRequestClientImpl::requestPriceDepthEvent(
@@ -68,7 +68,7 @@ namespace Huobi {
             const char* symbols,
             const std::function<void(const PriceDepthEvent&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
-       
+
         requestPriceDepthEvent(true, symbols, DepthStep::step0, callback, errorHandler);
     }
 
@@ -77,7 +77,7 @@ namespace Huobi {
             const char* symbols,
             const std::function<void(const PriceDepthEvent&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
-  
+
         requestPriceDepthEvent(autoClose, symbols, DepthStep::step0, callback, errorHandler);
     }
 
@@ -85,9 +85,9 @@ namespace Huobi {
             const char* symbols,
             const std::function<void(const TradeEvent&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
-       
-      requestTradeEvent(true, symbols, callback, errorHandler);
-        
+
+        requestTradeEvent(true, symbols, callback, errorHandler);
+
     }
 
     void WsRequestClientImpl::requestTradeEvent(
@@ -103,7 +103,7 @@ namespace Huobi {
             const char* symbols,
             const std::function<void(const TradeStatisticsEvent&) >& callback,
             const std::function<void(HuobiApiException&)>& errorHandler) {
-       
+
         request24HTradeStatistics(true, symbols, callback, errorHandler);
     }
 
@@ -162,5 +162,22 @@ namespace Huobi {
         impl->startReq(request);
     }
 
+    void WsRequestClientImpl::requestMarketDepthMBPEvent(
+            const char* symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        requestMarketDepthMBPEvent(true, symbols, level, callback, errorHandler);
+    }
+
+    void WsRequestClientImpl::requestMarketDepthMBPEvent(
+            bool autoClose,
+            const char* symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* request = impl->requestMarketDepthMBPEvent(autoClose, symbols, level, callback, errorHandler);
+        impl->startReq(request);
+    }
 
 }

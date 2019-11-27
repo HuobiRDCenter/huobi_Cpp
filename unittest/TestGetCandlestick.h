@@ -78,7 +78,7 @@ TEST(TestGetCandlestick, result) {
     JsonWrapper json = JsonDocument().parseFromString(data.c_str());
     auto candlestickList = request->jsonParser(json);
     ASSERT_EQ(2, candlestickList.size());
-    ASSERT_EQ(1550131200000, candlestickList[0].timestamp);
+    ASSERT_EQ(1550160000, candlestickList[0].timestamp);
     ASSERT_EQ(Decimal(3600.77), candlestickList[0].open);
     ASSERT_EQ(Decimal(3602.38), candlestickList[0].close);
     ASSERT_EQ(Decimal(3575), candlestickList[0].low);

@@ -90,7 +90,7 @@ TEST(TestRequestOrdertListEvent, Receive_Normal) {
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto result = request->JsonParser(json);
     ASSERT_EQ(2, result.orders.size());
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1569397755035l), result.timestamp);
+    ASSERT_EQ(1569397755035l, result.timestamp);
     ASSERT_EQ(Decimal("1"), result.orders[0].amount);
     ASSERT_EQ(Decimal("3.7858"), result.orders[0].price);
 

@@ -54,7 +54,7 @@ TEST(TestGet24HTradeStatistics, Result) {
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto result = request->jsonParser(json);
     ASSERT_EQ(Decimal("224419.35108158883"), result.amount);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550224944129l), result.timestamp);
+    ASSERT_EQ(1550224944129, result.timestamp);
     ASSERT_EQ(Decimal("121.97"), result.close);
     ASSERT_EQ(Decimal("123.42"), result.high);
     ASSERT_EQ(Decimal("120.25"), result.low);

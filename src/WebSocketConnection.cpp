@@ -140,7 +140,7 @@ namespace Huobi {
     }
 
     void WebSocketConnection::onMessage(const char* message) {
-        lwsl_user("RX: %s \n", message);   
+        lwsl_user("RX: %s \n", message);
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
         JsonDocument doc;
@@ -276,15 +276,19 @@ namespace Huobi {
         Logger::WriteLog("[Sub][%d] Disconnected", connectionId);
         connectStatus = ConnectionStatus::CLOSED;
         client = nullptr;
-
+       // close();
     }
 
     void WebSocketConnection::close() {
         Logger::WriteLog("[Sub][%d] Closing normally", connectionId);
         lwsl_user("Closing normally \n");
+        
         lws_set_timeout(client, PENDING_TIMEOUT_KILLED_BY_PARENT, LWS_TO_KILL_ASYNC);
+       // lwsl_user("Closing normally 1\n");
         lineStatus = LineStatus::LINE_IDEL;
+        //lwsl_user("Closing normally 2\n");
         dog->onClosedNormally(this);
+       // lwsl_user("Closing normally 3\n");
     }
 }
 

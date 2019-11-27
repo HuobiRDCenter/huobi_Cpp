@@ -65,7 +65,7 @@ TEST(TestRequestCandlestickEvent, Receive_Normal) {
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto events = request->JsonParser(json);
     ASSERT_EQ("btcusdt", events[0].symbol);
-    ASSERT_EQ(TimeService::convertCSTInSecondToUTC(1569107700l), events[0].timestamp);
+    ASSERT_EQ(1569107700l, events[0].timestamp);
     //assertEquals(100359274519L, event.getData().getId());
     ASSERT_EQ(720l, events[0].data.count);
     ASSERT_EQ(Decimal("430054.2200384556"), events[0].data.volume);
