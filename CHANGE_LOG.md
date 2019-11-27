@@ -16,6 +16,8 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 ## Table of Contents
 
+- [Huobi Global API C++ SDK version 1.0.7](#Huobi-Global-API-c++-SDK-version-1.0.7)
+
 - [Huobi Global API C++ SDK version 1.0.6](#Huobi-Global-API-c++-SDK-version-1.0.6)
 
 - [Huobi Global API C++ SDK version 1.0.5](#Huobi-Global-API-c++-SDK-version-1.0.5)
@@ -27,6 +29,26 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 - [Huobi Global API C++ SDK version 1.0.2](#Huobi-Global-API-c++-SDK-version-1.0.2)
 
 - [Huobi Global API C++ SDK version 1.0.1](#Huobi-Global-API-c++-SDK-version-1.0.1)
+
+
+## Huobi Global API Cpp SDK version 1.0.7
+
+[***version 1.0.7***](https://github.com/HuobiRDCenter/huobi_Cpp/releases)
+***2019-11-27***
+
+- align response timestamp to UTC time
+    ```
+    remove timeserver
+    ```
+- add subscribe mbp and request mbp
+    ```
+    market.$symbol.mbp.$levels
+    ```
+  
+- UT code update
+    ```
+    UT code update
+    ```
 
 
 ## Huobi Global API Cpp SDK version 1.0.6
