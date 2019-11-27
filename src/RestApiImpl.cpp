@@ -18,7 +18,7 @@ namespace Huobi {
         UrlParamsBuilder builder;
         res = createRequestByGet<long>("/v1/common/timestamp", builder);
         res->jsonParser = [this](JsonWrapper json) {
-            long value = TimeService::convertCSTInMillisecondToUTC(json.getLong("data"));
+            long value = json.getLong("data");
             return value;
         };
 
@@ -51,8 +51,7 @@ namespace Huobi {
             for (int i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Candlestick candlestick;
-                candlestick.timestamp =
-                        TimeService::convertCSTInSecondToUTC(item.getLong("id"));
+                candlestick.timestamp = item.getLong("id");
                 candlestick.id = item.getLong("id");
                 candlestick.open = item.getDecimal("open");
                 candlestick.close = item.getDecimal("close");
@@ -90,8 +89,8 @@ namespace Huobi {
                     trade.price = itemIn.getDecimal("price");
                     trade.amount = itemIn.getDecimal("amount");
                     trade.tradeId = itemIn.getString("id");
-                    trade.uniqueTradeId = item.getString("trade-id");
-                    trade.timestamp = TimeService::convertCSTInMillisecondToUTC(itemIn.getLong("ts"));
+                    trade.uniqueTradeId = itemIn.getString("trade-id");
+                    trade.timestamp = itemIn.getLong("ts");
                     trade.direction = TradeDirection::lookup(itemIn.getString("direction"));
                     trades.push_back(trade);
                 }
@@ -151,7 +150,7 @@ namespace Huobi {
         auto res = createRequestByGet<BestQuote>("/market/detail/merged", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             BestQuote bestQuote;
-            bestQuote.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            bestQuote.timestamp = json.getLong("ts");
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             JsonWrapper askArray = tick.getJsonObjectOrArray("ask");
             bestQuote.askPrice = askArray.getDecimalAt(0);
@@ -217,7 +216,7 @@ namespace Huobi {
         res->jsonParser = [this, size](const JsonWrapper & json) {
             PriceDepth price;
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
-            long ts = TimeService::convertCSTInMillisecondToUTC(tick.getLong("ts"));
+            long ts = tick.getLong("ts");
             JsonWrapper bids = tick.getJsonObjectOrArray("bids");
             JsonWrapper asks = tick.getJsonObjectOrArray("asks");
             std::vector<DepthEntry> bidList;
@@ -272,10 +271,8 @@ namespace Huobi {
                 withdraw.addressTag = item.getString("address-tag");
                 withdraw.fee = item.getDecimal("fee");
                 withdraw.withdrawState = WithdrawState::lookup(item.getString("state"));
-                withdraw.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
-                withdraw.updatedTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("updated-at"));
+                withdraw.createdTimestamp = item.getLong("created-at");
+                withdraw.updatedTimestamp = item.getLong("updated-at");
                 withdraw.chain = item.getString("chain");
                 withdraws.push_back(withdraw);
             }
@@ -310,10 +307,8 @@ namespace Huobi {
                 deposit.addressTag = item.getString("address-tag");
                 deposit.fee = item.getDecimal("fee");
                 deposit.depositState = DepositState::lookup(item.getString("state"));
-                deposit.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
-                deposit.updatedTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("updated-at"));
+                deposit.createdTimestamp = item.getLong("created-at");
+                deposit.updatedTimestamp = item.getLong("updated-at");
                 deposit.chain = item.getString("chain");
                 lstdeposit.push_back(deposit);
             }
@@ -330,8 +325,7 @@ namespace Huobi {
         auto res = createRequestByGet<TradeStatistics>("/market/detail", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             TradeStatistics tradeStatistics;
-            tradeStatistics.timestamp =
-                    TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            tradeStatistics.timestamp = json.getLong("ts");
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             tradeStatistics.amount = tick.getDecimal("amount");
             tradeStatistics.open = tick.getDecimal("open");
@@ -436,18 +430,15 @@ namespace Huobi {
                 loan.state = LoanOrderStates::lookup(item.getString("state"));
                 loan.accountType = AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
                 loan.userId = item.getLong("user-id");
-                loan.accruedTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("accrued-at"));
-                loan.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                loan.accruedTimestamp = item.getLong("accrued-at");
+                loan.createdTimestamp = item.getLong("created-at");
                 loan.accountId = item.getLong("account-id");
                 loan.paidPoint = item.getDecimal("paid-point");
                 loan.paidCoin = item.getDecimal("paid-coin");
                 loan.deductCurrency = item.getString("deduct-currency");
                 loan.deductAmount = item.getDecimal("deduct-amount");
                 loan.deductRate = item.getDecimal("deduct-rate");
-                loan.hourInterestRate = item.getDecimal("hour-interest-rate");
-                loan.dayInterestRate = item.getDecimal("hour-interest-rate");
+
                 loans.push_back(loan);
             }
             return loans;
@@ -484,8 +475,7 @@ namespace Huobi {
                 order.amount = item.getDecimal("amount");
                 order.accountType =
                         AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
-                order.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                order.createdTimestamp = item.getLong("created-at");
                 order.type = OrderType::lookup(item.getString("type"));
                 order.filledAmount = item.getDecimal("filled-amount");
                 order.filledCashAmount = item.getDecimal("filled-cash-amount");
@@ -602,11 +592,9 @@ namespace Huobi {
             order.orderId = data.getLong("id");
             order.accountType = AccountsInfoMap::getAccount(accessKey, data.getLong("account-id")).type;
             order.amount = data.getDecimal("amount");
-            order.canceledTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("canceled-at"));
-            order.createdTimestamp =
-                    TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
-            order.finishedTimestamp =
-                    TimeService::convertCSTInMillisecondToUTC(data.getLong("finished-at"));
+            order.canceledTimestamp = data.getLong("canceled-at");
+            order.createdTimestamp = data.getLong("created-at");
+            order.finishedTimestamp = data.getLong("finished-at");
             order.filledAmount = data.getDecimal("field-amount");
             order.filledCashAmount = data.getDecimal("field-cash-amount");
             order.filledFees = data.getDecimal("field-fees");
@@ -635,8 +623,7 @@ namespace Huobi {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 MatchResult matchResult;
                 matchResult.id = (item.getLong("id"));
-                matchResult.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                matchResult.createdTimestamp = item.getLong("created-at");
                 matchResult.filledAmount = item.getDecimal("filled-amount");
                 matchResult.filledFeeds = item.getDecimal("filled-fees");
                 matchResult.matchId = item.getLong("match-id");
@@ -677,9 +664,8 @@ namespace Huobi {
             for (int i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 MatchResult matchResult;
-                matchResult.id = (item.getLong("id"));
-                matchResult.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                matchResult.id = item.getLong("id");
+                matchResult.createdTimestamp = item.getLong("created-at");
                 matchResult.filledAmount = item.getDecimal("filled-amount");
                 matchResult.filledFeeds = item.getDecimal("filled-fees");
                 matchResult.matchId = item.getLong("match-id");
@@ -780,15 +766,12 @@ namespace Huobi {
                 order.accountType =
                         AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
                 order.amount = item.getDecimal("amount");
-                order.canceledTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("canceled-at", 0));
-                order.finishedTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("finished-at", 0));
+                order.canceledTimestamp = item.getLongOrDefault("canceled-at", 0);
+                order.finishedTimestamp = item.getLongOrDefault("finished-at", 0);
                 order.orderId = item.getLong("id");
                 order.symbol = item.getString("symbol");
                 order.price = item.getDecimal("price");
-                order.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                order.createdTimestamp = item.getLong("created-at");
                 order.type = OrderType::lookup(item.getString("type"));
                 order.filledAmount = item.getDecimal("field-amount");
                 order.filledCashAmount = item.getDecimal("field-cash-amount");
@@ -994,7 +977,7 @@ namespace Huobi {
             for (int i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
                 Candlestick candlestick;
-                candlestick.timestamp = TimeService::convertCSTInSecondToUTC(item.getLong("id"));
+                candlestick.timestamp = item.getLong("id");
                 candlestick.id = item.getLong("id");
                 candlestick.open = item.getDecimal("open");
                 candlestick.close = item.getDecimal("close");
@@ -1072,11 +1055,9 @@ namespace Huobi {
             order.orderId = data.getLong("id");
             order.accountType = AccountsInfoMap::getAccount(accessKey, data.getLong("account-id")).type;
             order.amount = data.getDecimal("amount");
-            order.canceledTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("canceled-at"));
-            order.createdTimestamp =
-                    TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
-            order.finishedTimestamp =
-                    TimeService::convertCSTInMillisecondToUTC(data.getLong("finished-at"));
+            order.canceledTimestamp = data.getLong("canceled-at");
+            order.createdTimestamp = data.getLong("created-at");
+            order.finishedTimestamp = data.getLong("finished-at");
             order.filledAmount = data.getDecimal("field-amount");
             order.filledCashAmount = data.getDecimal("field-cash-amount");
             order.filledFees = data.getDecimal("field-fees");
@@ -1155,15 +1136,12 @@ namespace Huobi {
                 order.accountType =
                         AccountsInfoMap::getAccount(accessKey, item.getLong("account-id")).type;
                 order.amount = item.getDecimal("amount");
-                order.canceledTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("canceled-at", 0));
-                order.finishedTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("finished-at", 0));
+                order.canceledTimestamp = item.getLongOrDefault("canceled-at", 0);
+                order.finishedTimestamp = item.getLongOrDefault("finished-at", 0);
                 order.orderId = item.getLong("id");
                 order.symbol = item.getString("symbol");
                 order.price = item.getDecimal("price");
-                order.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                order.createdTimestamp = item.getLong("created-at");
                 order.type = OrderType::lookup(item.getString("type"));
                 order.filledAmount = item.getDecimal("field-amount");
                 order.filledCashAmount = item.getDecimal("field-cash-amount");
@@ -1174,7 +1152,7 @@ namespace Huobi {
                 if (item.containKey("operator")) {
                     order.stopOrderOperator = StopOrderOperator::lookup(item.getString("operator"));
                 }
-                order.nextTime = TimeService::convertCSTInMillisecondToUTC(item.getLongOrDefault("next-time", 0));
+                order.nextTime = item.getLongOrDefault("next-time", 0);
                 orderList.push_back(order);
             }
             return orderList;
@@ -1197,7 +1175,7 @@ namespace Huobi {
             trade.amount = item.getDecimal("amount");
             trade.tradeId = item.getString("id");
             trade.uniqueTradeId = item.getString("trade-id");
-            trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
+            trade.timestamp = item.getLong("ts");
             trade.direction = TradeDirection::lookup(item.getString("direction"));
             return trade;
         };

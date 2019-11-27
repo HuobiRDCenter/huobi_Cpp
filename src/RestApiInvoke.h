@@ -98,8 +98,8 @@ namespace Huobi {
             curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, &writeFun); // !数据回调函数
             curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, &sBuffer); // !数据回调函数的参，一般为Buffer或文件fd
             if (request->method == "POST") {
-                //TODO: body需要转成utf-8
-                curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, request->getPostBody().c_str());
+                curl_easy_setopt(pCurl, CURLOPT_POSTFIELDSIZE, request->getPostBody().size());
+                curl_easy_setopt(pCurl, CURLOPT_COPYPOSTFIELDS, request->getPostBody().c_str());
             }
             curl_easy_perform(pCurl);
             if (code != CURLE_OK) {
@@ -115,7 +115,7 @@ namespace Huobi {
             curl_easy_cleanup(pCurl);
             curl_global_cleanup();
 
-            RestApiInvoke::checkResponse(json);          
+            RestApiInvoke::checkResponse(json);
             T val = (ptr->jsonParser)(json);
 
             return val;

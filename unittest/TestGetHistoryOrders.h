@@ -99,11 +99,11 @@ TEST(TestGetHistoryOrders, result) {
     auto orders = request->jsonParser(json);
     
     ASSERT_EQ(2, orders.size());
-    ASSERT_EQ(24965104183l, orders[0].orderId);
+    ASSERT_EQ(24965104183, orders[0].orderId);
     ASSERT_EQ(AccountType::spot, orders[0].accountType);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155568l),orders[0].canceledTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155647l),orders[0].finishedTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550630155350l),orders[0].createdTimestamp);
+    ASSERT_EQ(1550630155568,orders[0].canceledTimestamp);
+    ASSERT_EQ(1550630155647,orders[0].finishedTimestamp);
+    ASSERT_EQ(1550630155350,orders[0].createdTimestamp);
     ASSERT_EQ(Decimal("0.0888"), orders[0].filledAmount);
     ASSERT_EQ(Decimal("0.011"), orders[0].filledCashAmount);
     ASSERT_EQ(Decimal("0.03445"), orders[0].filledFees);

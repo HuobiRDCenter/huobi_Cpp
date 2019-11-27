@@ -92,7 +92,7 @@ TEST(TestGetMatchResults, result) {
     auto request = impl->getMatchResults(req);
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto matchResults = request->jsonParser(json);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550632074577), matchResults[1].createdTimestamp);
+    ASSERT_EQ(1550632074577, matchResults[1].createdTimestamp);
     ASSERT_EQ(4191225853L, matchResults[1].id);
     ASSERT_EQ(100047251154l, matchResults[1].matchId);
     ASSERT_EQ(24966984923l, matchResults[1].orderId);

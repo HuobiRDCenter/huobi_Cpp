@@ -29,10 +29,14 @@ namespace Huobi {
         // std::string host = "api.huobi.pro";
         std::string host = "api.huobi.so";
         WebSocketWatchDog* dog = nullptr;
+        
+        struct lws_context* context = nullptr;
     public:
         void startService() override;
         void startReq(WebSocketRequest* webSocketRequest);
 
+        void init_context();
+        
         SubscriptionClientImpl() {
             apiKey = "";
             secretKey = "";
@@ -120,6 +124,13 @@ namespace Huobi {
                 const std::function<void(const MarketBBOEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
+        void subscribeMarketDepthMBP(
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+
         WebSocketRequest* requestCandlestickEvent(
                 bool autoClose,
                 const char* symbols,
@@ -164,6 +175,15 @@ namespace Huobi {
                 long orderId,
                 const std::function<void(const OrderDetailEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* requestMarketDepthMBPEvent(
+                bool autoClose,
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+
 
     private:
         std::list<std::string> parseSymbols(const char* symbols);

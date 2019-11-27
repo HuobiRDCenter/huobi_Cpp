@@ -426,8 +426,15 @@ private:
         static CrossMarginAccountState fl_end;
         static CrossMarginAccountState fl_negative;
         static CrossMarginAccountState SDK_NOTSUPPORT;
+    };
 
-
+    class MBPLevel : public BaseEnumClass<MBPLevel> {
+        DEFINE_ENUM_CLASS(MBPLevel);
+    public:
+        static MBPLevel LEVEL5;
+        static MBPLevel LEVEL10;
+        static MBPLevel LEVEL20;
+        static MBPLevel LEVEL150;
     };
 
 }

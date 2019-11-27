@@ -45,12 +45,14 @@ TEST(TestRequestTradeEvent, Receive_Normal) {
             "\t\t\t\"amount\": 0.001000000000000000,\n"
             "\t\t\t\"ts\": 1550558574684,\n"
             "\t\t\t\"id\": 10033544262424890651900,\n"
+            "\t\t\t\"tradeId\": 10033544262424890651183,\n"
             "\t\t\t\"price\": 3892.360000000000000000,\n"
             "\t\t\t\"direction\": \"sell\"\n"
             "\t\t}, {\n"
             "\t\t\t\"amount\": 0.051200000000000000,\n"
             "\t\t\t\"ts\": 1550558574684,\n"
             "\t\t\t\"id\": 10033544262424890651183,\n"
+            "\t\t\t\"tradeId\": 10033544262424890651183,\n"
             "\t\t\t\"price\": 3892.350000000000000000,\n"
             "\t\t\t\"direction\": \"buy\"\n"
             "\t\t}]\n"
@@ -65,14 +67,14 @@ TEST(TestRequestTradeEvent, Receive_Normal) {
     auto event = request->JsonParser(json);
     ASSERT_EQ("btcusdt", event.symbol);
     ASSERT_EQ(2, event.tradeList.size());
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550558574702l), event.timestamp);
+    ASSERT_EQ(1550558574702l, event.timestamp);
     ASSERT_EQ(Decimal("0.001"), event.tradeList[0].amount);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550558574684l), event.tradeList[0].timestamp);
+    ASSERT_EQ(1550558574684l, event.tradeList[0].timestamp);
     ASSERT_EQ("10033544262424890651900", event.tradeList[0].tradeId);
     ASSERT_EQ(Decimal("3892.36"), event.tradeList[0].price);
     ASSERT_EQ(TradeDirection::sell, event.tradeList[0].direction);
     ASSERT_EQ(Decimal("0.0512"), event.tradeList[1].amount);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550558574684l), event.tradeList[1].timestamp);
+    ASSERT_EQ(1550558574684l, event.tradeList[1].timestamp);
     ASSERT_EQ("10033544262424890651183", event.tradeList[1].tradeId);
     ASSERT_EQ(Decimal("3892.35"), event.tradeList[1].price);
     ASSERT_EQ(TradeDirection::buy, event.tradeList[1].direction);

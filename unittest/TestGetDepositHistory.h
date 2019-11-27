@@ -54,6 +54,7 @@ TEST(TestGetDepositHistory, Result) {
             "        \"address-tag\": \"100040\",\n"
             "        \"fee\": 345,\n"
             "        \"state\": \"confirmed\",\n"
+            "        \"chain\": \"btc\",\n"
             "        \"created-at\": 1510912472199,\n"
             "        \"updated-at\": 1511145876575\n"
             "      }\n"
@@ -71,8 +72,8 @@ TEST(TestGetDepositHistory, Result) {
     auto withdrawDepositList = request->jsonParser(json);
     ASSERT_EQ(Decimal("345"), withdrawDepositList[0].fee);
     ASSERT_EQ(1171l, withdrawDepositList[0].id);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1510912472199l), withdrawDepositList[0].createdTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1511145876575l), withdrawDepositList[0].updatedTimestamp);
+    ASSERT_EQ(1510912472199, withdrawDepositList[0].createdTimestamp);
+    ASSERT_EQ(1511145876575, withdrawDepositList[0].updatedTimestamp);
     ASSERT_EQ(Decimal("7.457467"), withdrawDepositList[0].amount);
     ASSERT_EQ("rae93V8d2mdoUQHwBDBdM4NHCMehRJAsbm", withdrawDepositList[0].address);
     ASSERT_EQ("100040", withdrawDepositList[0].addressTag);

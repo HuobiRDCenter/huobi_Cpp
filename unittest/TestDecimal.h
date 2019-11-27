@@ -76,8 +76,6 @@ TEST(TestDecimal, Div) {
         Decimal b("456.123");
         ASSERT_EQ(Decimal("0.2706638340973816"), a / b);
         a /= b;
-        printf("!!!!!");
-        printf(a.toString().c_str());
         ASSERT_EQ(Decimal("0.2706638340973816"), a);
     }
     {

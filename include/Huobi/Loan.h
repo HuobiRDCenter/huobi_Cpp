@@ -89,8 +89,7 @@ namespace Huobi {
         std::string deductCurrency;
         Decimal deductAmount;
         Decimal deductRate;
-        Decimal hourInterestRate;
-        Decimal dayInterestRate;
+       
 
     };
 }

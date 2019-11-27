@@ -70,7 +70,7 @@ TEST(TestRequestAccountList, Receive_Normal) {
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto result = request->JsonParser(json);
     ASSERT_EQ(1, result.accounts.size());
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1569312000230l), result.timestamp);
+    ASSERT_EQ(1569312000230l, result.timestamp);
     ASSERT_EQ(AccountType::spot, result.accounts[0].type);
     ASSERT_EQ(AccountState::working, result.accounts[0].state);
     ASSERT_EQ(2, result.accounts[0].balances.size());

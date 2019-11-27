@@ -27,7 +27,6 @@ using namespace Huobi;
 TEST(TestGetMatchResult, request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     auto request = impl->getMatchResults("htbtc", 24966984923l);
-    printf(request->getUrl().c_str());
     ASSERT_TRUE(request->getUrl().find("/v1/order/orders/24966984923/matchresults") != -1);
     ASSERT_EQ("GET", request->method);
     ASSERT_TRUE(request->getUrl().find("Signature") != -1);
@@ -82,10 +81,10 @@ TEST(TestGetMatchResult, result) {
     auto request = impl->getMatchResults("htbtc", 24966984923l);
     JsonWrapper json = JsonDocument().parseFromString(data);
     auto matchResults = request->jsonParser(json);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550632074577l), matchResults[0].createdTimestamp);
-    ASSERT_EQ(4191225853l, matchResults[0].id);
-    ASSERT_EQ(100047251154l, matchResults[0].matchId);
-    ASSERT_EQ(24966984923l, matchResults[0].orderId);
+    ASSERT_EQ(1550632074577, matchResults[0].createdTimestamp);
+    ASSERT_EQ(4191225853, matchResults[0].id);
+    ASSERT_EQ(100047251154, matchResults[0].matchId);
+    ASSERT_EQ(24966984923, matchResults[0].orderId);
     ASSERT_EQ(Decimal("1"), matchResults[0].filledAmount);
     ASSERT_EQ(Decimal("0.00000061508"), matchResults[0].filledFeeds);
     ASSERT_EQ(Decimal("0.00030754"), matchResults[0].price);

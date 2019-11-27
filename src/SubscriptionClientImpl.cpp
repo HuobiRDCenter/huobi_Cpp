@@ -45,7 +45,7 @@ namespace Huobi {
                 lwsl_user("afer canceled.....\n");
                 connection->disconnect();
 
-                return 1;
+                return -1;
                 //case LWS_CALLBACK_WSI_DESTROY:
             case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
                 connection->disconnect();
@@ -59,7 +59,7 @@ namespace Huobi {
         return 0;
     }
 
-    static const struct lws_protocols protocols[] = {
+   static const struct lws_protocols protocols[] = {
         {
             "example-protocol",
             event_cb,
@@ -68,9 +68,9 @@ namespace Huobi {
         },
         { NULL, NULL, 0, 0}
     };
-    static struct lws_context* context = nullptr;
+    
 
-    static void init_context() {
+    void SubscriptionClientImpl::init_context() {
         if (context == nullptr) {
 
             int logs = LLL_ERR | LLL_WARN ;
@@ -125,6 +125,7 @@ namespace Huobi {
         }
         lwsl_user("enter_event_loop END\n");
         lws_context_destroy(context);
+
     }
 
     void SubscriptionClientImpl::createConnection(WebSocketRequest* request) {
@@ -218,6 +219,14 @@ namespace Huobi {
 
     }
 
+    void SubscriptionClientImpl::subscribeMarketDepthMBP(
+            const char* symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {       
+        createConnection(impl->subscribeMarketDepthMBP(parseSymbols(symbols), level, callback, errorHandler));
+    }
+
     WebSocketRequest* SubscriptionClientImpl::requestCandlestickEvent(
             bool autoClose,
             const char* symbols,
@@ -304,8 +313,19 @@ namespace Huobi {
         WebSocketRequest* req = impl->requestOrdertDetailEvent(autoClose, orderId, callback, errorHandler);
         createConnection(req);
         return req;
-
     }
+
+    WebSocketRequest * SubscriptionClientImpl::requestMarketDepthMBPEvent(
+            bool autoClose,
+            const char* symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        WebSocketRequest* req = impl->requestMarketDepthMBPEvent(autoClose, parseSymbols(symbols), level, callback, errorHandler);
+        createConnection(req);
+        return req;
+    }
+
 
 }
 

@@ -51,6 +51,7 @@ TEST(TestGetMarketTrade, Result) {
             "        \"amount\": 0.149500000000000000,\n"
             "        \"ts\": 1568773104358,\n"
             "        \"id\": 10217902064148516568498,\n"
+            "        \"trade-id\": 10217902064148516568498,\n"
             "        \"price\": 212.230000000000000000,\n"
             "        \"direction\": \"sell\"\n"
             "      }\n"
@@ -63,9 +64,9 @@ TEST(TestGetMarketTrade, Result) {
     auto trade = request->jsonParser(json);
     ASSERT_EQ(Decimal("212.23"), trade.price);
     ASSERT_EQ(Decimal("0.1495"), trade.amount);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1568773104358), trade.timestamp);
+    ASSERT_EQ(1568773104358, trade.timestamp);
     ASSERT_EQ("10217902064148516568498", trade.tradeId);
-    ASSERT_EQ(TradeDirection::sell, trade.direction);  
+    ASSERT_EQ(TradeDirection::sell, trade.direction);
 }
 
 #endif /* TESTGETMARKETTRADE_H */

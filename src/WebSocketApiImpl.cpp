@@ -34,10 +34,10 @@ namespace Huobi {
             CandlestickEvent event;
             event.symbol = parser.getSymbol();
             event.interval = interval;
-            event.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            event.timestamp = json.getLong("ts");
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             Candlestick data;
-            data.timestamp = TimeService::convertCSTInSecondToUTC(tick.getLong("id"));
+            data.timestamp = tick.getLong("id");
             data.id = tick.getLong("id");
             data.amount = tick.getDecimal("amount");
             data.close = tick.getDecimal("close");
@@ -72,7 +72,8 @@ namespace Huobi {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             TradeEvent tradeEvent;
             tradeEvent.symbol = parser.getSymbol();
-            tradeEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            tradeEvent.timestamp = json.getLong("ts");
+
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             JsonWrapper dataArray = tick.getJsonObjectOrArray("data");
             for (int i = 0; i < dataArray.size(); i++) {
@@ -83,7 +84,7 @@ namespace Huobi {
                 trade.tradeId = item.getString("id");
                 trade.uniqueTradeId = item.getString("tradeId");
                 trade.direction = TradeDirection::lookup(item.getString("direction"));
-                trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
+                trade.timestamp = item.getLong("ts");
                 tradeEvent.tradeList.push_back(trade);
             }
             return tradeEvent;
@@ -115,7 +116,7 @@ namespace Huobi {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             PriceDepthEvent priceDepthEvent;
             priceDepthEvent.symbol = parser.getSymbol();
-            priceDepthEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            priceDepthEvent.timestamp = json.getLong("ts");
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             JsonWrapper bids = tick.getJsonObjectOrArray("bids");
             JsonWrapper asks = tick.getJsonObjectOrArray("asks");
@@ -138,6 +139,7 @@ namespace Huobi {
             }
             depth.bids = bidsves;
             depth.asks = asksves;
+            depth.timestamp = tick.getLong("ts");
             priceDepthEvent.data = depth;
             return priceDepthEvent;
         };
@@ -167,7 +169,7 @@ namespace Huobi {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             TradeStatisticsEvent tradeStatisticsEvent;
             tradeStatisticsEvent.symbol = parser.getSymbol();
-            long ts = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            long ts = json.getLong("ts");
             tradeStatisticsEvent.timestamp = ts;
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             TradeStatistics statistics;
@@ -208,15 +210,15 @@ namespace Huobi {
             ChannelParser parser = ChannelParser(json.getString("topic"));
             OrderUpdateEvent orderUpdateEvent;
             orderUpdateEvent.symbol = parser.getSymbol();
-            orderUpdateEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            orderUpdateEvent.timestamp = json.getLong("ts");
             JsonWrapper data = json.getJsonObjectOrArray("data");
             Order order;
             order.orderId = data.getLong("order-id");
-            order.symbol = parser.getSymbol();           
+            order.symbol = parser.getSymbol();
             order.accountType = AccountsInfoMap::getAccount(this->accessKey, data.getLong("account-id")).type;
             order.amount = data.getDecimal("order-amount");
             order.price = data.getDecimal("order-price");
-            order.createdTimestamp = TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
+            order.createdTimestamp = (data.getLong("created-at"));
             order.type = OrderType::lookup(data.getString("order-type"));
             order.filledAmount = data.getDecimal("filled-amount");
             order.filledCashAmount = data.getDecimal("filled-cash-amount");
@@ -246,7 +248,7 @@ namespace Huobi {
             AccountEvent accountEvent;
             JsonWrapper data = json.getJsonObjectOrArray("data");
             accountEvent.changeType = AccountChangeType::lookup(data.getString("event"));
-            accountEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            accountEvent.timestamp = json.getLong("ts");
             JsonWrapper listArray = data.getJsonObjectOrArray("list");
             for (int i = 0; i < listArray.size(); i++) {
                 JsonWrapper itemInList = listArray.getJsonObjectAt(i);
@@ -285,7 +287,7 @@ namespace Huobi {
             ChannelParser parser = ChannelParser(json.getString("topic"));
             OrderUpdateEvent orderUpdateEvent;
             orderUpdateEvent.symbol = parser.getSymbol();
-            orderUpdateEvent.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            orderUpdateEvent.timestamp = json.getLong("ts");
             JsonWrapper data = json.getJsonObjectOrArray("data");
             Order order;
             order.orderId = data.getLong("order-id");
@@ -317,7 +319,6 @@ namespace Huobi {
         req->connectionHandler = [symbols](WebSocketConnection * connection) {
             for (std::string symbol : symbols) {
                 connection->send(Channels::marketBBOChannel(Channels::OP_SUB, symbol));
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
         };
 
@@ -325,7 +326,7 @@ namespace Huobi {
             ChannelParser parser = ChannelParser(json.getString("ch"));
             MarketBBOEvent event;
             event.symbol = parser.getSymbol();
-            long ts = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            long ts = json.getLong("ts");
             event.timestamp = ts;
             JsonWrapper tick = json.getJsonObjectOrArray("tick");
             BestQuote bbo;
@@ -333,11 +334,52 @@ namespace Huobi {
             bbo.askPrice = tick.getDecimal("ask");
             bbo.bidAmount = tick.getDecimal("bidSize");
             bbo.bidPrice = tick.getDecimal("bid");
-            bbo.timestamp = TimeService::convertCSTInMillisecondToUTC(tick.getLong("quoteTime"));
+            bbo.timestamp = (tick.getLong("quoteTime"));
             event.bbo = bbo;
             return event;
         };
 
+        req->isNeedSignature = false;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+
+    }
+
+    WebSocketRequest* WebSocketApiImpl::subscribeMarketDepthMBP(
+            const std::list<std::string>& symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+
+        InputChecker::checker()->checkCallback(callback);
+        auto req = new WebSocketRequestImpl<MarketDepthMBPEvent>();
+        req->connectionHandler = [symbols, level](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::MarketDepthMBP(Channels::OP_SUB, symbol, level));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        };
+        req->JsonParser = [this](const JsonWrapper & json) {
+
+            MarketDepthMBPEvent marketDepthMBPEvent;
+            JsonWrapper tick = json.getJsonObjectOrArray("tick");
+            marketDepthMBPEvent.seqNum = tick.getLong("seqNum");
+            marketDepthMBPEvent.prevSeqNum = tick.getLong("prevSeqNum");
+            JsonWrapper bids = tick.getJsonObjectOrArray("bids");
+            JsonWrapper asks = tick.getJsonObjectOrArray("asks");
+            for (int i = 0; i < bids.size(); i++) {
+                JsonWrapper item = bids.getArrayAt(i);
+                Decimal price = item.getDecimalAt(0);
+                marketDepthMBPEvent.bids[price] = item.getDecimalAt(1);
+            }
+            for (int i = 0; i < asks.size(); i++) {
+                JsonWrapper item = asks.getArrayAt(i);
+                Decimal price = item.getDecimalAt(0);
+                marketDepthMBPEvent.asks[price] = item.getDecimalAt(1);
+            }
+            return marketDepthMBPEvent;
+        };
         req->isNeedSignature = false;
         req->Callback = callback;
         req->errorHandler = errorHandler;
@@ -376,7 +418,7 @@ namespace Huobi {
                 candlestickEvent.symbol = parser.getSymbol();
                 candlestickEvent.interval = interval;
                 Candlestick can;
-                can.timestamp = TimeService::convertCSTInSecondToUTC(item.getLong("id"));
+                can.timestamp = item.getLong("id");
                 can.id = item.getLong("id");
                 can.amount = item.getDecimal("amount");
                 can.close = item.getDecimal("close");
@@ -441,7 +483,7 @@ namespace Huobi {
             event.data = priceDepth;
             ChannelParser parser = ChannelParser(json.getString("rep"));
             event.symbol = parser.getSymbol();
-            event.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            event.timestamp = json.getLong("ts");
             return event;
         };
         req->isNeedSignature = false;
@@ -479,13 +521,13 @@ namespace Huobi {
                 trade.tradeId = item.getString("id");
                 trade.uniqueTradeId = item.getString("tradeId");
                 trade.direction = TradeDirection::lookup(item.getString("direction"));
-                trade.timestamp = TimeService::convertCSTInMillisecondToUTC(item.getLong("ts"));
+                trade.timestamp = item.getLong("ts");
                 tradeVec.push_back(trade);
             }
             event.tradeList = tradeVec;
             ChannelParser parser = ChannelParser(json.getString("rep"));
             event.symbol = parser.getSymbol();
-            event.timestamp = TimeService::convertCSTInMillisecondToUTC(json.getLong("id"));
+            event.timestamp = json.getLong("id");
             return event;
         };
 
@@ -514,7 +556,7 @@ namespace Huobi {
         req->JsonParser = [](const JsonWrapper & json) {
             TradeStatisticsEvent event;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            long ts = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            long ts = json.getLong("ts");
             TradeStatistics statistics;
             statistics.amount = data.getDecimal("amount");
             statistics.open = data.getDecimal("open");
@@ -553,7 +595,7 @@ namespace Huobi {
         req->JsonParser = [](const JsonWrapper & json) {
             AccountListEvent event;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            long ts = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            long ts = json.getLong("ts");
             event.timestamp = ts;
             for (int i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
@@ -608,7 +650,7 @@ namespace Huobi {
         req->JsonParser = [this](const JsonWrapper & json) {
             OrderListEvent event;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            long ts = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            long ts = json.getLong("ts");
             event.timestamp = ts;
             for (int i = 0; i < data.size(); i++) {
                 JsonWrapper item = data.getJsonObjectAt(i);
@@ -618,9 +660,9 @@ namespace Huobi {
                 order.price = item.getDecimal("price");
                 order.amount = item.getDecimal("amount");
                 order.accountType =
-                        AccountsInfoMap::getAccount(this->accessKey, item.getLong("account-id")).type;             
+                        AccountsInfoMap::getAccount(this->accessKey, item.getLong("account-id")).type;
                 order.createdTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("created-at"));
+                        (item.getLong("created-at"));
                 order.type = OrderType::lookup(item.getString("type"));
                 order.filledAmount = item.getDecimal("filled-amount");
                 order.filledCashAmount = item.getDecimal("filled-cash-amount");
@@ -628,8 +670,8 @@ namespace Huobi {
                 order.source = OrderSource::lookup(item.getString("source"));
                 order.state = OrderState::lookup(item.getString("state"));
                 order.canceledTimestamp =
-                        TimeService::convertCSTInMillisecondToUTC(item.getLong("canceled-at"));
-                event.orders.push_back(order);        
+                        (item.getLong("canceled-at"));
+                event.orders.push_back(order);
             }
             return event;
         };
@@ -656,7 +698,7 @@ namespace Huobi {
         req->JsonParser = [this](const JsonWrapper & json) {
             OrderDetailEvent event;
             JsonWrapper data = json.getJsonObjectOrArray("data");
-            long ts = TimeService::convertCSTInMillisecondToUTC(json.getLong("ts"));
+            long ts = json.getLong("ts");
             event.timestamp = ts;
             Order order;
             order.orderId = data.getLong("id");
@@ -666,7 +708,7 @@ namespace Huobi {
             order.accountType =
                     AccountsInfoMap::getAccount(this->accessKey, data.getLong("account-id")).type;
             order.createdTimestamp =
-                    TimeService::convertCSTInMillisecondToUTC(data.getLong("created-at"));
+                    (data.getLong("created-at"));
             order.type = OrderType::lookup(data.getString("type"));
             order.filledAmount = data.getDecimal("filled-amount");
             order.filledCashAmount = data.getDecimal("filled-cash-amount");
@@ -674,11 +716,53 @@ namespace Huobi {
             order.source = OrderSource::lookup(data.getString("source"));
             order.state = OrderState::lookup(data.getString("state"));
             order.canceledTimestamp =
-                    TimeService::convertCSTInMillisecondToUTC(data.getLong("canceled-at"));
+                    (data.getLong("canceled-at"));
             event.order = order;
             return event;
         };
         req->isNeedSignature = true;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+    }
+
+    WebSocketRequest* WebSocketApiImpl::requestMarketDepthMBPEvent(
+            bool autoClose,
+            const std::list<std::string>& symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+
+        InputChecker::checker()
+                ->checkCallback(callback);
+        auto req = new WebSocketRequestImpl<MarketDepthMBPEvent> ();
+        req->connectionHandler = [symbols, level](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::MarketDepthMBP(Channels::OP_REQ, symbol, level));
+            }
+        };
+        req->autoClose = autoClose;
+        req->time = symbols.size();
+        req->JsonParser = [](const JsonWrapper & json) {
+            MarketDepthMBPEvent marketDepthMBPEvent;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            marketDepthMBPEvent.seqNum = data.getLong("seqNum");
+            marketDepthMBPEvent.prevSeqNum = data.getLong("prevSeqNum");
+            JsonWrapper bids = data.getJsonObjectOrArray("bids");
+            JsonWrapper asks = data.getJsonObjectOrArray("asks");
+            for (int i = 0; i < bids.size(); i++) {
+                JsonWrapper item = bids.getArrayAt(i);
+                Decimal price = item.getDecimalAt(0);
+                marketDepthMBPEvent.bids[price] = item.getDecimalAt(1);
+            }
+            for (int i = 0; i < asks.size(); i++) {
+                JsonWrapper item = asks.getArrayAt(i);
+                Decimal price = item.getDecimalAt(0);
+                marketDepthMBPEvent.asks[price] = item.getDecimalAt(1);
+            }
+            return marketDepthMBPEvent;
+        };
+        req->isNeedSignature = false;
         req->Callback = callback;
         req->errorHandler = errorHandler;
         return req;
