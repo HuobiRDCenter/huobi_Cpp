@@ -16,6 +16,8 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 ## Table of Contents
 
+- [Huobi Global API C++ SDK version 1.0.8](#Huobi-Global-API-c++-SDK-version-1.0.8)
+
 - [Huobi Global API C++ SDK version 1.0.7](#Huobi-Global-API-c++-SDK-version-1.0.7)
 
 - [Huobi Global API C++ SDK version 1.0.6](#Huobi-Global-API-c++-SDK-version-1.0.6)
@@ -30,6 +32,15 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 - [Huobi Global API C++ SDK version 1.0.1](#Huobi-Global-API-c++-SDK-version-1.0.1)
 
+## Huobi Global API Cpp SDK version 1.0.8
+
+[***version 1.0.8***](https://github.com/HuobiRDCenter/huobi_Cpp/releases)
+***2019-11-29***
+
+- update example demo, fix 1.0.7 bug
+    ```
+    SubscribeMarketDepthMBP
+    ```
 
 ## Huobi Global API Cpp SDK version 1.0.7
 
