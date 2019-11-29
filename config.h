@@ -1,1 +1,1 @@
-#define CURRENT_VERSION 1.0.7
+#define CURRENT_VERSION 1.0.8
