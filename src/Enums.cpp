@@ -211,6 +211,30 @@ namespace Huobi {
     MBPLevel MBPLevel::LEVEL10 = MBPLevel("10");
     MBPLevel MBPLevel::LEVEL20 = MBPLevel("20");
     MBPLevel MBPLevel::LEVEL150 = MBPLevel("150");
+    MBPLevel MBPLevel::SDK_NOTSUPPORT = MBPLevel("sdk_not_support_for_now");
+
+    AccountsUpdateMode AccountsUpdateMode::balance = AccountsUpdateMode("0");
+    AccountsUpdateMode AccountsUpdateMode::balanceAndaAvailable = AccountsUpdateMode("1");
+    AccountsUpdateMode AccountsUpdateMode::SDK_NOTSUPPORT = AccountsUpdateMode("sdk_not_support_for_now");
+
+
+    AccountsUpdateChangeType AccountsUpdateChangeType::order_place = AccountsUpdateChangeType("order.place");
+    AccountsUpdateChangeType AccountsUpdateChangeType::order_match = AccountsUpdateChangeType("order.match");
+    AccountsUpdateChangeType AccountsUpdateChangeType::order_refund = AccountsUpdateChangeType("order.refund");
+    AccountsUpdateChangeType AccountsUpdateChangeType::order_cancle = AccountsUpdateChangeType("order.cancle");
+    AccountsUpdateChangeType AccountsUpdateChangeType::order_fee_refund = AccountsUpdateChangeType("order.fee.refund");
+    AccountsUpdateChangeType AccountsUpdateChangeType::margin_transfer = AccountsUpdateChangeType("margin.transfer");
+    AccountsUpdateChangeType AccountsUpdateChangeType::margin_loan = AccountsUpdateChangeType("margin.loan");
+    AccountsUpdateChangeType AccountsUpdateChangeType::margin_interest = AccountsUpdateChangeType("margin.interest");
+    AccountsUpdateChangeType AccountsUpdateChangeType::margin_repay = AccountsUpdateChangeType("margin.repay");
+    AccountsUpdateChangeType AccountsUpdateChangeType::other = AccountsUpdateChangeType("other");
+    AccountsUpdateChangeType AccountsUpdateChangeType::SDK_NOTSUPPORT = AccountsUpdateChangeType("sdk_not_support_for_now");
+
+    AccountsUpdateAccountType AccountsUpdateAccountType::trade = AccountsUpdateAccountType("trade");
+    AccountsUpdateAccountType AccountsUpdateAccountType::loan = AccountsUpdateAccountType("loan");
+    AccountsUpdateAccountType AccountsUpdateAccountType::interest = AccountsUpdateAccountType("interest");
+    AccountsUpdateAccountType AccountsUpdateAccountType::SDK_NOTSUPPORT = AccountsUpdateAccountType("sdk_not_support_for_now");
+
 
 }
 

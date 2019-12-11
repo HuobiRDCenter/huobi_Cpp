@@ -14,6 +14,8 @@
 #include "Huobi/AccountListEvent.h"
 #include "Huobi/MarketBBOEvent.h"
 #include "Huobi/MarketDepthMBPEvent.h"
+#include "Huobi/TradeClearingEvent.h"
+#include "Huobi/AccountUpdateEvent.h"
 #include "SubscriptionOptions.h"
 
 
@@ -170,6 +172,17 @@ namespace Huobi {
                 const char* symbols,
                 MBPLevel level,
                 const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+
+        virtual void subscribeTradeClearingEvent(
+                const char* symbols,
+                const std::function<void(const TradeClearingEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void subscribeAccountUpdateEvent(
+                const AccountsUpdateMode& mode,
+                const std::function<void(const AccountUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
 
 

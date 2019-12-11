@@ -10,6 +10,8 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 ## Huobi C++ SDK Download
 
+- [Huobi Global API C++ SDK version 1.0.9](https://github.com/HuobiRDCenter/huobi_Cpp/releases/tag/1.0.9)
+
 - [Huobi Global API C++ SDK version 1.0.8](https://github.com/HuobiRDCenter/huobi_Cpp/releases/tag/1.0.8)
 
 - [Huobi Global API C++ SDK version 1.0.7](https://github.com/HuobiRDCenter/huobi_Cpp/releases/tag/1.0.7)

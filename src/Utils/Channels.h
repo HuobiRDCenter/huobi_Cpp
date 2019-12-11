@@ -14,7 +14,7 @@ namespace Huobi {
 
         static std::string klineChannel(
                 const std::string& symbol, const CandlestickInterval& interval) {
-           
+
             return klineChannel(OP_SUB, symbol, interval, 0, 0);
         }
 
@@ -41,7 +41,7 @@ namespace Huobi {
         }
 
         static std::string tradeChannel(const std::string& symbol) {
-           
+
             return tradeChannel(OP_SUB, symbol);
         }
 
@@ -54,7 +54,7 @@ namespace Huobi {
             return writer.toJsonString();
         }
 
-        static std::string priceDepthChannel(const std::string& symbol,DepthStep step) {
+        static std::string priceDepthChannel(const std::string& symbol, DepthStep step) {
             return priceDepthChannel(OP_SUB, symbol, step);
         }
 
@@ -95,7 +95,7 @@ namespace Huobi {
         }
 
         static std::string tradeStatisticsChannel(const std::string& symbol) {
-           
+
             return tradeStatisticsChannel(OP_SUB, symbol);
         }
 
@@ -150,7 +150,7 @@ namespace Huobi {
             return writer.toJsonString();
         }
 
-        static std::string orderDetailChannel(char*& op,long orderId) {
+        static std::string orderDetailChannel(char*& op, long orderId) {
             JsonWriter writer;
             writer.put("op", op);
             writer.put("cid", std::to_string(TimeService::getCurrentTimeStamp()));
@@ -158,21 +158,36 @@ namespace Huobi {
             writer.put("order-id", std::to_string(orderId));
             return writer.toJsonString();
         }
-        
-        static std::string marketBBOChannel(char*& op,const std::string& symbol) {
-            JsonWriter writer;    
+
+        static std::string marketBBOChannel(char*& op, const std::string& symbol) {
+            JsonWriter writer;
             writer.put(op, "market." + symbol + ".bbo");
             writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
             return writer.toJsonString();
         }
-        
-        static std::string MarketDepthMBP(char*& op,const std::string& symbol,const MBPLevel& level) {
-            JsonWriter writer;    
-            writer.put(op, "market." + symbol + ".mbp."+level.getValue());
+
+        static std::string MarketDepthMBP(char*& op, const std::string& symbol, const MBPLevel& level) {
+            JsonWriter writer;
+            writer.put(op, "market." + symbol + ".mbp." + level.getValue());
             writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
             return writer.toJsonString();
         }
-          
+
+        static std::string subscribeTradeClearingEvent(char*& op, const std::string& symbol) {
+            JsonWriter writer;
+            writer.put("action", op);
+            writer.put("ch", "trade.clearing#" + symbol);
+            return writer.toJsonString();
+        }
+        static std::string accountUpdateEvent(char*& op, const AccountsUpdateMode& mode) {
+            JsonWriter writer;
+            writer.put("action", op);
+            writer.put("ch", "accounts.update#" + mode.getValue());
+            return writer.toJsonString();
+        }
+        
+        
+
     };
     char* Channels::OP_SUB = "sub";
     char* Channels::OP_REQ = "req";

@@ -31,12 +31,12 @@ namespace Huobi {
             case LWS_CALLBACK_CLIENT_RECEIVE:
             {
                 // lwsl_user("receive");
-                char buf[4096 * 100] = {0};
-                unsigned int l = 4096 * 100;
-                l = gzDecompress((char*) in, len, buf, l);
+                //                char buf[4096 * 100] = {0};
+                //                unsigned int l = 4096 * 100;
+                //                l = gzDecompress((char*) in, len, buf, l);
                 //lwsl_user("RX %d: %s\n", l, (const char *) buf);
-                connection->onMessage(buf);
-
+                // connection->onMessage(buf);
+                connection->onMessage((char*) in, len);
                 break;
             }
             case LWS_CALLBACK_CLIENT_CLOSED:
@@ -59,7 +59,7 @@ namespace Huobi {
         return 0;
     }
 
-   static const struct lws_protocols protocols[] = {
+    static const struct lws_protocols protocols[] = {
         {
             "example-protocol",
             event_cb,
@@ -68,7 +68,6 @@ namespace Huobi {
         },
         { NULL, NULL, 0, 0}
     };
-    
 
     void SubscriptionClientImpl::init_context() {
         if (context == nullptr) {
@@ -223,8 +222,22 @@ namespace Huobi {
             const char* symbols,
             MBPLevel level,
             const std::function<void(const MarketDepthMBPEvent&) >& callback,
-            const std::function<void(HuobiApiException&)>& errorHandler) {       
+            const std::function<void(HuobiApiException&)>& errorHandler) {
         createConnection(impl->subscribeMarketDepthMBP(parseSymbols(symbols), level, callback, errorHandler));
+    }
+
+    void SubscriptionClientImpl::subscribeTradeClearingEvent(
+            const char* symbols,
+            const std::function<void(const TradeClearingEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribeTradeClearingEvent(parseSymbols(symbols), callback, errorHandler));
+    }
+
+    void SubscriptionClientImpl::subscribeAccountUpdateEvent(
+            const AccountsUpdateMode& mode,
+            const std::function<void(const AccountUpdateEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribeAccountUpdateEvent(mode, callback, errorHandler));
     }
 
     WebSocketRequest* SubscriptionClientImpl::requestCandlestickEvent(

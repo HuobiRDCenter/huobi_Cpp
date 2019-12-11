@@ -63,7 +63,10 @@ namespace Huobi {
         ccinfo.address = host.c_str();
         ccinfo.port = 443;
         if (request->isNeedSignature == true) {
-            ccinfo.path = "/ws/v1";
+            if (request->isV2)
+                ccinfo.path = "/ws/v2";
+            else
+                ccinfo.path = "/ws/v1";
         } else {
             if (host.find("api") != -1) {
                 ccinfo.path = "/ws";
@@ -131,7 +134,10 @@ namespace Huobi {
         client = wsi;
         dog->onConnectionCreated(this);
         if (request->isNeedSignature) {
-            send(createSignature());
+            if (request->isV2)
+                send(createV2Signature());
+            else
+                send(createSignature());
         } else {
             if (request->connectionHandler) {
                 request->connectionHandler(this);
@@ -139,7 +145,16 @@ namespace Huobi {
         }
     }
 
-    void WebSocketConnection::onMessage(const char* message) {
+    void WebSocketConnection::onMessage(char* in, size_t len) {
+
+        char* message = in;
+        if (!request->isV2) {
+            char buf[4096 * 100] = {0};
+            unsigned int l = 4096 * 100;
+            l = gzDecompress((char*) in, len, buf, l);
+            message = buf;
+        }
+
         lwsl_user("RX: %s \n", message);
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
@@ -169,6 +184,33 @@ namespace Huobi {
             } else if (op == "req") {
                 onReceive(json);
             }
+        } else if (json.containKey("action")) {
+            std::string action = json.getString("action");
+            lwsl_user("action %s...\n", action.c_str());
+
+            if (json.containKey("ch") && std::string(json.getString("ch")) == "auth") {
+                lwsl_user("ch...\n");
+                if (json.getInt("code") == 200) {
+                    if (request->connectionHandler) {
+                        request->connectionHandler(this);
+                    }
+                } else {
+                    lwsl_user("RX: %s \n", message);
+                }
+            } else if (action == "sub") {
+                lwsl_user("sub...\n");
+
+            } else if (action == "ping") {
+                lwsl_user("ping.. \n");
+                processV2Ping(json.getJsonObjectOrArray("data"));
+            } else if (action == "push") {
+                 lwsl_user("push...\n");
+                onReceive(json);
+            } else if (action == "req") {
+                 lwsl_user("req...\n");
+                onReceive(json);
+            }
+
         } else if (json.containKey("ch")) {
             onReceive(json);
         } else if (json.containKey("ping")) {
@@ -206,6 +248,19 @@ namespace Huobi {
         send(message);
     }
 
+    void WebSocketConnection::processV2Ping(JsonWrapper data) {
+        lwsl_user("data ");
+        long ts = data.getLong("ts");
+        JsonWriter writer;
+        writer.put("action", "pong");
+        writer.startObject("params");
+        writer.put("ts", ts);
+        writer.endObject();
+        std::string pong = writer.toJsonString();
+        lwsl_user("pong:%s\n ", pong.c_str());
+        send(pong);
+    }
+
     std::string WebSocketConnection::createSignature() {
 
         time_t t = time(NULL);
@@ -238,6 +293,46 @@ namespace Huobi {
         writer.put("Signature", signa.c_str());
         writer.put("SignatureMethod", "HmacSHA256");
         writer.put("Timestamp", buf);
+        return writer.toJsonString();
+    }
+
+    std::string WebSocketConnection::createV2Signature() {
+
+        time_t t = time(NULL);
+        struct tm *local = gmtime(&t);
+        char timeBuf[100] = {0};
+        sprintf(timeBuf, "%04d-%02d-%02dT%02d%%3A%02d%%3A%02d",
+                local->tm_year + 1900,
+                local->tm_mon + 1,
+                local->tm_mday,
+                local->tm_hour,
+                local->tm_min,
+                local->tm_sec);
+        char buf[100] = {0};
+        sprintf(buf, "%04d-%02d-%02dT%02d:%02d:%02d",
+                local->tm_year + 1900,
+                local->tm_mon + 1,
+                local->tm_mday,
+                local->tm_hour,
+                local->tm_min,
+                local->tm_sec);
+        std::string signa = ApiSignature::CreateV2Signature(host,
+                this->apiKey,
+                this->secretKey,
+                "/ws/v2", "GET", timeBuf, "");
+
+        JsonWriter writer;
+        writer.put("action", "req");
+        writer.put("ch", "auth");
+
+        writer.startObject("params");
+        writer.put("authType", "api");
+        writer.put("accessKey", this->apiKey);
+        writer.put("signatureMethod", "HmacSHA256");
+        writer.put("signatureVersion", "2.1");
+        writer.put("timestamp", buf);
+        writer.put("signature", signa.c_str());
+        writer.endObject();
         return writer.toJsonString();
     }
 
@@ -276,19 +371,19 @@ namespace Huobi {
         Logger::WriteLog("[Sub][%d] Disconnected", connectionId);
         connectStatus = ConnectionStatus::CLOSED;
         client = nullptr;
-       // close();
+        // close();
     }
 
     void WebSocketConnection::close() {
         Logger::WriteLog("[Sub][%d] Closing normally", connectionId);
         lwsl_user("Closing normally \n");
-        
+
         lws_set_timeout(client, PENDING_TIMEOUT_KILLED_BY_PARENT, LWS_TO_KILL_ASYNC);
-       // lwsl_user("Closing normally 1\n");
+        // lwsl_user("Closing normally 1\n");
         lineStatus = LineStatus::LINE_IDEL;
         //lwsl_user("Closing normally 2\n");
         dog->onClosedNormally(this);
-       // lwsl_user("Closing normally 3\n");
+        // lwsl_user("Closing normally 3\n");
     }
 }
 

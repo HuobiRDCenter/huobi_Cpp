@@ -435,6 +435,43 @@ private:
         static MBPLevel LEVEL10;
         static MBPLevel LEVEL20;
         static MBPLevel LEVEL150;
+        static MBPLevel SDK_NOTSUPPORT;
+    };
+
+    class AccountsUpdateMode : public BaseEnumClass<AccountsUpdateMode> {
+        DEFINE_ENUM_CLASS(AccountsUpdateMode);
+    public:
+        static AccountsUpdateMode balance;
+        static AccountsUpdateMode balanceAndaAvailable;
+        static AccountsUpdateMode SDK_NOTSUPPORT;
+
+    };
+
+    class AccountsUpdateAccountType : public BaseEnumClass<AccountsUpdateAccountType> {
+        DEFINE_ENUM_CLASS(AccountsUpdateAccountType);
+    public:
+        static AccountsUpdateAccountType trade;
+        static AccountsUpdateAccountType loan;
+        static AccountsUpdateAccountType interest;
+        static AccountsUpdateAccountType SDK_NOTSUPPORT;
+
+    };
+
+    class AccountsUpdateChangeType : public BaseEnumClass<AccountsUpdateChangeType> {
+        DEFINE_ENUM_CLASS(AccountsUpdateChangeType);
+    public:
+        static AccountsUpdateChangeType order_place;
+        static AccountsUpdateChangeType order_match;
+        static AccountsUpdateChangeType order_refund;
+        static AccountsUpdateChangeType order_cancle;
+        static AccountsUpdateChangeType order_fee_refund;
+        static AccountsUpdateChangeType margin_transfer;
+        static AccountsUpdateChangeType margin_loan;
+        static AccountsUpdateChangeType margin_interest;
+        static AccountsUpdateChangeType margin_repay;
+        static AccountsUpdateChangeType other;
+        static AccountsUpdateChangeType SDK_NOTSUPPORT;
+
     };
 
 }

@@ -29,14 +29,14 @@ namespace Huobi {
         // std::string host = "api.huobi.pro";
         std::string host = "api.huobi.so";
         WebSocketWatchDog* dog = nullptr;
-        
+
         struct lws_context* context = nullptr;
     public:
         void startService() override;
         void startReq(WebSocketRequest* webSocketRequest);
 
         void init_context();
-        
+
         SubscriptionClientImpl() {
             apiKey = "";
             secretKey = "";
@@ -128,6 +128,16 @@ namespace Huobi {
                 const char* symbols,
                 MBPLevel level,
                 const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+        void subscribeTradeClearingEvent(
+                const char* symbols,
+                const std::function<void(const TradeClearingEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+        void subscribeAccountUpdateEvent(
+                const AccountsUpdateMode& mode,
+                const std::function<void(const AccountUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
 

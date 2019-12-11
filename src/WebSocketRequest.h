@@ -8,16 +8,17 @@
 namespace Huobi {
 
     class WebSocketConnection;
-    
+
     class WebSocketRequest {
     public:
         std::string usr;
-        std::function<void(WebSocketConnection*)> connectionHandler;
+        std::function<void(WebSocketConnection*) > connectionHandler;
         virtual void implCallback(const JsonWrapper& json) = 0;
-        std::function<void(HuobiApiException&)> errorHandler;
+        std::function<void(HuobiApiException&) > errorHandler;
         bool isNeedSignature;
-        int time =0;
-        bool autoClose=true;
+        int time = 0;
+        bool autoClose = true;
+        bool isV2 = false;
     };
 
     template <typename T>
@@ -35,7 +36,7 @@ namespace Huobi {
             }
         }
         std::function<T(const JsonWrapper&) > JsonParser;
-        std::function<void(T&)> Callback;
+        std::function<void(T&) > Callback;
 
     };
 }

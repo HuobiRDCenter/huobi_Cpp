@@ -16,6 +16,8 @@
 #include "Huobi/OrderDetailEvent.h"
 #include "Huobi/MarketBBOEvent.h"
 #include "Huobi/MarketDepthMBPEvent.h"
+#include "Huobi/TradeClearingEvent.h"
+#include "Huobi/AccountUpdateEvent.h"
 #include "Huobi/Enums.h"
 
 namespace Huobi {
@@ -88,6 +90,17 @@ namespace Huobi {
                 const std::function<void(const MarketDepthMBPEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
 
+        WebSocketRequest* subscribeTradeClearingEvent(
+                const std::list<std::string>& symbols,
+                const std::function<void(const TradeClearingEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+        WebSocketRequest* subscribeAccountUpdateEvent(
+                const AccountsUpdateMode& mode,
+                const std::function<void(const AccountUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
+
+
         WebSocketRequest * requestCandlestickEvent(
                 bool autoClose,
                 const std::list<std::string>& symbols,
@@ -141,7 +154,7 @@ namespace Huobi {
                 const std::function<void(const OrderDetailEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
 
-        WebSocketRequest* requestMarketDepthMBPEvent(
+        WebSocketRequest * requestMarketDepthMBPEvent(
                 bool autoClose,
                 const std::list<std::string>& symbols,
                 MBPLevel level,

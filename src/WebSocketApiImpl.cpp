@@ -387,6 +387,75 @@ namespace Huobi {
 
     }
 
+    WebSocketRequest* WebSocketApiImpl::subscribeTradeClearingEvent(
+            const std::list<std::string>& symbols,
+            const std::function<void(const TradeClearingEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+        auto req = new WebSocketRequestImpl<TradeClearingEvent>();
+        req->connectionHandler = [symbols](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::subscribeTradeClearingEvent(Channels::OP_SUB, symbol));
+            }
+        };
+
+        req->JsonParser = [](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            TradeClearingEvent event;
+            event.symbol = data.getString("symbol");
+            event.orderId = data.getLong("orderId");
+            event.tradePrice = data.getDecimal("tradePrice");
+            event.tradeVolume = data.getDecimal("tradeVolume");
+            event.orderSide = OrderSide::lookup(data.getString("orderSide"));
+            event.orderType = OrderType::lookup(data.getString("orderType"));
+            event.aggressor = data.getBool("aggressor");
+            event.tradeId = data.getLong("tradeId");
+            event.tradeTime = data.getLong("tradeTime");
+            event.transactFee = data.getDecimal("transactFee");
+            event.feeDeduct = data.getDecimal("feeDeduct");
+            event.feeDeductType = data.getString("feeDeductType");
+            return event;
+        };
+
+        req->isNeedSignature = true;
+        req->isV2 = true;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+
+    }
+
+    WebSocketRequest* WebSocketApiImpl::subscribeAccountUpdateEvent(
+            const AccountsUpdateMode& mode,
+            const std::function<void(const AccountUpdateEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+
+        auto req = new WebSocketRequestImpl<AccountUpdateEvent>();
+        req->connectionHandler = [mode](WebSocketConnection * connection) {
+            connection->send(Channels::accountUpdateEvent(Channels::OP_SUB,mode));
+        };
+        req->JsonParser = [this](const JsonWrapper & json) {
+            AccountUpdateEvent accountUpdateEvent;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            accountUpdateEvent.accountId = data.getLong("accountId");
+            accountUpdateEvent.accountType = AccountsUpdateAccountType::lookup(data.getString("accountType"));
+            if (data.containKey("available"))
+                accountUpdateEvent.available = data.getDecimal("available");
+            if (data.containKey("balance"))
+                accountUpdateEvent.balance = data.getDecimal("balance");
+            accountUpdateEvent.changeTime = data.getLong("changeTime");
+            accountUpdateEvent.changeType = AccountsUpdateChangeType::lookup(data.getString("changeType"));
+            accountUpdateEvent.currency = data.getString("currency");
+            return accountUpdateEvent;
+        };
+        req->isNeedSignature = true;
+        req->isV2 = true;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+    }
+
     WebSocketRequest* WebSocketApiImpl::requestCandlestickEvent(
             bool autoClose,
             const std::list<std::string>& symbols,
