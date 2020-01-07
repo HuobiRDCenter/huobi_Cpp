@@ -16,6 +16,8 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 ## Table of Contents
 
+- [Huobi Global API C++ SDK version 1.0.10](#Huobi-Global-API-c++-SDK-version-1.0.10)
+
 - [Huobi Global API C++ SDK version 1.0.9](#Huobi-Global-API-c++-SDK-version-1.0.9)
 
 - [Huobi Global API C++ SDK version 1.0.8](#Huobi-Global-API-c++-SDK-version-1.0.8)
@@ -33,6 +35,23 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 - [Huobi Global API C++ SDK version 1.0.2](#Huobi-Global-API-c++-SDK-version-1.0.2)
 
 - [Huobi Global API C++ SDK version 1.0.1](#Huobi-Global-API-c++-SDK-version-1.0.1)
+
+## Huobi Global API Cpp SDK version 1.0.10
+
+[***version 1.0.10***](https://github.com/HuobiRDCenter/huobi_Cpp/releases)
+***2020-01-06***
+
+- add new api
+    ```
+     1. POST /v1/order/batch-orders
+     2. POST /v2/sub-user/management
+    ```
+- modify api
+    ```
+     1. POST /v1/order/orders/batchcancel
+        param add client-order-ids 
+        return success and failed detail info
+    ```
 
 ## Huobi Global API Cpp SDK version 1.0.9
 
