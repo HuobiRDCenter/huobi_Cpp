@@ -116,6 +116,20 @@ namespace Huobi {
     OrderSource OrderSource::super_margin_web = OrderSource("super-margin-web");
     OrderSource OrderSource::super_margin_fl_mgt = OrderSource("super-margin-fl-mgt");
     OrderSource OrderSource::super_margin_fl_sys = OrderSource("super-margin-fl-sys");
+    OrderSource OrderSource::spot_ios = OrderSource("spot-ios");
+    OrderSource OrderSource::spot_android = OrderSource("spot-android");
+    OrderSource OrderSource::spot_mac = OrderSource("spot-mac");
+    OrderSource OrderSource::spot_windows = OrderSource("spot-windows");
+    OrderSource OrderSource::margin_ios = OrderSource("margin-ios");
+    OrderSource OrderSource::margin_android = OrderSource("margin-android");
+    OrderSource OrderSource::margin_mac = OrderSource("margin-mac");
+    OrderSource OrderSource::margin_windows = OrderSource("margin-windows");
+    OrderSource OrderSource::super_margin_ios = OrderSource("super-margin-ios");
+    OrderSource OrderSource::super_margin_android = OrderSource("super-margin-android");
+    OrderSource OrderSource::super_margin_mac = OrderSource("super-margin-mac");
+    OrderSource OrderSource::super_margin_windows = OrderSource("super-margin-windows");
+
+
 
     OrderState OrderState::canceled = OrderState("canceled");
     OrderState OrderState::filled = OrderState("filled");
@@ -235,6 +249,13 @@ namespace Huobi {
     AccountsUpdateAccountType AccountsUpdateAccountType::interest = AccountsUpdateAccountType("interest");
     AccountsUpdateAccountType AccountsUpdateAccountType::SDK_NOTSUPPORT = AccountsUpdateAccountType("sdk_not_support_for_now");
 
+    LockAction LockAction::lock = LockAction("lock");
+    LockAction LockAction::unlock = LockAction("unlock");
+    LockAction LockAction::SDK_NOTSUPPORT = LockAction("sdk_not_support_for_now");
 
+
+    UserState UserState::lock = UserState("lock");
+    UserState UserState::normal = UserState("normal");
+    UserState UserState::SDK_NOTSUPPORT = UserState("sdk_not_support_for_now");
 }
 

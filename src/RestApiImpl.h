@@ -59,6 +59,10 @@
 #include "Huobi/CrossMarginLoadOrder.h"
 #include "Huobi/CrossMarginLoanOrdersRequest.h"
 #include "Huobi/CrossMarginAccount.h"
+#include "Huobi/BatchOrderResult.h"
+#include "Huobi/SubUserManageResult.h"
+#include "Huobi/BatchCancelOrdersResult.h"
+
 namespace Huobi {
 
     class RestApiImpl {
@@ -158,7 +162,7 @@ namespace Huobi {
         RestApi<std::vector<Order>>*getOpenOrders(OpenOrderRequest& openOrderRequest);
         RestApi<long>* createOrder(NewOrderRequest& newOrderRequest);
         RestApi<long>* cancelOrder(const char* symbol, long orderId);
-        RestApi<void*>* cancelOrders(const char* symbol, std::list<long> orderIds);
+        RestApi<BatchCancelOrdersResult>* cancelOrders(const char* symbol, std::list<std::string> ids,const char* orderIdsOrClientOrderIds);
         RestApi<BatchCancelResult>* cancelOpenOrders(CancelOpenOrderRequest& cancelOpenOrderRequest);
         RestApi<Order>* getOrder(const char* symbol, long orderId);
         RestApi<std::vector<MatchResult>>*getMatchResults(const char* symbol, long orderId);
@@ -181,7 +185,6 @@ namespace Huobi {
         RestApi<long>* transferBetweenFuturesAndPro(TransferFuturesRequest& req);
         RestApi<std::vector<Order>>*getOrderHistory(OrdersHistoryRequest& req);
         RestApi<Trade>* getMarketTrade(const char* symbol);
-
         RestApi<std::vector<CurrencyChain>>*getReferenceCurrencies(CurrencyChainsRequest& request);
         RestApi<std::vector<DepositAddress>>*getDepositAddress(DepositAddressRequest& request);
         RestApi<WithdrawQuota>* getWithdrawQuota(WithdrawQuotaRequest& request);
@@ -192,8 +195,8 @@ namespace Huobi {
         RestApi<void*>* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
         RestApi<std::vector<CrossMarginLoadOrder>>*crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
         RestApi<CrossMarginAccount>* crossMaginGetLoanBalance();
-
-
+        RestApi<std::vector<BatchOrderResult>>*batchOrders(std::list<NewOrderRequest> requests);
+        RestApi<SubUserManageResult>* subUserManage(long subUid, LockAction action);
 
     };
 }

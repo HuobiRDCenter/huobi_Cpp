@@ -70,6 +70,10 @@
 #include "Huobi/OrderListEventRequest.h"
 #include "Huobi/OrderDetailEvent.h"
 #include "Huobi/MarketBBOEvent.h"
+#include "Huobi/BatchOrderResult.h"
+#include "Huobi/SubUserManageResult.h"
+#include "Huobi/BatchCancelOrdersResult.h"
+
 
 #endif /* HUOBICLIENT_H */
 

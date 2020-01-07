@@ -26,7 +26,7 @@ int main(int argc, char** argv) {
             AccountType::spot,
             OrderType::buy_limit,
             Decimal(1.0),
-            Decimal(1.0),
+            Decimal(1.0)
             );
     /**
      *  Set other fields flexibly.

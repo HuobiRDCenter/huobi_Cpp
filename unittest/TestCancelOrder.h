@@ -34,10 +34,10 @@ TEST(TestCancelOrder, Request) {
 
 TEST(TestCancelOrder, CancelOrders) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    std::list<long> longList;
-    longList.push_back(12443l);
-    longList.push_back(2344l);
-    auto request = impl->cancelOrders("htbtc", longList);
+    std::list<std::string> longList;
+    longList.push_back(std::to_string(12443l));
+    longList.push_back(std::to_string(2344l));
+    auto request = impl->cancelOrders("htbtc", longList,"order-ids");
     ASSERT_EQ("POST", request->method);
     ASSERT_TRUE(request->getUrl().find("Signature") != -1);
     JsonDocument doc;
@@ -53,25 +53,25 @@ TEST(TestCancelOrder, InvalidSymbolInCancelOrder) {
 
 TEST(TestCancelOrder, InvalidSymbolInCancelOrders) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    std::list<long> longList;
-    longList.push_back(12443l);
-    longList.push_back(2344l);
-    EXPECT_THROW(impl->cancelOrders("$$$$", longList), HuobiApiException);
+    std::list<std::string> longList;
+    longList.push_back(std::to_string(12443l));
+    longList.push_back(std::to_string(2344l));
+    EXPECT_THROW(impl->cancelOrders("$$$$", longList,"order-ids"), HuobiApiException);
 }
 
 TEST(TestCancelOrder, NullOrderList) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    std::list<long> longList;
-    EXPECT_THROW(impl->cancelOrders("btcusdt", longList), HuobiApiException);
+    std::list<std::string> longList;
+    EXPECT_THROW(impl->cancelOrders("btcusdt", longList,"order-ids"), HuobiApiException);
 }
 
 TEST(TestCancelOrder, HugeOrderList) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    std::list<long> longList;
+    std::list<std::string> longList;
     for (int i = 0; i <= 50; i++) {
-        longList.push_back((long)i);
+        longList.push_back(std::to_string(i));
     }
-    EXPECT_THROW(impl->cancelOrders("btcusdt", longList), HuobiApiException);
+    EXPECT_THROW(impl->cancelOrders("btcusdt", longList,"order-ids"), HuobiApiException);
 }
 
 #endif /* TESTCANCELORDER_H */
