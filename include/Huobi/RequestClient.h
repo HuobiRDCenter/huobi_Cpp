@@ -52,7 +52,9 @@
 #include "Huobi/CrossMarginLoadOrder.h"
 #include "Huobi/CrossMarginLoanOrdersRequest.h"
 #include "Huobi/CrossMarginAccount.h"
-
+#include "Huobi/BatchOrderResult.h"
+#include "Huobi/SubUserManageResult.h"
+#include "Huobi/BatchCancelOrdersResult.h"
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -161,7 +163,7 @@ namespace Huobi {
          * \param symbol   The symbol, like "btcusdt"
          * \param orderIds The list of order id
          */
-        virtual void* cancelOrders(const char* symbol, std::list<long> orderIds) = 0;
+        virtual BatchCancelOrdersResult cancelOrders(const char* symbol, std::list<long> orderIds) = 0;
         /**
          * request to cancel open orders.
          *
@@ -479,6 +481,13 @@ namespace Huobi {
          * \return The the balance of the margin loan account.
          */
         virtual CrossMarginAccount crossMaginGetLoanBalance() = 0;
+
+
+        virtual std::vector<BatchOrderResult> batchOrders(std::list<NewOrderRequest> requests) = 0;
+
+        virtual SubUserManageResult subUserManage(long subUid, LockAction action) = 0;
+
+        virtual BatchCancelOrdersResult cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds) = 0;
     };
 
     RequestClient* createRequestClient();

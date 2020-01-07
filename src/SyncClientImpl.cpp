@@ -129,10 +129,6 @@ namespace Huobi {
 
     std::vector<Account> SyncClientImpl::getAccountBalance() {
         std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
-        //        for (Account account : accounts) {
-        //            std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
-        //            account.balances = balances;
-        //        }
 
         for (int i = 0; i < accounts.size(); i++) {
             std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
@@ -143,13 +139,6 @@ namespace Huobi {
 
     Account SyncClientImpl::getAccountBalance(AccountType accountType) {
         std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
-        //        for (Account account : accounts) {
-        //            if (account.type == accountType) {
-        //                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
-        //                account.balances = balances;
-        //                return account;
-        //            }
-        //        }
         for (int i = 0; i < accounts.size(); i++) {
             if (accounts[i].type == accountType) {
                 std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
@@ -187,8 +176,16 @@ namespace Huobi {
 
     }
 
-    void* SyncClientImpl::cancelOrders(const char* symbol, std::list<long> orderIds) {
-        return RestApiInvoke::callSync(impl->cancelOrders(symbol, orderIds));
+    BatchCancelOrdersResult SyncClientImpl::cancelOrders(const char* symbol, std::list<long> orderIds) {
+
+        std::list<std::string> strOrderIds;
+        std::list<long>::iterator ite = orderIds.begin();
+        while (ite != orderIds.end()) {
+            strOrderIds.push_back(std::to_string(*ite));
+            ite++;
+        }
+
+        return RestApiInvoke::callSync(impl->cancelOrders(symbol, strOrderIds, "order-ids"));
 
     }
 
@@ -325,6 +322,17 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->crossMaginGetLoanBalance());
     }
 
+    std::vector<BatchOrderResult> SyncClientImpl::batchOrders(std::list<NewOrderRequest> requests) {
+        return RestApiInvoke::callSync(impl->batchOrders(requests));
+    }
+
+    SubUserManageResult SyncClientImpl::subUserManage(long subUid, LockAction action) {
+        return RestApiInvoke::callSync(impl->subUserManage(subUid, action));
+    }
+
+    BatchCancelOrdersResult SyncClientImpl::cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds) {
+        return RestApiInvoke::callSync(impl->cancelOrders(symbol, clientOrderIds, "client-order-ids"));
+    }
 
 
 }

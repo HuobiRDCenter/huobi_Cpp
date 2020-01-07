@@ -269,6 +269,18 @@ private:
         static OrderSource super_margin_web;
         static OrderSource super_margin_fl_sys;
         static OrderSource super_margin_fl_mgt;
+        static OrderSource spot_ios;
+        static OrderSource spot_android;
+        static OrderSource spot_mac;
+        static OrderSource spot_windows;
+        static OrderSource margin_ios;
+        static OrderSource margin_android;
+        static OrderSource margin_mac;
+        static OrderSource margin_windows;
+        static OrderSource super_margin_ios;
+        static OrderSource super_margin_android;
+        static OrderSource super_margin_mac;
+        static OrderSource super_margin_windows;
         static OrderSource SDK_NOTSUPPORT;
     };
 
@@ -472,6 +484,22 @@ private:
         static AccountsUpdateChangeType other;
         static AccountsUpdateChangeType SDK_NOTSUPPORT;
 
+    };
+
+    class LockAction : public BaseEnumClass<LockAction> {
+        DEFINE_ENUM_CLASS(LockAction);
+    public:
+        static LockAction lock;
+        static LockAction unlock;
+        static LockAction SDK_NOTSUPPORT;
+    };
+
+    class UserState : public BaseEnumClass<UserState> {
+        DEFINE_ENUM_CLASS(UserState);
+    public:
+        static UserState lock;
+        static UserState normal;
+        static UserState SDK_NOTSUPPORT;
     };
 
 }

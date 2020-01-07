@@ -557,21 +557,39 @@ namespace Huobi {
 
     }
 
-    RestApi<void*>* RestApiImpl::cancelOrders(const char* symbol, std::list<long> orderIds) {
+    RestApi<BatchCancelOrdersResult>* RestApiImpl::cancelOrders(const char* symbol, std::list<std::string> ids, const char* orderIdsOrClientOrderIds) {
         InputChecker::checker()
                 ->checkSymbol(symbol)
-                ->checkList(orderIds, 1, 50, "orderIds");
+                ->checkList(ids, 1, 50, "ids");
         std::list<std::string> stringList;
-        std::list<long>::iterator ite = orderIds.begin();
-        while (ite != orderIds.end()) {
-            stringList.push_back(std::to_string(*ite));
+        std::list<std::string>::iterator ite = ids.begin();
+        while (ite != ids.end()) {
+            stringList.push_back(*ite);
             ite++;
         }
         UrlParamsBuilder builder;
-        builder.putPost("order-ids", stringList);
-        auto res = createRequestByPostWithSignature<void*>("/v1/order/orders/batchcancel", builder);
+        builder.putPost(orderIdsOrClientOrderIds, stringList);
+        auto res = createRequestByPostWithSignature<BatchCancelOrdersResult>("/v1/order/orders/batchcancel", builder);
         res->jsonParser = [this] (const JsonWrapper & json) {
-            return nullptr;
+            BatchCancelOrdersResult batchCancelOrdersResult;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            JsonWrapper success = data.getJsonObjectOrArray("success");
+            JsonWrapper failed = data.getJsonObjectOrArray("failed");
+            for (int i = 0; i < success.size(); i++) {
+                batchCancelOrdersResult.successList.push_back(success.getStringAt(i));
+            }
+            for (int i = 0; i < failed.size(); i++) {
+                JsonWrapper item = failed.getJsonObjectAt(i);
+                FailedObj failedObj;
+                failedObj.errMsg = item.getString("err-msg");
+                failedObj.orderId = item.getString("order-id");
+                failedObj.clientOrderId = item.getString("client-order-id");
+                failedObj.errCode = item.getString("err-code");
+                if(item.containKey("order-state"))
+                failedObj.orderState = item.getString("order-state");
+                batchCancelOrdersResult.failedList.push_back(failedObj);
+            }
+            return batchCancelOrdersResult;
         };
         return res;
     }
@@ -1489,6 +1507,98 @@ namespace Huobi {
             crossMarginAccount.balanceList = balances;
             return crossMarginAccount;
 
+        };
+        return res;
+    }
+
+    RestApi<std::vector<BatchOrderResult>>*RestApiImpl::batchOrders(std::list<NewOrderRequest> requests) {
+
+        InputChecker::checker()->checkList(requests, 1, 10, "orders size");
+
+        UrlParamsBuilder urlbuilder;
+        for (NewOrderRequest newOrderRequest : requests) {
+
+            InputChecker::checker()
+                    ->checkSymbol(newOrderRequest.symbol)
+                    ->shouldBiggerThanZero(newOrderRequest.amount, "amount");
+            if (newOrderRequest.type == OrderType::sell_limit
+                    || newOrderRequest.type == OrderType::buy_limit
+                    || newOrderRequest.type == OrderType::buy_limit_maker
+                    || newOrderRequest.type == OrderType::sell_limit_maker) {
+                InputChecker::checker()
+                        ->shouldBiggerThanZero(newOrderRequest.price, "Price");
+            }
+            if (newOrderRequest.type == OrderType::sell_market
+                    || newOrderRequest.type == OrderType::buy_market) {
+                InputChecker::checker()
+                        ->shouldZero(newOrderRequest.price, "Price");
+            }
+
+            if (newOrderRequest.type == OrderType::buy_stop_limit
+                    || newOrderRequest.type == OrderType::sell_stop_limit) {
+                InputChecker::checker()
+                        ->shouldBiggerThanZero(newOrderRequest.stop_price, "stop_price")
+                        ->checkEnumNull(newOrderRequest.orderOperator);
+            }
+            Account account = AccountsInfoMap::getUser(accessKey)->getAccount(newOrderRequest.accountType, newOrderRequest.subtype);
+
+            const char* source = "api";
+            if (newOrderRequest.accountType == AccountType::margin) {
+                source = "margin-api";
+            }
+            if (newOrderRequest.accountType == AccountType::super_margin) {
+                source = "super-margin-api";
+            }
+
+
+            UrlParamsBuilder builder;
+            builder.putPost("account-id", account.id)
+                    .putPost("amount", newOrderRequest.amount)
+                    .putPost("symbol", newOrderRequest.symbol)
+                    .putPost("type", newOrderRequest.type.getValue())
+                    .putPost("source", source)
+                    .putPost("price", newOrderRequest.price)
+                    .putPost("client-order-id", newOrderRequest.client_order_id)
+                    .putPost("stop-price", newOrderRequest.stop_price)
+                    .putPost("operator", newOrderRequest.orderOperator.getValue());
+            urlbuilder.putPostList(builder);
+
+        }
+
+
+        auto res = createRequestByPostWithSignature<std::vector < BatchOrderResult >> ("/v1/order/batch-orders", urlbuilder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<BatchOrderResult> batchOrderResults;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                BatchOrderResult batchOrderResult;
+                batchOrderResult.orderId = item.getLong("order-id");
+                batchOrderResult.clientOrderId = item.getString("client-order-id");
+                batchOrderResults.push_back(batchOrderResult);
+            }
+            return batchOrderResults;
+        };
+        return res;
+
+    }
+
+    RestApi<SubUserManageResult>* RestApiImpl::subUserManage(long subUid, LockAction action) {
+        InputChecker::checker()->shouldBiggerThanZero(subUid, "subUid")->checkEnumNull(action);
+
+
+        UrlParamsBuilder builder;
+        builder.putPost("subUid", subUid);
+        builder.putPost("action", action.getValue());
+
+
+        auto res = createRequestByPostWithSignature<SubUserManageResult>("/v2/sub-user/management", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            SubUserManageResult subUserManageResult;
+            subUserManageResult.subUid = data.getLong("subUid");
+            subUserManageResult.userState = UserState::lookup(data.getString("userState"));
+            return subUserManageResult;
         };
         return res;
     }
