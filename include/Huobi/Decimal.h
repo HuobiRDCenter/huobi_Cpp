@@ -125,7 +125,7 @@ namespace Huobi {
         }
 
         bool operator>(const Decimal & obj) const {
-            return !(this->operator>(obj));
+            return !(this->operator<=(obj));
         }
 
         bool operator>=(const Decimal & obj) const {
