@@ -334,5 +334,21 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->cancelOrders(symbol, clientOrderIds, "client-order-ids"));
     }
 
+    std::vector<TransactFeeRate> SyncClientImpl::getTransactFeeRate(const char* symbols) {
+        return RestApiInvoke::callSync(impl->getTransactFeeRate(symbols));
+    }
+
+    std::vector<MarginLoanInfo> SyncClientImpl::getLoanInfo(const char* symbols) {
+        return RestApiInvoke::callSync(impl->getLoanInfo(symbols));
+    }
+
+    std::vector<MarginLoanInfo> SyncClientImpl::getLoanInfo() {
+        return RestApiInvoke::callSync(impl->getLoanInfo(""));
+    }
+
+    std::vector<CrossMarginLoanInfo> SyncClientImpl::getCrossMarginLoanInfo() {
+        return RestApiInvoke::callSync(impl->getCrossMarginLoanInfo());
+    }
+
 
 }

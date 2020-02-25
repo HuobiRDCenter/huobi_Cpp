@@ -482,6 +482,9 @@ namespace Huobi {
                 order.filledFees = item.getDecimal("filled-fees");
                 order.source = OrderSource::lookup(item.getString("source"));
                 order.state = OrderState::lookup(item.getString("state"));
+                if (data.containKey("client-order-id")) {
+                    order.clientOrderId = data.getString("client-order-id");
+                }
                 orderList.push_back(order);
             }
             return orderList;
@@ -585,8 +588,8 @@ namespace Huobi {
                 failedObj.orderId = item.getString("order-id");
                 failedObj.clientOrderId = item.getString("client-order-id");
                 failedObj.errCode = item.getString("err-code");
-                if(item.containKey("order-state"))
-                failedObj.orderState = item.getString("order-state");
+                if (item.containKey("order-state"))
+                    failedObj.orderState = item.getString("order-state");
                 batchCancelOrdersResult.failedList.push_back(failedObj);
             }
             return batchCancelOrdersResult;
@@ -620,6 +623,9 @@ namespace Huobi {
             order.source = OrderSource::lookup(data.getString("source"));
             order.state = OrderState::lookup(data.getString("state"));
             order.type = OrderType::lookup(data.getString("type"));
+            if (data.containKey("client-order-id")) {
+                order.clientOrderId = data.getString("client-order-id");
+            }
             return order;
         };
         return res;
@@ -773,7 +779,9 @@ namespace Huobi {
                 .putUrl("end-date", req.endDate)
                 .putUrl("from", req.startId)
                 .putUrl("states", req.state.getValue())
-                .putUrl("size", req.size);
+                .putUrl("size", req.size)
+                .putUrl("start-time", req.startTime)
+                .putUrl("end-time", req.endTime);
         auto res = createRequestByGetWithSignature<std::vector < Order >> ("/v1/order/orders", builder);
         res->jsonParser = [this] (const JsonWrapper & json) {
             std::vector<Order> orderList;
@@ -796,6 +804,9 @@ namespace Huobi {
                 order.filledFees = item.getDecimal("field-fees");
                 order.source = OrderSource::lookup(item.getString("source"));
                 order.state = OrderState::lookup(item.getString("state"));
+                if (data.containKey("client-order-id")) {
+                    order.clientOrderId = data.getString("client-order-id");
+                }
                 orderList.push_back(order);
             }
             return orderList;
@@ -1083,6 +1094,9 @@ namespace Huobi {
             order.source = OrderSource::lookup(data.getString("source"));
             order.state = OrderState::lookup(data.getString("state"));
             order.type = OrderType::lookup(data.getString("type"));
+            if (data.containKey("client-order-id")) {
+                order.clientOrderId = data.getString("client-order-id");
+            }
             return order;
         };
         return res;
@@ -1171,6 +1185,9 @@ namespace Huobi {
                     order.stopOrderOperator = StopOrderOperator::lookup(item.getString("operator"));
                 }
                 order.nextTime = item.getLongOrDefault("next-time", 0);
+                if (data.containKey("client-order-id")) {
+                    order.clientOrderId = data.getString("client-order-id");
+                }
                 orderList.push_back(order);
             }
             return orderList;
@@ -1242,6 +1259,10 @@ namespace Huobi {
                     chain.withdrawQuotaPerYear = item.getDecimal("withdrawQuotaPerYear");
                     chain.withdrawQuotaTotal = item.getDecimal("withdrawQuotaTotal");
                     chain.withdrawStatus = item.getString("withdrawStatus");
+                    if (item.containKey("baseChain"))
+                        chain.baseChain = item.getString("baseChain");
+                    if (item.containKey("baseChainProtocol"))
+                        chain.baseChainProtocol = item.getString("baseChainProtocol");
                     chains.push_back(chain);
                 }
                 currencyChain.chains = chains;
@@ -1283,10 +1304,8 @@ namespace Huobi {
 
         InputChecker::checker()
                 ->shouldNotNull(request.currency, "currency");
-
         UrlParamsBuilder builder;
         builder.putUrl("currency", request.currency);
-
         auto res = createRequestByGetWithSignature<WithdrawQuota> ("/v2/account/withdraw/quota", builder);
 
         res->jsonParser = [this](const JsonWrapper & json) {
@@ -1310,9 +1329,12 @@ namespace Huobi {
                 withdrawChainQuotaVec.push_back(withdrawChainQuota);
             }
 
+
             withdrawQuota.chains = withdrawChainQuotaVec;
             return withdrawQuota;
         };
+
+
         return res;
 
     }
@@ -1585,13 +1607,9 @@ namespace Huobi {
 
     RestApi<SubUserManageResult>* RestApiImpl::subUserManage(long subUid, LockAction action) {
         InputChecker::checker()->shouldBiggerThanZero(subUid, "subUid")->checkEnumNull(action);
-
-
         UrlParamsBuilder builder;
         builder.putPost("subUid", subUid);
         builder.putPost("action", action.getValue());
-
-
         auto res = createRequestByPostWithSignature<SubUserManageResult>("/v2/sub-user/management", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
             JsonWrapper data = json.getJsonObjectOrArray("data");
@@ -1600,6 +1618,108 @@ namespace Huobi {
             subUserManageResult.userState = UserState::lookup(data.getString("userState"));
             return subUserManageResult;
         };
+        return res;
+    }
+
+    RestApi<std::vector<TransactFeeRate>>*RestApiImpl::getTransactFeeRate(const char* symbols) {
+
+        std::string input(symbols);
+        std::stringstream ss(input);
+        std::string temp;
+        while (std::getline(ss, temp, ',')) {
+            InputChecker::checker()->checkSymbol(temp);
+        }
+        UrlParamsBuilder builder;
+        builder.putUrl("symbols", ApiSignature::escapeURL((symbols)));
+
+        auto res = createRequestByGetWithSignature<std::vector < TransactFeeRate >> ("/v2/reference/transact-fee-rate", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::vector<TransactFeeRate> transactFeeRateList;
+            JsonWrapper dataArray = json.getJsonObjectOrArray("data");
+            for (int i = 0; i < dataArray.size(); i++) {
+                JsonWrapper itemInData = dataArray.getJsonObjectAt(i);
+                TransactFeeRate transactFeeRate;
+                transactFeeRate.symbol = itemInData.getString("symbol");
+                transactFeeRate.makerFeeRate = itemInData.getDecimal("makerFeeRate");
+                transactFeeRate.takerFeeRate = itemInData.getDecimal("takerFeeRate");
+                transactFeeRate.actualMakerRate = itemInData.getDecimal("actualMakerRate");
+                transactFeeRate.actualTakerRate = itemInData.getDecimal("actualTakerRate");
+                transactFeeRateList.push_back(transactFeeRate);
+            }
+            return transactFeeRateList;
+        };
+        return res;
+    }
+
+    RestApi<std::vector<MarginLoanInfo>>*RestApiImpl::getLoanInfo(const char* symbols) {
+
+        UrlParamsBuilder builder;
+        if (symbols != "") {
+            std::string input(symbols);
+            std::stringstream ss(input);
+            std::string temp;
+            while (std::getline(ss, temp, ',')) {
+                InputChecker::checker()->checkSymbol(temp);
+            }
+
+            builder.putUrl("symbols", ApiSignature::escapeURL((symbols)));
+
+        }
+
+        auto res = createRequestByGetWithSignature<std::vector < MarginLoanInfo >> ("/v1/margin/loan-info", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::vector<MarginLoanInfo> marginLoanInfoList;
+            JsonWrapper dataArray = json.getJsonObjectOrArray("data");
+
+            for (int i = 0; i < dataArray.size(); i++) {
+                JsonWrapper itemInData = dataArray.getJsonObjectAt(i);
+                MarginLoanInfo marginLoanInfo;
+                marginLoanInfo.symbol = itemInData.getString("symbol");
+                std::vector<MarginLoanCurrencyInfo> marginLoanCurrencyInfoList;
+                JsonWrapper currenciesArray = itemInData.getJsonObjectOrArray("currencies");
+                for (int j = 0; j < currenciesArray.size(); j++) {
+                    JsonWrapper item = currenciesArray.getJsonObjectAt(j);
+                    MarginLoanCurrencyInfo marginLoanCurrencyInfo;
+                    marginLoanCurrencyInfo.currency = item.getString("currency");
+                    marginLoanCurrencyInfo.interestRate = item.getString("interest-rate");
+                    marginLoanCurrencyInfo.minLoanAmt = item.getString("min-loan-amt");
+                    marginLoanCurrencyInfo.maxLoanAmt = item.getString("max-loan-amt");
+                    marginLoanCurrencyInfo.loanableAmt = item.getString("loanable-amt");
+                    marginLoanCurrencyInfo.actualRate = item.getString("actual-rate");
+                    marginLoanCurrencyInfoList.push_back(marginLoanCurrencyInfo);
+                }
+                marginLoanInfo.currencies = marginLoanCurrencyInfoList;
+                marginLoanInfoList.push_back(marginLoanInfo);
+            }
+            return marginLoanInfoList;
+        };
+        return res;
+
+    }
+
+    RestApi<std::vector<CrossMarginLoanInfo>>*RestApiImpl::getCrossMarginLoanInfo() {
+
+        UrlParamsBuilder buildler;
+        auto res = createRequestByGetWithSignature<std::vector < CrossMarginLoanInfo >> ("/v1/cross-margin/loan-info", buildler);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<CrossMarginLoanInfo> crossMarginLoanInfoList;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper jw = data.getJsonObjectAt(i);
+                CrossMarginLoanInfo crossMarginLoanInfo;
+                crossMarginLoanInfo.currency = jw.getString("currency");
+                crossMarginLoanInfo.interestRate = jw.getString("interest-rate");
+                crossMarginLoanInfo.minLoanAmt = jw.getString("min-loan-amt");
+                crossMarginLoanInfo.maxLoanAmt = jw.getString("max-loan-amt");
+                crossMarginLoanInfo.loanableAmt = jw.getString("loanable-amt");
+                crossMarginLoanInfo.actualRate = jw.getString("actual-rate");
+                crossMarginLoanInfoList.push_back(crossMarginLoanInfo);
+            }
+
+            return crossMarginLoanInfoList;
+
+        };
+
         return res;
     }
 

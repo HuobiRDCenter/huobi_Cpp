@@ -82,7 +82,10 @@ namespace Huobi {
         std::vector<BatchOrderResult> batchOrders(std::list<NewOrderRequest> requests);
         SubUserManageResult subUserManage(long subUid, LockAction action);
         BatchCancelOrdersResult cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds);
-
+        std::vector<TransactFeeRate> getTransactFeeRate(const char* symbols);
+        std::vector<MarginLoanInfo> getLoanInfo(const char* symbols);
+        std::vector<MarginLoanInfo> getLoanInfo();
+        std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo();
 
 
     };

@@ -55,6 +55,9 @@
 #include "Huobi/BatchOrderResult.h"
 #include "Huobi/SubUserManageResult.h"
 #include "Huobi/BatchCancelOrdersResult.h"
+#include "Huobi/TransactFeeRate.h"
+#include "Huobi/MarginLoanInfo.h"
+#include "Huobi/CrossMarginLoanInfo.h"
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -488,6 +491,17 @@ namespace Huobi {
         virtual SubUserManageResult subUserManage(long subUid, LockAction action) = 0;
 
         virtual BatchCancelOrdersResult cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds) = 0;
+
+        virtual std::vector<TransactFeeRate> getTransactFeeRate(const char* symbols) = 0;
+
+        virtual std::vector<MarginLoanInfo> getLoanInfo(const char* symbols) = 0;
+
+        virtual std::vector<MarginLoanInfo> getLoanInfo() = 0;
+
+        virtual std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo() = 0;
+
+
+
     };
 
     RequestClient* createRequestClient();

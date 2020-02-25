@@ -6,6 +6,7 @@
 
 
 #include "Huobi/HuobiClient.h"
+#include "../key.h"
 #include<iostream>
 
 using namespace Huobi;
@@ -13,11 +14,11 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-    RequestClient* client = createRequestClient("xxx", "xxx");
+    RequestClient* client = createRequestClient(Key::apiKey, Key::secretKey);
     TransferFuturesRequest transferReq(
             TransferFuturesType::pro_to_futures, 
             "btc",
-            Decimal("1.0"));
+            Decimal("0.0001"));
     long transferId = client->transferBetweenFuturesAndPro(transferReq);
     cout << "transfer Id: " << transferId << endl;
 }
