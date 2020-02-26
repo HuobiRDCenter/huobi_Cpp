@@ -16,6 +16,8 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 ## Table of Contents
 
+- [Huobi Global API C++ SDK version 1.0.11](#Huobi-Global-API-c++-SDK-version-1.0.11)
+
 - [Huobi Global API C++ SDK version 1.0.10](#Huobi-Global-API-c++-SDK-version-1.0.10)
 
 - [Huobi Global API C++ SDK version 1.0.9](#Huobi-Global-API-c++-SDK-version-1.0.9)
@@ -35,6 +37,30 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 - [Huobi Global API C++ SDK version 1.0.2](#Huobi-Global-API-c++-SDK-version-1.0.2)
 
 - [Huobi Global API C++ SDK version 1.0.1](#Huobi-Global-API-c++-SDK-version-1.0.1)
+
+
+## Huobi Global API Cpp SDK version 1.0.11
+
+[***version 1.0.11***](https://github.com/HuobiRDCenter/huobi_Cpp/releases)
+***2020-02-26***
+
+-  modify api for response&params
+    ```
+     GET /v1/order/orders/{order-id}      1. add client-order-id in response
+     GET /v1/order/orders/getClientOrder  1. add client-order-id in response
+     GET /v1/order/openOrders             1. add client-order-id in response
+     GET /v1/order/orders                 1. add client-order-id in response   2.add params start-time and end-time
+     GET /v1/order/history                1. add client-order-id in response
+     GET /v2/reference/currencies         1. add baseChain,baseChainProtocol in response
+    ```
+
+- add new api
+    ```
+     GET /v2/reference/transact-fee-rate
+     GET /v1/margin/loan-info
+     GET /v1/cross-margin/loan-info
+    ```
+
 
 ## Huobi Global API Cpp SDK version 1.0.10
 
