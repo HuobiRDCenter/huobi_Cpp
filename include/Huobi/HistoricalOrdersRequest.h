@@ -48,6 +48,8 @@ namespace Huobi {
         std::string endDate;
         std::string startId;
         int size = 0;
+        long startTime = 0;
+        long endTime = 0;
     };
 }
 

@@ -6,7 +6,9 @@
 #include "Utils/JsonDocument.h"
 #include "EtfResult.h"
 #include "Huobi/HuobiApiException.h"
-
+#include "TimeService.h"
+#include <stdio.h>
+#include <fstream>
 namespace Huobi {
 
     class RestApiInvoke {
@@ -79,6 +81,7 @@ namespace Huobi {
             std::string sBuffer;
             printf("\n");
             printf("------request------\n");
+
             printf(ptr->getUrl().c_str());
             printf("\n");
             curl_easy_setopt(pCurl, CURLOPT_SSLKEYTYPE, "PEM");

@@ -34,6 +34,9 @@ namespace Huobi {
         Decimal minTransactFeeWithdraw;
         Decimal maxTransactFeeWithdraw;
         Decimal transactFeeRateWithdraw;
+        std::string baseChain;
+        std::string baseChainProtocol;
+
     };
 
 }

@@ -62,6 +62,9 @@
 #include "Huobi/BatchOrderResult.h"
 #include "Huobi/SubUserManageResult.h"
 #include "Huobi/BatchCancelOrdersResult.h"
+#include "Huobi/TransactFeeRate.h"
+#include "Huobi/MarginLoanInfo.h"
+#include "Huobi/CrossMarginLoanInfo.h"
 
 namespace Huobi {
 
@@ -162,7 +165,7 @@ namespace Huobi {
         RestApi<std::vector<Order>>*getOpenOrders(OpenOrderRequest& openOrderRequest);
         RestApi<long>* createOrder(NewOrderRequest& newOrderRequest);
         RestApi<long>* cancelOrder(const char* symbol, long orderId);
-        RestApi<BatchCancelOrdersResult>* cancelOrders(const char* symbol, std::list<std::string> ids,const char* orderIdsOrClientOrderIds);
+        RestApi<BatchCancelOrdersResult>* cancelOrders(const char* symbol, std::list<std::string> ids, const char* orderIdsOrClientOrderIds);
         RestApi<BatchCancelResult>* cancelOpenOrders(CancelOpenOrderRequest& cancelOpenOrderRequest);
         RestApi<Order>* getOrder(const char* symbol, long orderId);
         RestApi<std::vector<MatchResult>>*getMatchResults(const char* symbol, long orderId);
@@ -197,6 +200,10 @@ namespace Huobi {
         RestApi<CrossMarginAccount>* crossMaginGetLoanBalance();
         RestApi<std::vector<BatchOrderResult>>*batchOrders(std::list<NewOrderRequest> requests);
         RestApi<SubUserManageResult>* subUserManage(long subUid, LockAction action);
+        RestApi<std::vector<TransactFeeRate>>*getTransactFeeRate(const char* symbols);
+        RestApi<std::vector<MarginLoanInfo>>*getLoanInfo(const char* symbols);
+        RestApi<std::vector<CrossMarginLoanInfo>>*getCrossMarginLoanInfo();
+
 
     };
 }

@@ -95,6 +95,8 @@ namespace Huobi {
          * The next time for query ,it exists only if size out of range .
          */
         long nextTime = 0;
+
+        std::string clientOrderId;
     };
 
 }
