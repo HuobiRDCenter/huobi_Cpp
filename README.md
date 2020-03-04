@@ -1,4 +1,4 @@
-# Huobi C++ SDK (beta version)
+# Huobi C++ SDK
 
 This is Huobi C++ SDK, This is a lightweight c++ library, you can import to your C++ project and use this SDK to query all market data, trading and manage your account.
 
