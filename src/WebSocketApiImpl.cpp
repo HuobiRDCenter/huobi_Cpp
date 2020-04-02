@@ -444,7 +444,7 @@ namespace Huobi {
                 accountUpdateEvent.available = data.getDecimal("available");
             if (data.containKey("balance"))
                 accountUpdateEvent.balance = data.getDecimal("balance");
-            accountUpdateEvent.changeTime = data.getLong("changeTime");
+            accountUpdateEvent.changeTime=data.getLongOrDefault("changeTime", -1);
             accountUpdateEvent.changeType = AccountsUpdateChangeType::lookup(data.getString("changeType"));
             accountUpdateEvent.currency = data.getString("currency");
             return accountUpdateEvent;

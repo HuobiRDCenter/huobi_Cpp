@@ -30,6 +30,9 @@ namespace Huobi {
 
     const char* JsonWrapper::getString(const char* name) const {
         checkMandatoryField(name);
+        if (object[name].GetString() == nullptr) {
+            return "";
+        }
         return object[name].GetString();
     }
 
@@ -52,6 +55,9 @@ namespace Huobi {
 
     long JsonWrapper::getLongOrDefault(const char* name, long def) const {
         if (!containKey(name)) {
+            return def;
+        }
+        if (object[name].GetString() == nullptr) {
             return def;
         }
         return std::stol(object[name].GetString());
