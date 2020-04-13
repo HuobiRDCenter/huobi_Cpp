@@ -1,20 +1,14 @@
 # Huobi C++ SDK Change Log
 
-
-
 This is Huobi C++ SDK, This is a lightweight c++ library, you can import to your c++ project and use this SDK to query all market data, trading and manage your account.
-
-
 
 The SDK supports both synchronous RESTful API invoking, and subscribe the market data from the Websocket connection.
 
-
-
-
-
-
-
 ## Table of Contents
+
+- [Huobi Global API C++ SDK version 1.0.13](#Huobi-Global-API-c++-SDK-version-1.0.13)
+
+- [Huobi Global API C++ SDK version 1.0.12](#Huobi-Global-API-c++-SDK-version-1.0.12)
 
 - [Huobi Global API C++ SDK version 1.0.11](#Huobi-Global-API-c++-SDK-version-1.0.11)
 
@@ -38,6 +32,36 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
 
 - [Huobi Global API C++ SDK version 1.0.1](#Huobi-Global-API-c++-SDK-version-1.0.1)
 
+## Huobi Global API Cpp SDK version 1.0.13
+
+***2020-04-13***
+
+- Modify API request and response field
+
+  ```
+  GET /v1/cross-margin/loan-orders				Add sub-id as optional parameters
+  GET /v1/cross-margin/accounts/balance		Add sub-id as optional parameters
+  GET /market/tickers											Add best bid offer response field
+  POST /v1/order/orders/place							Add FOK order types
+  POST /v1/order/batch-orders							Add FOK order types
+  ```
+
+- Add new API
+
+  ```
+  GET https://status.huobigroup.com/api/v2/summary.json
+  WebSocket topic market.$symbol.mbp.refresh.$levels
+  GET /v2/account/ledger
+  ```
+
+
+## Huobi Global API Cpp SDK version 1.0.12
+
+- modify subscribe for account update with currency balance information
+
+  ```
+   subscribe : account update
+  ```
 
 ## Huobi Global API Cpp SDK version 1.0.11
 
