@@ -319,7 +319,12 @@ namespace Huobi {
     }
 
     CrossMarginAccount SyncClientImpl::crossMaginGetLoanBalance() {
-        return RestApiInvoke::callSync(impl->crossMaginGetLoanBalance());
+        CrossMaginGetLoanBalanceRequest request;
+        return crossMaginGetLoanBalance(request);
+    }
+
+    CrossMarginAccount SyncClientImpl::crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginGetLoanBalance(request));
     }
 
     std::vector<BatchOrderResult> SyncClientImpl::batchOrders(std::list<NewOrderRequest> requests) {
@@ -349,6 +354,19 @@ namespace Huobi {
     std::vector<CrossMarginLoanInfo> SyncClientImpl::getCrossMarginLoanInfo() {
         return RestApiInvoke::callSync(impl->getCrossMarginLoanInfo());
     }
+
+    std::string SyncClientImpl::getSystemStatus() {
+        return RestApiInvoke::getSystemStatus();
+    }
+
+    std::vector<Ticker> SyncClientImpl::getMarketTickers() {
+        return RestApiInvoke::callSync(impl->getMarketTickers());
+    }
+
+    std::vector<AccountLedger> SyncClientImpl::getAccountLedger(AccountLedgerRequest& accountLedgerRequest) {
+        return RestApiInvoke::callSync(impl->getAccountLedger(accountLedgerRequest));
+    }
+
 
 
 }

@@ -670,7 +670,7 @@ namespace Huobi {
     RestApi<std::vector<MatchResult>>*RestApiImpl::getMatchResults(MatchResultRequest& matchResultRequest) {
         InputChecker::checker()->
                 checkSymbol(matchResultRequest.symbol)
-                ->checkRange(matchResultRequest.size, 0, 100, "size")
+                ->checkRange(matchResultRequest.size, 0, 500, "size")
                 ->checkDate(matchResultRequest.startDate, "startDate")
                 ->checkDate(matchResultRequest.endDate, "endDate");
         UrlParamsBuilder builder;
@@ -843,6 +843,7 @@ namespace Huobi {
                 Balance balance;
                 balance.currency = item.getString("currency");
                 balance.balance = item.getDecimal("balance");
+                balance.accountType = AccountType::lookup(item.getString("type"));
                 balances.push_back(balance);
             }
             return balances;
@@ -1472,6 +1473,7 @@ namespace Huobi {
         builder.putUrl("from", request.from);
         builder.putUrl("size", request.size);
         builder.putUrl("direct", request.direction.getValue());
+        builder.putUrl("sub-uid", request.subUid);
 
         auto res = createRequestByGetWithSignature<std::vector < CrossMarginLoadOrder >> ("/v1/cross-margin/loan-orders", builder);
         res->jsonParser = [this](const JsonWrapper & json) {
@@ -1501,10 +1503,12 @@ namespace Huobi {
 
     }
 
-    RestApi<CrossMarginAccount>* RestApiImpl::crossMaginGetLoanBalance() {
+    RestApi<CrossMarginAccount>* RestApiImpl::crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request) {
 
-        UrlParamsBuilder buildler;
-        auto res = createRequestByGetWithSignature<CrossMarginAccount>("/v1/cross-margin/accounts/balance", buildler);
+        UrlParamsBuilder builder;
+        builder.putUrl("sub-uid", request.subUid);
+
+        auto res = createRequestByGetWithSignature<CrossMarginAccount>("/v1/cross-margin/accounts/balance", builder);
 
         res->jsonParser = [this](const JsonWrapper & json) {
             JsonWrapper item = json.getJsonObjectOrArray("data");
@@ -1720,6 +1724,74 @@ namespace Huobi {
 
         };
 
+        return res;
+    }
+
+    RestApi<std::vector<Ticker>>*RestApiImpl::getMarketTickers() {
+        UrlParamsBuilder builder;
+
+        auto res = createRequestByGet<std::vector < Ticker >> ("/market/tickers", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::vector<Ticker> tickers;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                Ticker ticker;
+                ticker.open = item.getDecimal("open");
+                ticker.close = item.getDecimal("close");
+                ticker.low = item.getDecimal("low");
+                ticker.high = item.getDecimal("high");
+                ticker.amount = item.getDecimal("amount");
+                ticker.count = item.getDecimal("count");
+                ticker.vol = item.getDecimal("vol");
+                ticker.symbol = item.getString("symbol");
+                ticker.bid = item.getDecimal("bid");
+                ticker.bidSize = item.getDecimal("bidSize");
+                ticker.ask = item.getDecimal("ask");
+                ticker.askSize = item.getDecimal("askSize");
+                tickers.push_back(ticker);
+            }
+            return tickers;
+        };
+        return res;
+    }
+
+    RestApi<std::vector<AccountLedger>>*RestApiImpl::getAccountLedger(AccountLedgerRequest& request) {
+
+        InputChecker::checker()
+                ->shouldNotNull(request.accountId, "accountId");
+
+        UrlParamsBuilder builder;
+        builder.putUrl("accountId", request.accountId);
+        builder.putUrl("currency", request.currency);
+        builder.putUrl("transactTypes", request.transactTypes);
+        builder.putUrl("startTime", request.startTime);
+        builder.putUrl("endTime", request.endTime);
+        builder.putUrl("sort", request.sort);
+        builder.putUrl("limit", request.limit);
+        builder.putUrl("fromId", request.fromId);
+
+        auto res = createRequestByGetWithSignature<std::vector < AccountLedger >> ("/v2/account/ledger", builder);
+        res->jsonParser = [this](const JsonWrapper & json) {
+            std::vector<AccountLedger> accountLedgers;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                AccountLedger accountLedger;
+                accountLedger.accountId = item.getInt("accountId");
+                accountLedger.currency = item.getString("currency");
+                accountLedger.transactAmt = item.getDecimal("transactAmt");
+                accountLedger.transactType = item.getString("transactType");
+                accountLedger.transactId = item.getInt("transactId");
+                accountLedger.transactTime = item.getInt("transactTime");
+                if (item.containKey("transferer"))
+                    accountLedger.transferer = item.getInt("transferer");
+                if (item.containKey("transferee"))
+                    accountLedger.transferee = item.getInt("transferee");
+                accountLedgers.push_back(accountLedger);
+            }
+            return accountLedgers;
+        };
         return res;
     }
 

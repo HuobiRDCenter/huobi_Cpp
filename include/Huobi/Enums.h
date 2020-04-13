@@ -229,6 +229,10 @@ private:
         static OrderType buy_stop_limit;
         static OrderType sell_stop_limit;
         static OrderType invalid;
+        static OrderType buy_limit_fok;
+        static OrderType sell_limit_fok;
+        static OrderType buy_stop_limit_fok;
+        static OrderType sell_stop_limit_fok;
         static OrderType SDK_NOTSUPPORT;
     };
 

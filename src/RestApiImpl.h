@@ -65,6 +65,10 @@
 #include "Huobi/TransactFeeRate.h"
 #include "Huobi/MarginLoanInfo.h"
 #include "Huobi/CrossMarginLoanInfo.h"
+#include "Huobi/CrossMaginGetLoanBalanceRequest.h"
+#include "Huobi/Ticker.h"
+#include "Huobi/AccountLedger.h"
+#include "Huobi/AccountLedgerRequest.h"
 
 namespace Huobi {
 
@@ -197,13 +201,14 @@ namespace Huobi {
         RestApi<long>* crossMaginApplyLoan(CrossMarginApplyLoanRequest& request);
         RestApi<void*>* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
         RestApi<std::vector<CrossMarginLoadOrder>>*crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
-        RestApi<CrossMarginAccount>* crossMaginGetLoanBalance();
+        RestApi<CrossMarginAccount>* crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request);
         RestApi<std::vector<BatchOrderResult>>*batchOrders(std::list<NewOrderRequest> requests);
         RestApi<SubUserManageResult>* subUserManage(long subUid, LockAction action);
         RestApi<std::vector<TransactFeeRate>>*getTransactFeeRate(const char* symbols);
         RestApi<std::vector<MarginLoanInfo>>*getLoanInfo(const char* symbols);
         RestApi<std::vector<CrossMarginLoanInfo>>*getCrossMarginLoanInfo();
-
+        RestApi<std::vector<Ticker>>*getMarketTickers();
+        RestApi<std::vector<AccountLedger>>*getAccountLedger(AccountLedgerRequest& accountLedgerRequest);
 
     };
 }

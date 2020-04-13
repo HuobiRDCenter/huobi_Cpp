@@ -433,7 +433,7 @@ namespace Huobi {
 
         auto req = new WebSocketRequestImpl<AccountUpdateEvent>();
         req->connectionHandler = [mode](WebSocketConnection * connection) {
-            connection->send(Channels::accountUpdateEvent(Channels::OP_SUB,mode));
+            connection->send(Channels::accountUpdateEvent(Channels::OP_SUB, mode));
         };
         req->JsonParser = [this](const JsonWrapper & json) {
             AccountUpdateEvent accountUpdateEvent;
@@ -444,7 +444,7 @@ namespace Huobi {
                 accountUpdateEvent.available = data.getDecimal("available");
             if (data.containKey("balance"))
                 accountUpdateEvent.balance = data.getDecimal("balance");
-            accountUpdateEvent.changeTime = data.getLong("changeTime");
+            accountUpdateEvent.changeTime=data.getLongOrDefault("changeTime", -1);
             accountUpdateEvent.changeType = AccountsUpdateChangeType::lookup(data.getString("changeType"));
             accountUpdateEvent.currency = data.getString("currency");
             return accountUpdateEvent;
@@ -455,6 +455,47 @@ namespace Huobi {
         req->errorHandler = errorHandler;
         return req;
     }
+
+     WebSocketRequest* WebSocketApiImpl::subscribeMarketDepthMBPrefresh(
+            const std::list<std::string>& symbols,
+            MBPLevel level,
+            const std::function<void(const MarketDepthMBPEvent&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+
+        InputChecker::checker()->checkCallback(callback);
+        auto req = new WebSocketRequestImpl<MarketDepthMBPEvent>();
+        req->connectionHandler = [symbols, level](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::MarketDepthMBPrefresh(Channels::OP_SUB, symbol, level));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        };
+        req->JsonParser = [this](const JsonWrapper & json) {
+
+            MarketDepthMBPEvent marketDepthMBPEvent;
+            JsonWrapper tick = json.getJsonObjectOrArray("tick");
+            marketDepthMBPEvent.seqNum = tick.getLong("seqNum");
+            JsonWrapper bids = tick.getJsonObjectOrArray("bids");
+            JsonWrapper asks = tick.getJsonObjectOrArray("asks");
+            for (int i = 0; i < bids.size(); i++) {
+                JsonWrapper item = bids.getArrayAt(i);
+                Decimal price = item.getDecimalAt(0);
+                marketDepthMBPEvent.bids[price] = item.getDecimalAt(1);
+            }
+            for (int i = 0; i < asks.size(); i++) {
+                JsonWrapper item = asks.getArrayAt(i);
+                Decimal price = item.getDecimalAt(0);
+                marketDepthMBPEvent.asks[price] = item.getDecimalAt(1);
+            }
+            return marketDepthMBPEvent;
+        };
+        req->isNeedSignature = false;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        return req;
+
+    }
+
 
     WebSocketRequest* WebSocketApiImpl::requestCandlestickEvent(
             bool autoClose,

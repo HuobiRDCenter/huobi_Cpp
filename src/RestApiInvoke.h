@@ -123,6 +123,42 @@ namespace Huobi {
 
             return val;
         }
+
+        static std::string getSystemStatus() {
+
+            CURLcode code = curl_global_init(CURL_GLOBAL_DEFAULT);
+            if (code != CURLE_OK) {
+                std::cout << "curl_global_init() Err" << std::endl;
+                throw HuobiApiException("", "curl_global_init() Err");
+            }
+            CURL* pCurl = curl_easy_init();
+            if (pCurl == NULL) {
+                std::cout << "curl_easy_init() Err" << std::endl;
+                throw HuobiApiException("", "curl_easy_init() Err");
+            }
+            std::string sBuffer;
+            curl_easy_setopt(pCurl, CURLOPT_SSLKEYTYPE, "PEM");
+            curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYPEER, 1L);
+            curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYHOST, 1L);
+            curl_easy_setopt(pCurl, CURLOPT_URL, "https://status.huobigroup.com/api/v2/summary.json"); // 访问的URL
+            curl_easy_setopt(pCurl, CURLOPT_CAINFO, "/etc/huobi_cert/cert.pem");
+            curl_slist *plist = curl_slist_append(NULL, "Content-Type:application/x-www-form-urlencoded");
+            curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, plist);
+            curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 20); // 超时(单位S)
+            curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, &writeFun); // !数据回调函数
+            curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, &sBuffer); // !数据回调函数的参，一般为Buffer或文件fd
+            if (code != CURLE_OK) {
+                std::cout << "curl_easy_perform() Err" << std::endl;
+                throw HuobiApiException("", "curl_easy_perform() Err");
+            }
+            curl_easy_perform(pCurl);
+
+
+            curl_easy_cleanup(pCurl);
+            curl_global_cleanup();
+
+            return sBuffer;
+        }
     };
 }
 

@@ -186,7 +186,13 @@ namespace Huobi {
             return writer.toJsonString();
         }
         
-        
+        static std::string MarketDepthMBPrefresh(char*& op, const std::string& symbol, const MBPLevel& level) {
+            JsonWriter writer;
+            writer.put(op, "market." + symbol + ".mbp.refresh." + level.getValue());
+            writer.put("id", std::to_string(TimeService::getCurrentTimeStamp()));
+            return writer.toJsonString();
+        }
+
 
     };
     char* Channels::OP_SUB = "sub";

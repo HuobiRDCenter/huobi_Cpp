@@ -24,6 +24,7 @@ namespace Huobi {
         std::string from;
         QueryDirection direction;
         int size = 0;
+        long subUid = 0;
 
     };
 

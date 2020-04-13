@@ -85,8 +85,12 @@ namespace Huobi {
     OrderType OrderType::sell_ioc = OrderType("sell-ioc");
     OrderType OrderType::buy_limit_maker = OrderType("buy-limit-maker");
     OrderType OrderType::sell_limit_maker = OrderType("sell-limit-maker");
-    OrderType OrderType::buy_stop_limit = OrderType("buy_stop_limit");
-    OrderType OrderType::sell_stop_limit = OrderType("sell_stop_limit");
+    OrderType OrderType::buy_stop_limit = OrderType("buy-stop-limit");
+    OrderType OrderType::sell_stop_limit = OrderType("sell-stop-limit");
+    OrderType OrderType::buy_limit_fok = OrderType("buy-limit-fok");
+    OrderType OrderType::sell_limit_fok = OrderType("sell-limit-fok");
+    OrderType OrderType::buy_stop_limit_fok = OrderType("buy-stop-limit-fok");
+    OrderType OrderType::sell_stop_limit_fok = OrderType("sell-stop-limit-fok");
     OrderType OrderType::invalid = OrderType("invalid");
     OrderType OrderType::SDK_NOTSUPPORT = OrderType("sdk_not_support_for_now");
 

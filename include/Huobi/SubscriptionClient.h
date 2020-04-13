@@ -185,6 +185,12 @@ namespace Huobi {
                 const std::function<void(const AccountUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
 
+        virtual void subscribeMarketDepthMBPrefresh(
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
 
         /*
          * start sub,must excute after sub-function.

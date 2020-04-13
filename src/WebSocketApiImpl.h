@@ -100,6 +100,11 @@ namespace Huobi {
                 const std::function<void(const AccountUpdateEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler);
 
+        WebSocketRequest* subscribeMarketDepthMBPrefresh(
+                const std::list<std::string>& symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler);
 
         WebSocketRequest * requestCandlestickEvent(
                 bool autoClose,

@@ -79,6 +79,7 @@ namespace Huobi {
         void* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
         std::vector<CrossMarginLoadOrder> crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
         CrossMarginAccount crossMaginGetLoanBalance();
+        CrossMarginAccount crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request);
         std::vector<BatchOrderResult> batchOrders(std::list<NewOrderRequest> requests);
         SubUserManageResult subUserManage(long subUid, LockAction action);
         BatchCancelOrdersResult cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds);
@@ -86,8 +87,9 @@ namespace Huobi {
         std::vector<MarginLoanInfo> getLoanInfo(const char* symbols);
         std::vector<MarginLoanInfo> getLoanInfo();
         std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo();
-
-
+        std::string getSystemStatus();
+        std::vector<Ticker> getMarketTickers();
+        std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest& accountLedgerRequest);
     };
 }
 

@@ -58,6 +58,10 @@
 #include "Huobi/TransactFeeRate.h"
 #include "Huobi/MarginLoanInfo.h"
 #include "Huobi/CrossMarginLoanInfo.h"
+#include "Huobi/CrossMaginGetLoanBalanceRequest.h"
+#include "Huobi/Ticker.h"
+#include "Huobi/AccountLedger.h"
+#include "Huobi/AccountLedgerRequest.h"
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -485,6 +489,7 @@ namespace Huobi {
          */
         virtual CrossMarginAccount crossMaginGetLoanBalance() = 0;
 
+        virtual CrossMarginAccount crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request) = 0;
 
         virtual std::vector<BatchOrderResult> batchOrders(std::list<NewOrderRequest> requests) = 0;
 
@@ -500,6 +505,11 @@ namespace Huobi {
 
         virtual std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo() = 0;
 
+        virtual std::string getSystemStatus() = 0;
+
+        virtual std::vector<Ticker> getMarketTickers() = 0;
+
+        virtual std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest& accountLedgerRequest) = 0;
 
 
     };
