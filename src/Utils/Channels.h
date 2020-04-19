@@ -193,6 +193,13 @@ namespace Huobi {
             return writer.toJsonString();
         }
 
+        static std::string OrderUpdateV2(char*& op, const std::string& symbol) {
+            JsonWriter writer;
+            writer.put("action", op);
+            writer.put("ch", "orders#" + symbol);
+            return writer.toJsonString();
+        }
+
 
     };
     char* Channels::OP_SUB = "sub";

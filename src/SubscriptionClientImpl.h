@@ -146,6 +146,13 @@ namespace Huobi {
                 const std::function<void(const MarketDepthMBPEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
 
+        void subscribeOrderUpdateV2(
+                const char* symbol,
+                const std::function<void(const OrderUpdateV2Event&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) override;
+
+
+
         WebSocketRequest* requestCandlestickEvent(
                 bool autoClose,
                 const char* symbols,

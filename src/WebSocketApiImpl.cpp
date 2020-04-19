@@ -496,6 +496,60 @@ namespace Huobi {
 
     }
 
+    WebSocketRequest* WebSocketApiImpl::subscribeOrderUpdateV2(
+            const std::list<std::string>& symbols,
+            const std::function<void(const OrderUpdateV2Event&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        InputChecker::checker()->checkCallback(callback);
+        auto req = new WebSocketRequestImpl<OrderUpdateV2Event>();
+        req->connectionHandler = [symbols](WebSocketConnection * connection) {
+            for (std::string symbol : symbols) {
+                connection->send(Channels::OrderUpdateV2(Channels::OP_SUB, symbol));
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        };
+        req->JsonParser = [this](const JsonWrapper & json) {
+            OrderUpdateV2Event orderUpdateV2Event;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            orderUpdateV2Event.eventType = data.getString("eventType");
+            orderUpdateV2Event.symbol = data.getString("symbol");
+            orderUpdateV2Event.orderId = data.getLong("orderId");
+            if (data.containKey("clientOrderId"))
+                orderUpdateV2Event.clientOrderId = data.getString("clientOrderId");
+            if (data.containKey("orderPrice"))
+                orderUpdateV2Event.orderPrice = data.getString("orderPrice");
+            if (data.containKey("orderSize"))
+                orderUpdateV2Event.orderSize = data.getString("orderSize");
+            orderUpdateV2Event.orderStatus = data.getString("orderStatus");
+            if (data.containKey("orderCreateTime"))
+                orderUpdateV2Event.orderCreateTime = data.getLong("orderCreateTime");
+            if (data.containKey("tradePrice"))
+                orderUpdateV2Event.tradePrice = data.getString("tradePrice");
+            if (data.containKey("tradeVolume"))
+                orderUpdateV2Event.tradeVolume = data.getString("tradeVolume");
+            if (data.containKey("tradeId"))
+                orderUpdateV2Event.tradeId = data.getLong("tradeId");
+            if (data.containKey("tradeTime"))
+                orderUpdateV2Event.tradeTime = data.getLong("tradeTime");
+            if (data.containKey("aggressor"))
+                orderUpdateV2Event.aggressor = data.getBool("aggressor");
+            if (data.containKey("orderStatus"))
+                orderUpdateV2Event.orderStatus = data.getString("orderStatus");
+            if (data.containKey("remainAmt"))
+                orderUpdateV2Event.remainAmt = data.getString("remainAmt");
+            if (data.containKey("lastActTime"))
+                orderUpdateV2Event.lastActTime = data.getLong("lastActTime");
+
+            return orderUpdateV2Event;
+        };
+        req->isNeedSignature = true;
+        req->Callback = callback;
+        req->errorHandler = errorHandler;
+        req->isV2=true;
+        return req;
+
+
+    }
 
     WebSocketRequest* WebSocketApiImpl::requestCandlestickEvent(
             bool autoClose,
