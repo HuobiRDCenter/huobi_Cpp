@@ -62,6 +62,8 @@
 #include "Huobi/Ticker.h"
 #include "Huobi/AccountLedger.h"
 #include "Huobi/AccountLedgerRequest.h"
+#include "Huobi/QuerySubUserDepositRequest.h"
+
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -510,6 +512,10 @@ namespace Huobi {
         virtual std::vector<Ticker> getMarketTickers() = 0;
 
         virtual std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest& accountLedgerRequest) = 0;
+
+        virtual std::vector<DepositAddress> getSubUserDepositAddress(long subUid, const char *currency) = 0;
+
+        virtual std::vector<Deposit> querySubUserDeposit(QuerySubUserDepositRequest &request) = 0;
 
 
     };

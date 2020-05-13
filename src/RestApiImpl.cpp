@@ -1795,9 +1795,70 @@ namespace Huobi {
         return res;
     }
 
-    template <typename T>
-    RestApi<T>* RestApiImpl::createRequestByPostWithSignature(const char* adress, UrlParamsBuilder& builder) {
-        RestApi<T>* res = new RestApi<T>;
+    RestApi<std::vector<DepositAddress>> *RestApiImpl::getSubUserDepositAddress(long subUid, const char *currency) {
+        UrlParamsBuilder builder;
+        builder.putUrl("currency", currency)
+                .putUrl("subUid", subUid);
+
+        auto res = createRequestByGetWithSignature<std::vector<DepositAddress >>("/v2/sub-user/deposit-address",
+                                                                                 builder);
+
+        res->jsonParser = [this](const JsonWrapper &json) {
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            std::vector<DepositAddress> depositAddressVec;
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                DepositAddress depositAddress;
+                depositAddress.address = item.getString("address");
+                depositAddress.addressTag = item.getString("addressTag");
+                depositAddress.chain = item.getString("chain");
+                depositAddress.currency = item.getString("currency");
+                depositAddressVec.push_back(depositAddress);
+            }
+            return depositAddressVec;
+        };
+        return res;
+    }
+
+
+    RestApi<std::vector<Deposit>> *RestApiImpl::querySubUserDeposit(QuerySubUserDepositRequest &request) {
+        UrlParamsBuilder builder;
+        builder.putUrl("currency", request.currency)
+                .putUrl("subUid", request.subUid)
+                .putUrl("startTime", request.startTime)
+                .putUrl("endTime", request.endTime)
+                .putUrl("sort", request.sort)
+                .putUrl("limit", request.limit)
+                .putUrl("fromId", request.fromId);
+        auto res = createRequestByGetWithSignature<std::vector<Deposit >>("/v2/sub-user/query-deposit", builder);
+        res->jsonParser = [this](const JsonWrapper &json) {
+            std::vector<Deposit> lstdeposit;
+            JsonWrapper data = json.getJsonObjectOrArray("data");
+            for (int i = 0; i < data.size(); i++) {
+                JsonWrapper item = data.getJsonObjectAt(i);
+                Deposit deposit;
+                deposit.id = item.getLong("id");
+                deposit.currency = item.getString("currency");
+                deposit.txHash = item.getString("txHash");
+                deposit.amount = item.getDecimal("amount");
+                deposit.address = item.getString("address");
+                deposit.addressTag = item.getString("addressTag");
+                deposit.depositState = DepositState::lookup(item.getString("state"));
+                deposit.createdTimestamp = item.getLong("createdTime");
+                deposit.updatedTimestamp = item.getLong("updatedTime");
+                deposit.chain = item.getString("chain");
+                lstdeposit.push_back(deposit);
+            }
+            return lstdeposit;
+        };
+
+        return res;
+    }
+
+
+    template<typename T>
+    RestApi<T> *RestApiImpl::createRequestByPostWithSignature(const char *adress, UrlParamsBuilder &builder) {
+        RestApi<T> *res = new RestApi<T>;
         res->method = "POST";
         std::string temp = adress;
         temp += "?";

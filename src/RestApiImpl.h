@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <Huobi/QuerySubUserDepositRequest.h>
 
 #include "RestApi.h"
 #include "AccountsInfoMap.h"
@@ -209,6 +210,10 @@ namespace Huobi {
         RestApi<std::vector<CrossMarginLoanInfo>>*getCrossMarginLoanInfo();
         RestApi<std::vector<Ticker>>*getMarketTickers();
         RestApi<std::vector<AccountLedger>>*getAccountLedger(AccountLedgerRequest& accountLedgerRequest);
+
+        RestApi<std::vector<DepositAddress>> *getSubUserDepositAddress(long subUid, const char *currency);
+
+        RestApi<std::vector<Deposit>> *querySubUserDeposit(QuerySubUserDepositRequest &request);
 
     };
 }

@@ -88,8 +88,15 @@ namespace Huobi {
         std::vector<MarginLoanInfo> getLoanInfo();
         std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo();
         std::string getSystemStatus();
+
         std::vector<Ticker> getMarketTickers();
-        std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest& accountLedgerRequest);
+
+        std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest &accountLedgerRequest);
+
+        std::vector<DepositAddress> getSubUserDepositAddress(long subUid, const char *currency);
+
+        std::vector<Deposit> querySubUserDeposit(QuerySubUserDepositRequest &request);
+
     };
 }
 

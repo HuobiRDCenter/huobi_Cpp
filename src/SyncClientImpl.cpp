@@ -367,6 +367,14 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->getAccountLedger(accountLedgerRequest));
     }
 
+    std::vector<DepositAddress> SyncClientImpl::getSubUserDepositAddress(long subUid, const char *currency) {
+        return RestApiInvoke::callSync(impl->getSubUserDepositAddress(subUid, currency));
+    }
+
+    std::vector<Deposit> SyncClientImpl::querySubUserDeposit(QuerySubUserDepositRequest &request) {
+        return RestApiInvoke::callSync(impl->querySubUserDeposit(request));
+
+    }
 
 
 }
