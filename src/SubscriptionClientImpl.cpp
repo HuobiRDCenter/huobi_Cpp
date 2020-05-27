@@ -248,6 +248,13 @@ namespace Huobi {
         createConnection(impl->subscribeMarketDepthMBPrefresh(parseSymbols(symbols), level, callback, errorHandler));
     }
 
+    void SubscriptionClientImpl::subscribeOrderUpdateV2(
+            const char* symbol,
+            const std::function<void(const OrderUpdateV2Event&) >& callback,
+            const std::function<void(HuobiApiException&)>& errorHandler) {
+        createConnection(impl->subscribeOrderUpdateV2(parseSymbols(symbol), callback, errorHandler));
+    }
+
     WebSocketRequest* SubscriptionClientImpl::requestCandlestickEvent(
             bool autoClose,
             const char* symbols,
