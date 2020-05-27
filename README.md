@@ -1,10 +1,12 @@
-# Huobi C++ SDK (beta version)
+# Huobi C++ SDK
 
 This is Huobi C++ SDK, This is a lightweight c++ library, you can import to your C++ project and use this SDK to query all market data, trading and manage your account.
 
 The SDK supports both synchronous RESTful API invoking, and subscribe the market data from the Websocket connection.
 
+## Huobi C++ SDK Releases
 
+Go to [Releases](https://github.com/HuobiRDCenter/huobi_Cpp/releases) page to view and download each release.
 
 ## Table of Contents
 
@@ -26,35 +28,63 @@ The SDK supports both synchronous RESTful API invoking, and subscribe the market
   - [Reference data](#Reference-data)
     - [Exchange timestamp](#Exchange-timestamp)
     - [Symbol and currencies](#symbol-and-currencies)
+    - [Symbols](#symbols)
+    - [Currencies](#Currencies)
+    - [Currency & Chains](#Currency-&-Chains)
   - [Market data](#Market-data)
     - [Candlestick/KLine](#Candlestick/KLine)
     - [Depth](#Depth)
     - [Latest trade](#latest-trade)
     - [Best bid/ask](#best-bid/ask)
-    - [Historical Trade](#historical)
+    - [Historical Trade](#Historical-Trade)
     - [24H Statistics](#24h-statistics)
+    - [Market Trade](#Market-Trade)
   - [Account](#account)
+    - [Account balance](#account-balance)
+    - [Transfer](#transfer)
+    - [Get Account History](#Get-Account-History)
+    - [Subuser account balance](#subuser-account-balance)
+    - [Subuser aggregate balance](#Subuser-aggregate-balance)
+    - [Subuser management](#subuser-management)
   - [Wallet](#wallet)
-    - [Withdraw](@Withdraw)
-    - [Cancel withdraw](@cancel-withdraw)
+    - [Withdraw](#Withdraw)
+    - [Cancel withdraw](#cancel-withdraw)
     - [Withdraw and deposit history](#withdraw-and-deposit-history)
+    - [Query Deposit Address](#Query-Deposit-Address)
+    - [Query Withdraw Quota](Query-Withdraw-Quota)
   - [Trading](#trading)
     - [Create order](#create-order)
     - [Cancel order](#cancel-order)
     - [Cancel open orders](#cancel-open-orders)
     - [Get order info](#get-order-info)
+    - [Historical orders](#historical-orders)
+    - [Get order info by client order id](#Get-order-info-by-client-order-id)
+    - [Cancel order by client order id](#Cancel-rder-by-client-order-id)
+    - [FeeRate](#FeeRate)
+    - [Order history](#Order-history)
+    - [Batch orders](#Batch-orders)
+    - [Batch cancel](#Batch-cancel)
   - [Margin Loan](#margin-loan)
     - [Apply loan](#apply-loan)
     - [Reply loan](#reply-loan)
     - [Loan history](#loan-history)
+    - [Transfer Asset btween Spot Trading Account and Cross Margin Account](#Transfer-Asset-btween-Spot-Trading-Account-and-Cross-Margin Account)
+    - [Request a Margin Loan](#Request-a-Margin-Loan)
+    - [Search Past Margin Orders](#Search-Past-Margin-Orders)
+    - [Repay Margin Loan](#Repay-Margin-Loan)
+    - [Get the Balance of the Margin Loan Account](#Get-the-Balance-of-the-Margin-Loan-Account)
 - [Subscription example](#Subscription-example)
   - [Subscribe trade update](#Subscribe-trade-update)
   - [Subscribe candlestick/KLine update](#Subscribe-candlestick/KLine-update)
   - [Subscribe market data](#Subscribe-market-data)
   - [Subscribe order update](#subscribe-order-update)
   - [Subscribe account change](#subscribe-account-change)
+  - [Subscribe order update (new)](#subscribe-order-update  (new))
+  - [Subscribe account update(V2)](#subscribe-account-update(V2))
+  - [Subscribe trade clearing](#Subscribe-trade-clearing)
+  - [Subscribe market mbp](#subscribe-market-mbp)
   - [Start subscription](#Start-subscription)
-
+  
   
 
 ## Beginning
@@ -459,6 +489,38 @@ for (std::string currency : exchangeInfo.currencies) {
   std::cout << currency << std::endl;
 }
 ```
+#### Symbols
+
+```c++
+RequestClient* request = createRequestClient();
+std::vector<Symbols> symbolsList = request->getSymbols();
+for (Symbols symbols : symbolsList) {
+  std::cout << symbols.symbol << std::endl;
+  std::cout << symbols.pricePrecision << std::endl;  
+}
+```
+#### Currencies
+
+```c++
+RequestClient* request = createRequestClient();
+std::vector<std::string> stringList =request->getCurrencies();
+for (std::string currency : stringList) {
+  std::cout << currency << std::endl;
+}
+```
+
+#### Currency & Chains
+
+```c++
+RequestClient* request = createRequestClient();
+CurrencyChainsRequest currencyChainsRequest;
+std::vector<CurrencyChain> chains =request->getReferenceCurrencies();
+for (CurrencyChain currencyChain : chains) {
+    std::cout << "currency: " << currencyChain.currency << std::endl;
+    std::cout << "instStatus: " << currencyChain.instStatus << std::endl;
+  }
+```
+
 
 ### Market data
 
@@ -517,16 +579,56 @@ RequestClient* request = createRequestClient();
 TradeStatistics tradeStatistics = request->get24HTradeStatistics("ethusdt");
 std::cout << trade_statistics.open << std::endl;
 ```
-
+#### Market Trade
+```c++
+RequestClient* request = createRequestClient();
+Trade trade = request->getMarketTrade("ethusdt");
+std::cout << trade.price << std::endl;
+```
 ### Account
 
 *Authentication is required.*
 
+#### Account balance
 ```c++
 RequestClient* request = createRequestClient("your apikey", "your secretKey");
 Account account = request->getAccountBalance(Account::spot);
 std::cout << account.getBalance("btc")[0].balance << std::endl;
 ```
+
+#### Transfer
+```c++
+RequestClient* request = createRequestClient("your apikey", "your secretKey");
+TransferMasterRequest req(12345L, TransferMasterType::master_transfer_in, "btc", Decimal(1.0));
+request->transferBetweenParentAndSub(req);
+```
+
+#### Get Account History
+```c++
+RequestClient* request = createRequestClient("your apikey", "your secretKey");
+AccountHistoryRequest req(12345L);
+request->getAccountHistory(req);
+```
+
+#### Subuser account balance
+
+```c++
+RequestClient* request = createRequestClient("your apikey", "your secretKey");
+request->getSpecifyAccountBalance(12345L);
+```
+#### Subuser aggregate balance
+```c++
+RequestClient* request = createRequestClient("your apikey", "your secretKey");
+request->getCurrentUserAggregatedBalance();
+```
+
+#### Subuser management
+
+```c++
+RequestClient* request = createRequestClient("your apikey", "your secretKey");
+request->subUserManage(12345L,LockAction::lock);
+```
+
 
 ### Wallet
 
@@ -558,6 +660,18 @@ std::vector<Withdraw> withdrawVes = request->getWithdrawHistory("btc", id, 10);
 std::cout << withdrawVes[0].amount << std::endl;
 std::vector<Deposit> depositVes = request->getDepositHistory("btc", id, 10);
 std::cout << depositVes[0].amount << std::endl;
+```
+#### Query Deposit Address
+
+```c++
+DepositAddressRequest depositAddressRequest("btc");
+request->getDepositAddress(depositAddressRequest);
+```
+
+#### Query Withdraw Quota
+```c++
+WithdrawQuotaRequest withdrawQuotaRequest("btc");
+request->getWithdrawQuota(withdrawQuotaRequest);
 ```
 
 ### Trading
@@ -605,9 +719,70 @@ std::cout << order.price << std::endl;
 *Authentication is required.*
 
 ```c++
- HistoricalOrdersRequest historicalOrder("btcusdt", OrderState::canceled);
+HistoricalOrdersRequest historicalOrder("btcusdt", OrderState::canceled);
  std::vector<Order> orderVes = request->getHistoricalOrders(historicalOrder);
  std::cout << orderVes[0].price << std::endl;
+```
+
+
+#### Get order info by client order id
+
+*Authentication is required.*
+
+```c++
+Order order = request->getOrderByClientOrderId(clientOrderId);
+std::cout << order.price << std::endl;
+```
+
+#### Cancel order by client order id
+
+*Authentication is required.*
+
+```c++
+request->cancelOrderByClientOrderId(clientOrderId);
+```
+
+#### FeeRate
+
+*Authentication is required.*
+
+```c++
+std::vector<FeeRate> feeRates = request->getFeeRate("btcusdt");
+for (FeeRate feeRate : feeRates) {
+  std::cout << feeRate.symbol << std::endl;
+  std::cout << feeRate.maker_fee << std::endl;  
+  std::cout << feeRate.taker_fee << std::endl;  
+} 
+```
+
+#### Order history
+
+*Authentication is required.*
+
+*Get historical orders in the last 48 hours.*
+
+```c++
+ OrdersHistoryRequest ordersHistory;
+ std::vector<Order> orderVes = request->getOrderHistory(ordersHistory);
+ std::cout << orderVes[0].price << std::endl;
+```
+#### Batch orders
+```c++
+NewOrderRequest order("btcusdt",AccountType::spot,OrderType::buy_limit,
+                       Decimal(1),Decimal(0.1)); 
+std::list<NewOrderRequest> orders;
+orders.push_back(order);
+request->batchOrders(orders);
+```
+
+#### Batch cancel
+```c++
+std::list<long> orderIds;
+orderIds.push_back(12345L);
+std::list<std::string> clientOrderIds;
+clientOrderIds.push_back("1234");
+request->cancelOrders("btcusdt",orderIds);
+request->cancelClientIdOrders("btcusdt",clientOrderIds);
 ```
 
 ### Margin Loan
@@ -640,7 +815,43 @@ std::cout << id << std::endl;
  std::cout << loanVes[0].loanAmount << std::endl;
 ```
 
+#### Transfer Asset btween Spot Trading Account and Cross Margin Account
 
+*Authentication is required.*
+
+```c++
+ request->crossMaginTransferIn(crossMarginTransferRequest);
+ request->crossMaginTransferOut(crossMarginTransferRequest);
+```
+#### Request a Margin Loan
+
+*Authentication is required.*
+
+```c++
+ request->crossMaginApplyLoan(crossMarginApplyLoanRequest);
+```
+#### Search Past Margin Orders
+*Authentication is required.*
+
+```c++
+ request->crossMaginGetLoanOrders(crossMarginLoanOrdersRequest);
+```
+
+#### Repay Margin Loan
+
+*Authentication is required.*
+
+```c++
+ request->crossMaginRepayLoan(crossMarginRepayLoanRequest);
+```
+
+#### Get the Balance of the Margin Loan Account
+
+*Authentication is required.*
+
+```c++
+ request->crossMaginGetLoanBalance();
+```
 
 ## Subscription example
 
@@ -693,6 +904,60 @@ subscriptionClient->subscribeAccountEvent(
     }
 });
 ```
+### Subscribe order update  (new)
+
+*Authentication is required.*
+*Recommend to use this new sub ,lower data latency and more accurate message order.*
+
+```c++
+subscriptionClient->subscribeOrderUpdateNewEvent(
+  "btcusdt",
+  [](const OrderUpdateEvent& orderEvent) {
+    std::cout << orderEvent.data.price << std::endl;
+});
+```
+#### Subscribe account update(V2)
+*Authentication is required.*
+
+
+```c++
+subscriptionClient->subscribeAccountUpdateEvent(AccountsUpdateMode::balanceAndaAvailable, [](AccountUpdateEvent event) {
+        cout << "---- accountId: " << event.accountId << " ----" << endl;
+        cout << "---- accountType: " << event.accountType.getValue() << " ----" << endl;
+        cout << "---- available: " << event.available << " ----" << endl;
+        cout << "---- balance: " << event.balance << " ----" << endl;
+        cout << "---- changeTime: " << event.changeTime << " ----" << endl;
+        cout << "---- changeType: " << event.changeType.getValue() << " ----" << endl;
+        cout << "---- currency: " << event.currency << " ----" << endl;
+
+    });
+```
+#### Subscribe trade clearing
+*Authentication is required.*
+
+
+```c++
+ subscriptionClient->subscribeTradeClearingEvent("htusdt", [](TradeClearingEvent event) {
+        cout << "---- aggressor: " << event.aggressor << " ----" << endl;
+        cout << "---- feeDeduct: " << event.feeDeduct << " ----" << endl;
+        cout << "---- feeDeductType: " << event.feeDeductType << " ----" << endl;
+        cout << "---- orderId: " << event.orderId << " ----" << endl;
+        cout << "---- orderSide: " << event.orderSide.getValue() << " ----" << endl;
+        cout << "---- orderType: " << event.orderType.getValue() << " ----" << endl;
+        cout << "---- symbol: " << event.symbol << " ----" << endl;
+        cout << "---- tradeId: " << event.tradeId << " ----" << endl;
+        cout << "---- tradePrice: " << event.tradePrice << " ----" << endl;
+        cout << "---- tradeTime: " << event.tradeTime << " ----" << endl;
+        cout << "---- tradeVolume: " << event.tradeVolume << " ----" << endl;
+        cout << "---- transactFee: " << event.transactFee << " ----" << endl;
+    });
+```
+#### Subscribe market mbp
+```c++
+ subscriptionClient->subscribeMarketDepthMBP("btcusdt", MBPLevel::LEVEL150, [](MarketDepthMBPEvent event) {
+    cout << "---- seqNum: " << event.seqNum << " ----" << endl;
+    });
+```
 
 ### Start subscription
 
@@ -731,9 +996,5 @@ $ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdkcentos
 ````
 $ docker exec -it $(docker ps -qa | head -1) /bin/bash
 ````
-
-
-
-
 
 

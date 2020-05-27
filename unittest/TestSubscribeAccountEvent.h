@@ -55,7 +55,7 @@ TEST(TestSubscribeAccountEvent,Receive_Normal) {
     JsonDocument doc;
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto event = request->JsonParser(json);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550556381242l), event.timestamp);
+    ASSERT_EQ(1550556381242, event.timestamp);
     ASSERT_EQ(1, event.accountChangeList.size());
     ASSERT_EQ(AccountChangeType::newOrder, event.changeType);
     ASSERT_EQ(AccountType::spot, event.accountChangeList[0].accountType);

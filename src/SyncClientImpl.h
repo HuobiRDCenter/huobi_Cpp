@@ -14,7 +14,7 @@ namespace Huobi {
         const char* accesssKey;
         const char* secretKey;
         RestApiImpl *impl;
-        
+
     public:
         SyncClientImpl(const char* accesssKey, const char* secretKey);
         SyncClientImpl(const char* accesssKey, const char* secretKey, RequestOptions& op);
@@ -30,8 +30,8 @@ namespace Huobi {
         TradeStatistics get24HTradeStatistics(const char* symbol);
         ExchangeInfo getExchangeInfo();
         BestQuote getBestQuote(const char* symbol);
-        std::vector<Withdraw> getWithdrawHistory(const char* currency, long fromId, int size);
-        std::vector<Deposit> getDepositHistory(const char* currency, long fromId, int size);
+        std::vector<Withdraw> getWithdrawHistory(WithdrawRecordRequest& request);
+        std::vector<Deposit> getDepositHistory(DepositRecordRequest& request);
         long transfer(TransferRequest& transferRequest);
         long applyLoan(const char* symbol, const char* currency, Decimal amount);
         long repayLoan(long loadId, Decimal amount);
@@ -39,11 +39,12 @@ namespace Huobi {
         LastTradeAndBestQuote getLastTradeAndBestQuote(const char* symbol);
         std::vector<Account> getAccountBalance();
         Account getAccountBalance(AccountType accountType);
+        Account getAccountBalance(AccountType accountType, std::string subtype);
         std::vector<Order> getOpenOrders(OpenOrderRequest& openOrderRequest);
         Order getOrder(const char* symbol, long orderId);
         long createOrder(NewOrderRequest& newOrderRequest);
         long cancelOrder(const char* symbol, long orderId);
-        void* cancelOrders(const char* symbol, std::list<long> orderIds);
+        BatchCancelOrdersResult cancelOrders(const char* symbol, std::list<long> orderIds);
         BatchCancelResult cancelOpenOrders(CancelOpenOrderRequest& request);
         std::vector<MatchResult> getMatchResults(const char* symbol, long orderId);
         std::vector<MatchResult> getMatchResults(MatchResultRequest& matchResultRequest);
@@ -59,6 +60,43 @@ namespace Huobi {
         std::vector<Candlestick> getEtfCandlestick(const char* etfSymbol, CandlestickInterval interval,
                 int limit = 150);
         std::vector<MarginBalanceDetail> getMarginBalanceDetail(const char* symbol);
+        long cancelOrderByClientOrderId(const char* client_order_id);
+        Order getOrderByClientOrderId(const char* client_order_id);
+        std::vector<FeeRate> getFeeRate(const char* symbols);
+        std::vector<Symbols> getSymbols();
+        std::vector<std::string> getCurrencies();
+        long transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest);
+        std::vector<Order> getOrderHistory(OrdersHistoryRequest& req);
+        Trade getMarketTrade(const char* symbol);
+
+        std::vector<CurrencyChain> getReferenceCurrencies(CurrencyChainsRequest& request);
+        std::vector<DepositAddress> getDepositAddress(DepositAddressRequest& request);
+        WithdrawQuota getWithdrawQuota(WithdrawQuotaRequest& request);
+        std::vector<AccountHistory> getAccountHistory(AccountHistoryRequest& request);
+        long crossMaginTransferIn(CrossMarginTransferRequest& request);
+        long crossMaginTransferOut(CrossMarginTransferRequest& request);
+        long crossMaginApplyLoan(CrossMarginApplyLoanRequest& request);
+        void* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
+        std::vector<CrossMarginLoadOrder> crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
+        CrossMarginAccount crossMaginGetLoanBalance();
+        CrossMarginAccount crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request);
+        std::vector<BatchOrderResult> batchOrders(std::list<NewOrderRequest> requests);
+        SubUserManageResult subUserManage(long subUid, LockAction action);
+        BatchCancelOrdersResult cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds);
+        std::vector<TransactFeeRate> getTransactFeeRate(const char* symbols);
+        std::vector<MarginLoanInfo> getLoanInfo(const char* symbols);
+        std::vector<MarginLoanInfo> getLoanInfo();
+        std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo();
+        std::string getSystemStatus();
+
+        std::vector<Ticker> getMarketTickers();
+
+        std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest &accountLedgerRequest);
+
+        std::vector<DepositAddress> getSubUserDepositAddress(long subUid, const char *currency);
+
+        std::vector<Deposit> querySubUserDeposit(QuerySubUserDepositRequest &request);
+
     };
 }
 

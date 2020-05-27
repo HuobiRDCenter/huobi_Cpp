@@ -69,9 +69,11 @@ namespace Huobi {
             if (accessKey.empty() || secretKey.empty()) {
                 throw HuobiApiException(HuobiApiException::KEY_MISSING, "API key and secret key are required");
             }
+            
             std::string cre = method + "\n" + host + "\n" + adress + "\n"
                               + "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
-                              + "&SignatureVersion=2&Timestamp=" + timeBuf;
+                              + "&SignatureVersion=2&Timestamp=" + timeBuf;       
+            
             if (strcmp(param, "")) {
                 cre = cre + "&" + param;
             }
@@ -105,6 +107,51 @@ namespace Huobi {
             return code;
         }
 
+        
+        static std::string CreateV2Signature(std::string host, std::string accessKey, std::string secretKey,
+                                           std::string adress, std::string method, char *timeBuf, const char *param) {
+            if (accessKey.empty() || secretKey.empty()) {
+                throw HuobiApiException(HuobiApiException::KEY_MISSING, "API key and secret key are required");
+            }
+            
+            std::string cre = method + "\n" + host + "\n" + adress + "\n"
+                              + "accessKey=" + accessKey + "&signatureMethod=HmacSHA256"
+                              + "&signatureVersion=2.1&timestamp=" + timeBuf;       
+            
+            if (strcmp(param, "")) {
+                cre = cre + "&" + param;
+            }
+
+            const EVP_MD *engine = EVP_sha256();
+            unsigned char output[1024] = {0};
+            uint32_t len = 1024;
+
+//openssl 1.0.x
+#ifdef OPENSSL_VERSION_1_0
+            HMAC_CTX ctx;
+            HMAC_CTX_init(&ctx);
+            HMAC_Init_ex(&ctx, secretKey.c_str(), secretKey.size(), engine, NULL);
+            HMAC_Update(&ctx, (unsigned char *) cre.c_str(), cre.size());
+            HMAC_Final(&ctx, output, &len);
+            HMAC_CTX_cleanup(&ctx);
+#endif
+
+            //openssl 1.1.x
+#ifdef OPENSSL_VERSION_1_1
+            HMAC_CTX* ctx = HMAC_CTX_new();
+            HMAC_Init_ex(ctx, secretKey.c_str(), secretKey.size(), engine, NULL);
+            HMAC_Update(ctx, (unsigned char*) cre.c_str(), cre.size());
+            HMAC_Final(ctx, output, &len);
+            HMAC_CTX_free(ctx);
+#endif
+
+            std::string code;
+            code = base64_encode(output, 32);
+
+            return code;
+        }
+
+        
         static std::string buildSignaturePath(std::string host, std::string accessKey, std::string secretKey,
                                               std::string adress, std::string method, const char *param) {
             time_t t = time(NULL);
@@ -120,7 +167,7 @@ namespace Huobi {
             std::string code = escapeURL(CreateSignature(host, accessKey, secretKey, adress, method, timeBuf, param));
             std::string res = "";
             res +=
-                    "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
+                   "AccessKeyId=" + accessKey + "&SignatureMethod=HmacSHA256"
                     + "&SignatureVersion=2&Timestamp=" + timeBuf + "&Signature=" + code;
 
             return res;

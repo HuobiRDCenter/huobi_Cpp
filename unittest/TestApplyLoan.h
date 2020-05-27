@@ -31,8 +31,7 @@ using namespace Huobi;
 
 TEST(TestApplyLoan, Request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-
-    auto request = impl->applyLoan("btcusdt", "btc", Decimal("1.1"));
+     auto request = impl->applyLoan("btcusdt", "btc", Decimal("1.1"));
     ASSERT_TRUE(request->getUrl().find("/v1/margin/orders") != -1);
     ASSERT_EQ("POST", request->method);
     JsonDocument doc;
@@ -43,11 +42,11 @@ TEST(TestApplyLoan, Request) {
 }
 
 TEST(TestApplyLoan, Result_Normal) {
-    std::string data =  "{\n"
-       "  \"status\": \"ok\",\n"
-       "  \"data\": 1000\n"
-       "}";
-    
+    std::string data = "{\n"
+            "  \"status\": \"ok\",\n"
+            "  \"data\": 1000\n"
+            "}";
+
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     auto request = impl->applyLoan("btcusdt", "btc", Decimal("1.1"));
     JsonWrapper json = JsonDocument().parseFromString(data.c_str());

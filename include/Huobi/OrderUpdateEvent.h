@@ -24,6 +24,26 @@ namespace Huobi {
          * The order detail.
          */
         Order data;
+
+        /**
+         * The client order id defined  by user .
+         */
+        std::string client_order_id;
+
+        /**
+         * The match id.
+         */
+        long match_id;
+
+        /**
+         * The deal role,taker or maker.
+         */
+        DealRole role;
+
+        /**
+         * The unfilled amount.
+         */
+        Decimal unfilled_amount;
     };
 
 

@@ -24,10 +24,14 @@ using namespace Huobi;
 
 TEST(TestGetWithdrawHistory, request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    auto request = impl->getWithdrawHistory("btc", 24966984923l, 1);
+    WithdrawRecordRequest withdrawReq;
+    withdrawReq.currency = "btc";
+    withdrawReq.fromId = 24966984923l;
+    withdrawReq.size = 1;
+    auto request = impl->getWithdrawHistory(withdrawReq);
     ASSERT_EQ("GET", request->method);
     ASSERT_TRUE(request->getUrl().find("/v1/query/deposit-withdraw") != -1);
-    ASSERT_TRUE(request->getUrl().find("Signature") != -1);    
+    ASSERT_TRUE(request->getUrl().find("Signature") != -1);
     ASSERT_TRUE(request->getUrl().find("currency=btc") != -1);
     ASSERT_TRUE(request->getUrl().find("from=24966984923") != -1);
     ASSERT_TRUE(request->getUrl().find("size=1") != -1);
@@ -37,20 +41,12 @@ TEST(TestGetWithdrawHistory, request) {
 
 TEST(TestGetWithdrawHistory, InvalidSymbol) {
 
+    WithdrawRecordRequest request;
+    request.currency = "?";
+    request.fromId = 24966984923l;
+    request.size = 1;
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    EXPECT_THROW(impl->getWithdrawHistory("?", 24966984923l, 1), HuobiApiException);
-}
-
-TEST(TestGetWithdrawHistory, InvalidSize) {
-
-    RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    EXPECT_THROW(impl->getWithdrawHistory("btc", 24966984923l, 0), HuobiApiException);
-}
-
-TEST(TestGetWithdrawHistory, Invalidfrom) {
-
-    RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    EXPECT_THROW(impl->getWithdrawHistory("?", 0, 1), HuobiApiException);
+    EXPECT_THROW(impl->getWithdrawHistory(request), HuobiApiException);
 }
 
 TEST(TestGetWithdrawHistory, Result_Normal) {
@@ -68,19 +64,24 @@ TEST(TestGetWithdrawHistory, Result_Normal) {
             "        \"address-tag\": \"100040\",\n"
             "        \"fee\": 345,\n"
             "        \"state\": \"confirmed\",\n"
+            "        \"chain\": \"btc\",\n"
             "        \"created-at\": 1510912472199,\n"
             "        \"updated-at\": 1511145876575\n"
             "      }\n"
             "    ]\n"
             "}";
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    auto request = impl->getWithdrawHistory("btc", 24966984923l, 1);
+    WithdrawRecordRequest withdrawReq;
+    withdrawReq.currency = "btc";
+    withdrawReq.fromId = 24966984923l;
+    withdrawReq.size = 1;
+    auto request = impl->getWithdrawHistory(withdrawReq);
     JsonWrapper json = JsonDocument().parseFromString(data.c_str());
     auto withdrawList = request->jsonParser(json);
     ASSERT_EQ(Decimal("345"), withdrawList[0].fee);
     ASSERT_EQ(1171l, withdrawList[0].id);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1510912472199l), withdrawList[0].createdTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1511145876575l), withdrawList[0].updatedTimestamp);
+    ASSERT_EQ(1510912472199l, withdrawList[0].createdTimestamp);
+    ASSERT_EQ(1511145876575l, withdrawList[0].updatedTimestamp);
     ASSERT_EQ(Decimal("7.457467"), withdrawList[0].amount);
     ASSERT_EQ("rae93V8d2mdoUQHwBDBdM4NHCMehRJAsbm", withdrawList[0].address);
     ASSERT_EQ("100040", withdrawList[0].addressTag);

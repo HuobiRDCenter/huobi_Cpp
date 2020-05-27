@@ -62,7 +62,8 @@ TEST(TestSubTradeStatistics, Receive_Normal) {
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto event = request->JsonParser(json);      
     ASSERT_EQ("btcusdt", event.symbol);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550740513421l), event.timestamp);
+     printf("%ld\n",event.timestamp);
+    ASSERT_EQ(1550740513421, event.timestamp);
     //assertEquals(100359274519L, event.getData().getId());
     ASSERT_EQ(204966l, event.tradeStatistics.count);
     ASSERT_EQ(Decimal("115320213.26007387"), event.tradeStatistics.volume);

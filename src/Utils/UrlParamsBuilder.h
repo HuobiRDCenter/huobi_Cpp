@@ -21,6 +21,7 @@ namespace Huobi {
         std::map<std::string, std::string> postMap;
         std::map<std::string, std::string> getMap;
         std::map<std::string, std::list<std::string>> postStringListMap;
+        std::list<UrlParamsBuilder> builderList;
 
         std::string adress = "";
 
@@ -50,14 +51,27 @@ namespace Huobi {
             return adress;
         }
 
+        std::map<std::string, std::string> getPostMap() {
+            return postMap;
+        }
+
+        UrlParamsBuilder& putPostList(UrlParamsBuilder& builder) {
+
+            if (!isPost) {
+                isPost = true;
+            }
+            builderList.push_back(builder);
+            return *this;
+        }
+
         std::string getPostBody() {
 
             rapidjson::StringBuffer strBuf;
             rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
             writer.StartObject();
             if (isPost) {
-                if (postStringListMap.empty()) {
-                    
+                if (!postMap.empty()) {
+
                     std::map<std::string, std::string>::iterator ite = postMap.begin();
                     while (ite != postMap.end()) {
 
@@ -65,16 +79,19 @@ namespace Huobi {
                         writer.String(ite->second.c_str());
                         ite++;
                     }
-                } else {
+                } else if (!postStringListMap.empty()){
                     std::list<std::string> lst = postStringListMap.begin()->second;
-                    std::list<std::string>::iterator ite=lst.begin();
-                    writer.Key("order-ids");
+                    std::list<std::string>::iterator ite = lst.begin();
+                    writer.Key(postStringListMap.begin()->first.c_str());
                     writer.StartArray();
                     while (ite != lst.end()) {
                         writer.String((*ite).c_str());
                         ite++;
                     }
                     writer.EndArray();
+                }else if(!builderList.empty()){
+
+                    return getPostList();
                 }
 
                 writer.EndObject();
@@ -104,7 +121,7 @@ namespace Huobi {
             if (lparam.isZero()) {
                 return *this;
             }
-           return  putPostImpl(pre, lparam);
+            return putPostImpl(pre, lparam);
         }
 
         UrlParamsBuilder& putPost(const std::string& pre, const std::string& lparam) {
@@ -116,10 +133,10 @@ namespace Huobi {
 
         UrlParamsBuilder& putPost(const std::string& pre, const std::list<std::string>& lparam) {
             if (!lparam.size()) {
-                throw  HuobiApiException(HuobiApiException::INPUT_ERROR, "list should not null");
+                throw HuobiApiException(HuobiApiException::INPUT_ERROR, "list should not null");
             }
-            if(!isPost)
-                isPost=true;
+            if (!isPost)
+                isPost = true;
             postStringListMap[pre] = lparam;
             return *this;
         }
@@ -128,7 +145,7 @@ namespace Huobi {
             if (lparam.empty()) {
                 return *this;
             }
-           
+
             getMap[pre] = lparam;
             return *this;
         }
@@ -143,14 +160,14 @@ namespace Huobi {
         }
 
         UrlParamsBuilder& putUrl(const std::string& pre, int lparam) {
-            if (lparam==0) {
+            if (lparam == 0) {
                 return *this;
             }
             return putUrlImpl(pre, lparam);
         }
 
         UrlParamsBuilder& putUrl(const std::string& pre, long lparam) {
-            if (lparam==0) {
+            if (lparam == 0) {
                 return *this;
             }
             return putUrlImpl(pre, lparam);
@@ -162,6 +179,10 @@ namespace Huobi {
             }
             return putUrlImpl(pre, lparam);
         }
+
+
+
+
     private:
 
         template <typename T>
@@ -183,6 +204,34 @@ namespace Huobi {
             postMap[pre] = ss.str();
             return *this;
         }
+
+        std::string getPostList() {
+            rapidjson::StringBuffer strBuf;
+            rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+            writer.StartArray();
+            std::list<UrlParamsBuilder>::iterator builderListite = builderList.begin();
+            while (builderListite != builderList.end()) {
+                std::map<std::string, std::string> iteMap = builderListite->getPostMap();
+                std::map<std::string, std::string>::iterator ite = iteMap.begin();
+                writer.StartObject();
+                while (ite != iteMap.end()) {
+
+                    writer.Key(ite->first.c_str());
+                    writer.String(ite->second.c_str());
+
+                    ite++;
+                }
+                writer.EndObject();
+                builderListite++;
+            }
+            writer.EndArray();
+            std::string data = strBuf.GetString();
+            return data;
+
+        }
+
+
+
     };
 
 }

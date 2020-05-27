@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <Huobi/QuerySubUserDepositRequest.h>
 
 #include "RestApi.h"
 #include "AccountsInfoMap.h"
@@ -38,19 +39,51 @@
 #include "Huobi/Logger.h"
 #include "Huobi/RequestOptions.h"
 #include "Huobi/MarginBalanceDetail.h"
+#include "Huobi/FeeRate.h"
+#include "Huobi/WithdrawRecordRequest.h"
+#include "Huobi/DepositRecordRequest.h"
+#include "Huobi/TransferFuturesRequest.h"
+#include "Huobi/OrdersHistoryRequest.h"
 #include "GetHost.h"
+
+#include "Huobi/CurrencyChain.h"
+#include "Huobi/CurrencyChainsRequest.h"
+#include "Huobi/DepositAddress.h"
+#include "Huobi/DepositAddressRequest.h"
+#include "Huobi/WithdrawQuota.h"
+#include "Huobi/WithdrawQuotaRequest.h"
+#include "Huobi/AccountHistory.h"
+#include "Huobi/AccountHistoryRequest.h"
+#include "Huobi/CrossMarginTransferRequest.h"
+#include "Huobi/CrossMarginApplyLoanRequest.h"
+#include "Huobi/CrossMarginRepayLoanRequest.h"
+#include "Huobi/CrossMarginLoadOrder.h"
+#include "Huobi/CrossMarginLoanOrdersRequest.h"
+#include "Huobi/CrossMarginAccount.h"
+#include "Huobi/BatchOrderResult.h"
+#include "Huobi/SubUserManageResult.h"
+#include "Huobi/BatchCancelOrdersResult.h"
+#include "Huobi/TransactFeeRate.h"
+#include "Huobi/MarginLoanInfo.h"
+#include "Huobi/CrossMarginLoanInfo.h"
+#include "Huobi/CrossMaginGetLoanBalanceRequest.h"
+#include "Huobi/Ticker.h"
+#include "Huobi/AccountLedger.h"
+#include "Huobi/AccountLedgerRequest.h"
 
 namespace Huobi {
 
     class RestApiImpl {
     private:
 
-        std::string TradingUrl = "https://api.huobi.pro:443";
-        std::string MarketQueryUrl = "https://api.huobi.pro:443";
+        std::string TradingUrl = "https://api.huobi.so";
+        std::string MarketQueryUrl = "https://api.huobi.so:443";
 
         std::string accessKey;
         std::string secretKey;
-        std::string host = "api.huobi.pro";
+        std::string host = "api.huobi.so";
+
+
     public:
 
         RestApiImpl() {
@@ -135,8 +168,8 @@ namespace Huobi {
         RestApi<std::vector<Account>>*getAccounts();
         RestApi<std::vector<Balance>>*getBalance(Account& account);
         RestApi<BestQuote>* getBestQuote(const char* symbol);
-        RestApi<std::vector<Withdraw>>*getWithdrawHistory(const char* currency, long fromId, int size);
-        RestApi<std::vector<Deposit>>*getDepositHistory(const char* currency, long fromId, int size);
+        RestApi<std::vector<Withdraw>>*getWithdrawHistory(WithdrawRecordRequest& request);
+        RestApi<std::vector<Deposit>>*getDepositHistory(DepositRecordRequest& request);
         RestApi<long>* transfer(TransferRequest& transferRequest);
         RestApi<long>* applyLoan(const char* symbol, const char* currency, Decimal amount);
         RestApi<long>* repayLoan(long loadId, Decimal amount);
@@ -144,7 +177,7 @@ namespace Huobi {
         RestApi<std::vector<Order>>*getOpenOrders(OpenOrderRequest& openOrderRequest);
         RestApi<long>* createOrder(NewOrderRequest& newOrderRequest);
         RestApi<long>* cancelOrder(const char* symbol, long orderId);
-        RestApi<void*>* cancelOrders(const char* symbol, std::list<long> orderIds);
+        RestApi<BatchCancelOrdersResult>* cancelOrders(const char* symbol, std::list<std::string> ids, const char* orderIdsOrClientOrderIds);
         RestApi<BatchCancelResult>* cancelOpenOrders(CancelOpenOrderRequest& cancelOpenOrderRequest);
         RestApi<Order>* getOrder(const char* symbol, long orderId);
         RestApi<std::vector<MatchResult>>*getMatchResults(const char* symbol, long orderId);
@@ -161,6 +194,34 @@ namespace Huobi {
         RestApi<std::vector<Candlestick>>*getETFCandlestick(
                 const char* symbol, CandlestickInterval interval, int size);
         RestApi<std::vector<MarginBalanceDetail>>*getMarginBalanceDetail(const char* symbol);
+        RestApi<long>* cancelOrderByClientOrderId(const char* client_order_id);
+        RestApi<Order>* getOrderByClientOrderId(const char* client_order_id);
+        RestApi<std::vector<FeeRate>>*getFeeRate(const char* symbols);
+        RestApi<long>* transferBetweenFuturesAndPro(TransferFuturesRequest& req);
+        RestApi<std::vector<Order>>*getOrderHistory(OrdersHistoryRequest& req);
+        RestApi<Trade>* getMarketTrade(const char* symbol);
+        RestApi<std::vector<CurrencyChain>>*getReferenceCurrencies(CurrencyChainsRequest& request);
+        RestApi<std::vector<DepositAddress>>*getDepositAddress(DepositAddressRequest& request);
+        RestApi<WithdrawQuota>* getWithdrawQuota(WithdrawQuotaRequest& request);
+        RestApi<std::vector<AccountHistory>>*getAccountHistory(AccountHistoryRequest& request);
+        RestApi<long>*crossMaginTransferIn(CrossMarginTransferRequest& request);
+        RestApi<long>* crossMaginTransferOut(CrossMarginTransferRequest& request);
+        RestApi<long>* crossMaginApplyLoan(CrossMarginApplyLoanRequest& request);
+        RestApi<void*>* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request);
+        RestApi<std::vector<CrossMarginLoadOrder>>*crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request);
+        RestApi<CrossMarginAccount>* crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request);
+        RestApi<std::vector<BatchOrderResult>>*batchOrders(std::list<NewOrderRequest> requests);
+        RestApi<SubUserManageResult>* subUserManage(long subUid, LockAction action);
+        RestApi<std::vector<TransactFeeRate>>*getTransactFeeRate(const char* symbols);
+        RestApi<std::vector<MarginLoanInfo>>*getLoanInfo(const char* symbols);
+        RestApi<std::vector<CrossMarginLoanInfo>>*getCrossMarginLoanInfo();
+        RestApi<std::vector<Ticker>>*getMarketTickers();
+        RestApi<std::vector<AccountLedger>>*getAccountLedger(AccountLedgerRequest& accountLedgerRequest);
+
+        RestApi<std::vector<DepositAddress>> *getSubUserDepositAddress(long subUid, const char *currency);
+
+        RestApi<std::vector<Deposit>> *querySubUserDeposit(QuerySubUserDepositRequest &request);
+
     };
 }
 #endif /* RESTAPIIMPL_H */

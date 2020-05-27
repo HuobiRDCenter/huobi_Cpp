@@ -45,6 +45,31 @@ namespace Huobi {
             throw HuobiApiException("", "");
         }
 
+        Account getAccount(AccountType accountType, std::string subtype = "") {
+            //            if (accountType == AccountType::margin && subtype != "") {
+            //                for (Account account : accounts) {
+            //                    if (account.subtype == subtype) {
+            //                        return account;
+            //                    }
+            //                }
+            //            }
+
+            for (Account account : accounts) {
+
+                if (account.type == accountType) {
+                    if (accountType != AccountType::margin) {
+                        return account;
+                    } else {
+                        if (account.subtype == subtype)
+                            return account;
+                    }
+
+                }
+
+            }
+            throw HuobiApiException("cannot found account", "type error or margin account loss subtype");
+        }
+
         /**
          * Get account by account id.
          *

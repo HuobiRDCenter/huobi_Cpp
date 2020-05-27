@@ -25,6 +25,8 @@ namespace Huobi {
          * The balance in the main currency unit.
          */
         Decimal balance;
+
+        AccountType accountType;
     };
 
 }

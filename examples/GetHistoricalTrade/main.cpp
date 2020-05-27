@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
 
     RequestClient* client = createRequestClient();
     vector<Trade> tradeVes = client->getHistoricalTrade("btcusdt", 5);
-    cout<<"---- Historical trade for btcusdt ----"<<endl;
+    cout << "---- Historical trade for btcusdt ----" << endl;
     for (Trade trade : tradeVes) {
         cout << "Trade at: " << trade.timestamp << endl;
         cout << "Id: " << trade.tradeId << endl;
@@ -22,4 +22,5 @@ int main(int argc, char** argv) {
         cout << "Amount: " << trade.amount << endl;
         cout << "Direction: " << trade.direction.getValue() << endl;
     }
+
 }

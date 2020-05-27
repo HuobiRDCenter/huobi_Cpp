@@ -87,13 +87,13 @@ namespace Huobi {
         return RestApiInvoke::callSync(impl->get24HTradeStatistics(symbol));
     }
 
-    std::vector<Withdraw> SyncClientImpl::getWithdrawHistory(const char* currency, long fromId, int size) {
-        return RestApiInvoke::callSync(impl->getWithdrawHistory(currency, fromId, size));
+    std::vector<Withdraw> SyncClientImpl::getWithdrawHistory(WithdrawRecordRequest& request) {
+        return RestApiInvoke::callSync(impl->getWithdrawHistory(request));
 
     }
 
-    std::vector<Deposit> SyncClientImpl::getDepositHistory(const char* currency, long fromId, int size) {
-        return RestApiInvoke::callSync(impl->getDepositHistory(currency, fromId, size));
+    std::vector<Deposit> SyncClientImpl::getDepositHistory(DepositRecordRequest& request) {
+        return RestApiInvoke::callSync(impl->getDepositHistory(request));
 
     }
 
@@ -129,23 +129,38 @@ namespace Huobi {
 
     std::vector<Account> SyncClientImpl::getAccountBalance() {
         std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
-        for (Account account : accounts) {
-            std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
-            account.balances = balances;
+
+        for (int i = 0; i < accounts.size(); i++) {
+            std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
+            accounts[i].balances = balances;
         }
         return accounts;
     }
 
     Account SyncClientImpl::getAccountBalance(AccountType accountType) {
         std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
-        for (Account account : accounts) {
-            if (account.type == accountType) {
-                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(account));
-                account.balances = balances;
-                return account;
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts[i].type == accountType) {
+                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
+                accounts[i].balances = balances;
+                return accounts[i];
             }
         }
-        return Account();
+
+    }
+
+    Account SyncClientImpl::getAccountBalance(AccountType accountType, std::string subtype) {
+        std::vector<Account> accounts = RestApiInvoke::callSync(impl->getAccounts());
+
+        for (int i = 0; i < accounts.size(); i++) {
+            if (accounts[i].type == accountType && accounts[i].subtype == subtype) {
+                std::vector<Balance> balances = RestApiInvoke::callSync(impl->getBalance(accounts[i]));
+                accounts[i].balances = balances;
+                return accounts[i];
+            }
+        }
+      
+        throw HuobiApiException("cannot found account", "type error or margin account loss subtype");
     }
 
     std::vector<Order> SyncClientImpl::getOpenOrders(OpenOrderRequest& openOrderRequest) {
@@ -162,8 +177,16 @@ namespace Huobi {
 
     }
 
-    void* SyncClientImpl::cancelOrders(const char* symbol, std::list<long> orderIds) {
-        return RestApiInvoke::callSync(impl->cancelOrders(symbol, orderIds));
+    BatchCancelOrdersResult SyncClientImpl::cancelOrders(const char* symbol, std::list<long> orderIds) {
+
+        std::list<std::string> strOrderIds;
+        std::list<long>::iterator ite = orderIds.begin();
+        while (ite != orderIds.end()) {
+            strOrderIds.push_back(std::to_string(*ite));
+            ite++;
+        }
+
+        return RestApiInvoke::callSync(impl->cancelOrders(symbol, strOrderIds, "order-ids"));
 
     }
 
@@ -223,8 +246,136 @@ namespace Huobi {
             int limit) {
         return RestApiInvoke::callSync(impl->getETFCandlestick(etfSymbol, interval, limit));
     }
-    
+
     std::vector<MarginBalanceDetail> SyncClientImpl::getMarginBalanceDetail(const char* symbol) {
         return RestApiInvoke::callSync(impl->getMarginBalanceDetail(symbol));
     }
+
+    long SyncClientImpl::cancelOrderByClientOrderId(const char* client_order_id) {
+        return RestApiInvoke::callSync(impl->cancelOrderByClientOrderId(client_order_id));
+    }
+
+    Order SyncClientImpl::getOrderByClientOrderId(const char* client_order_id) {
+        return RestApiInvoke::callSync(impl->getOrderByClientOrderId(client_order_id));
+    }
+
+    std::vector<FeeRate> SyncClientImpl::getFeeRate(const char* symbols) {
+        return RestApiInvoke::callSync(impl->getFeeRate(symbols));
+    }
+
+    std::vector<Symbols> SyncClientImpl::getSymbols() {
+        return RestApiInvoke::callSync(impl->getSymbols());
+    }
+
+    std::vector<std::string> SyncClientImpl::getCurrencies() {
+        return RestApiInvoke::callSync(impl->getCurrencies());
+    }
+
+    long SyncClientImpl::transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest) {
+        return RestApiInvoke::callSync(impl->transferBetweenFuturesAndPro(transferRequest));
+    }
+
+    std::vector<Order> SyncClientImpl::getOrderHistory(OrdersHistoryRequest& req) {
+        return RestApiInvoke::callSync(impl->getOrderHistory(req));
+    }
+
+    Trade SyncClientImpl::getMarketTrade(const char* symbol) {
+        return RestApiInvoke::callSync(impl->getMarketTrade(symbol));
+    }
+
+    std::vector<CurrencyChain> SyncClientImpl::getReferenceCurrencies(CurrencyChainsRequest& request) {
+        return RestApiInvoke::callSync(impl->getReferenceCurrencies(request));
+    }
+
+    std::vector<DepositAddress> SyncClientImpl::getDepositAddress(DepositAddressRequest& request) {
+        return RestApiInvoke::callSync(impl->getDepositAddress(request));
+    }
+
+    WithdrawQuota SyncClientImpl::getWithdrawQuota(WithdrawQuotaRequest& request) {
+        return RestApiInvoke::callSync(impl->getWithdrawQuota(request));
+    }
+
+    std::vector<AccountHistory> SyncClientImpl::getAccountHistory(AccountHistoryRequest& request) {
+        return RestApiInvoke::callSync(impl->getAccountHistory(request));
+    }
+
+    long SyncClientImpl::crossMaginTransferIn(CrossMarginTransferRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginTransferIn(request));
+    }
+
+    long SyncClientImpl::crossMaginTransferOut(CrossMarginTransferRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginTransferOut(request));
+    }
+
+    long SyncClientImpl::crossMaginApplyLoan(CrossMarginApplyLoanRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginApplyLoan(request));
+    }
+
+    void* SyncClientImpl::crossMaginRepayLoan(CrossMarginRepayLoanRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginRepayLoan(request));
+    }
+
+    std::vector<CrossMarginLoadOrder> SyncClientImpl::crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginGetLoanOrders(request));
+    }
+
+    CrossMarginAccount SyncClientImpl::crossMaginGetLoanBalance() {
+        CrossMaginGetLoanBalanceRequest request;
+        return crossMaginGetLoanBalance(request);
+    }
+
+    CrossMarginAccount SyncClientImpl::crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request) {
+        return RestApiInvoke::callSync(impl->crossMaginGetLoanBalance(request));
+    }
+
+    std::vector<BatchOrderResult> SyncClientImpl::batchOrders(std::list<NewOrderRequest> requests) {
+        return RestApiInvoke::callSync(impl->batchOrders(requests));
+    }
+
+    SubUserManageResult SyncClientImpl::subUserManage(long subUid, LockAction action) {
+        return RestApiInvoke::callSync(impl->subUserManage(subUid, action));
+    }
+
+    BatchCancelOrdersResult SyncClientImpl::cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds) {
+        return RestApiInvoke::callSync(impl->cancelOrders(symbol, clientOrderIds, "client-order-ids"));
+    }
+
+    std::vector<TransactFeeRate> SyncClientImpl::getTransactFeeRate(const char* symbols) {
+        return RestApiInvoke::callSync(impl->getTransactFeeRate(symbols));
+    }
+
+    std::vector<MarginLoanInfo> SyncClientImpl::getLoanInfo(const char* symbols) {
+        return RestApiInvoke::callSync(impl->getLoanInfo(symbols));
+    }
+
+    std::vector<MarginLoanInfo> SyncClientImpl::getLoanInfo() {
+        return RestApiInvoke::callSync(impl->getLoanInfo(""));
+    }
+
+    std::vector<CrossMarginLoanInfo> SyncClientImpl::getCrossMarginLoanInfo() {
+        return RestApiInvoke::callSync(impl->getCrossMarginLoanInfo());
+    }
+
+    std::string SyncClientImpl::getSystemStatus() {
+        return RestApiInvoke::getSystemStatus();
+    }
+
+    std::vector<Ticker> SyncClientImpl::getMarketTickers() {
+        return RestApiInvoke::callSync(impl->getMarketTickers());
+    }
+
+    std::vector<AccountLedger> SyncClientImpl::getAccountLedger(AccountLedgerRequest& accountLedgerRequest) {
+        return RestApiInvoke::callSync(impl->getAccountLedger(accountLedgerRequest));
+    }
+
+    std::vector<DepositAddress> SyncClientImpl::getSubUserDepositAddress(long subUid, const char *currency) {
+        return RestApiInvoke::callSync(impl->getSubUserDepositAddress(subUid, currency));
+    }
+
+    std::vector<Deposit> SyncClientImpl::querySubUserDeposit(QuerySubUserDepositRequest &request) {
+        return RestApiInvoke::callSync(impl->querySubUserDeposit(request));
+
+    }
+
+
 }

@@ -11,13 +11,8 @@ using namespace Huobi;
 using namespace std;
 
 int main(int argc, char** argv) {
-    NewOrderRequest newOrderRequest(
-        "htusdt",
-        AccountType::spot,
-        OrderType::buy_limit,
-        Decimal(1.0),
-        Decimal(4.2));
 
+  
     RequestOptions options;
     options.url = "https://api.huobi.pro";
 
@@ -37,24 +32,61 @@ int main(int argc, char** argv) {
     }
 
 
+
     RequestClient* client = createRequestClient(apiKey.c_str(),apiSec.c_str(), options);
+    /**
+     * Huobi provide kinds of ways to create newOrderRequest .
+     */
+
+    /**
+     *  Create newOrderRequest by structure.
+     */
+  
+      NewOrderRequest newOrderRequest(
+            "htusdt",
+            AccountType::spot,
+            OrderType::buy_limit,
+            Decimal(1.0),
+            Decimal(3.9)
+            );
+   newOrderRequest.client_order_id = "xxx";
+  
+
     long orderId = client->createOrder(newOrderRequest);
+    cout << orderId << endl;
 
     Order orderInfo = client->getOrder("htusdt", orderId);
     cout<<"Id: " << orderInfo.orderId<<endl;
+    cout<<"cId: " << orderInfo.clientOrderId << endl;
     cout<<"Type: " << orderInfo.type.getValue()<<endl;
     cout<<"Status: " << orderInfo.state.getValue()<<endl;
     cout<<"Amount: " << orderInfo.amount<<endl;
     cout<<"Price: " << orderInfo.price<<endl;
+  
+  
+    Order orderInfo = client->getOrderByClientOrderId("xxx");
+   
+    cout<<"Test CID Id: " << orderInfo.orderId<<endl;
+    cout<<"Test CID cId: " << orderInfo.clientOrderId << endl;
+    cout<<"Test CID Type: " << orderInfo.type.getValue()<<endl;
+    cout<<"Test CID Status: " << orderInfo.state.getValue()<<endl;
+    cout<<"Test CID Amount: " << orderInfo.amount<<endl;
+    cout<<"Test CID Price: " << orderInfo.price<<endl;
 
     // Cancel above order.
-    client->cancelOrder("htusdt", orderId);
+    #client->cancelOrder("htusdt", orderId);
+    client->cancelOrderByClientOrderId("xxx");
 
-    // Confirm the order status after cancel.
-    Order canceledOrderInfo = client->getOrder("htusdt", orderId);
-    cout<<"---- The order detail after cancel ----"<<endl;
-    cout<<"Id: " << orderInfo.orderId<<endl;
-    cout<<"Status :" << canceledOrderInfo.state.getValue()<<endl;
     
+    Order orderInfo = client->getOrder("htusdt", orderId);
+    cout << "Id: " << orderInfo.orderId << endl;
+    cout << "Type: " << orderInfo.type.getValue() << endl;
+    cout << "Status: " << orderInfo.state.getValue() << endl;
+    cout << "Amount: " << orderInfo.amount << endl;
+    cout << "Price: " << orderInfo.price << endl;
+  
+  
+  return 0;
 
-    }
+}
+

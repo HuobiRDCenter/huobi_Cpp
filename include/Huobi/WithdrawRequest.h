@@ -18,8 +18,11 @@ namespace Huobi {
          * \param amount The amount of currency to withdraw. (mandatory)
          * \param currency The crypto currency to withdraw. (mandatory)
          */
-        WithdrawRequest(const std::string& address, Decimal amount, const std::string& currency) :
-        address(address), amount(amount), currency(currency) {
+        WithdrawRequest(const std::string& address,
+                Decimal amount,
+                const std::string& currency,
+                Decimal fee) :
+        address(address), amount(amount), currency(currency), fee(fee) {
         }
 
         /**
@@ -30,9 +33,10 @@ namespace Huobi {
          * \param currency The crypto currency to withdraw. (mandatory)
          * \param fee The fee to pay with this withdraw. (optional, can be null)
          * \param addressTag A tag specified for this address. (optional, can be null)
+         * \param chain  Set as "usdt" to withdraw USDT to OMNI, set as "trc20usdt" to withdraw USDT to TRX
          */
-        WithdrawRequest(const std::string& address, Decimal amount, const std::string& currency, Decimal fee, const std::string& addressTag) :
-        address(address), amount(amount), currency(currency), fee(fee), addressTag(addressTag) {
+        WithdrawRequest(const std::string& address, Decimal amount, const std::string& currency, Decimal fee, const std::string& addressTag, const std::string chain) :
+        address(address), amount(amount), currency(currency), fee(fee), addressTag(addressTag), chain(chain) {
         }
 
 
@@ -45,6 +49,8 @@ namespace Huobi {
         Decimal fee;
 
         std::string addressTag;
+
+        std::string chain;
     };
 
 }

@@ -36,82 +36,17 @@ int main(int argc, char** argv) {
     }
 
 
-    SubscriptionClient* subscriptionClient = createSubscriptionClient(
-                apiKey.c_str(), apiSec.c_str(), options);
-    //    subscriptionClient->subscribeAccountEvent(BalanceMode::available, [](const AccountEvent& accountEvent) {
-    //        for (AccountChange change : accountEvent.accountChangeList) {
-    //            cout << "Available Account: " << change.accountId ;
-    //            cout << " " << change.accountType.getValue();
-    //            cout << " Currency: " << change.currency;
-    //            cout << " Balance: " << change.balance;
-    //            cout << " ChangeReason: " << accountEvent.changeType.getValue();
-    //            cout << "Balance type: " << change.balanceType.getValue() << endl;
-    //        }
-    //    });
+    SubscriptionClient* subscriptionClient = createSubscriptionClient( apiKey.c_str(), apiSec.c_str(), options);
 
-    //    subscriptionClient->subscribeAccountEvent(BalanceMode::total, [](const AccountEvent& accountEvent) {
-    //        for (AccountChange change : accountEvent.accountChangeList) {
-    //            cout << "Total Account: " << change.accountId ;
-    //            cout << " " << change.accountType.getValue();
-    //            cout << " Currency: " << change.currency;
-    //            cout << " Balance: " << change.balance;
-    //            cout << " ChangeReason: " << accountEvent.changeType.getValue();
-    //            cout << "Balance type: " << change.balanceType.getValue() << endl;
-    //        }
-    //    });
-
-
-    //    subscriptionClient->subscribeOrderUpdateEvent("ethusdt", [](const OrderUpdateEvent& change) {
-    //            cout << "OrderUpdate: " << change.symbol
-    //                 << " ts:" << change.timestamp
-    //                 << " Account:" << change.data.accountType.getValue()
-    //                 << " OrderID:" << change.data.orderId
-    //                 << " OrderType:" << change.data.type.getValue()
-    //                 << " Price:" << change.data.orderId
-    //                 << " Size:" << change.data.amount
-    //                 << " Filled:" << change.data.filledAmount
-    //                 << " Status:" << change.data.state.getValue()
-    //                 << std::endl;
-    //    });
-
-
-
-    subscriptionClient->subscribeOrderUpdateEvent("ltcusdt", [](const OrderUpdateEvent& change) {
-        cout << "OrderUpdate: " << change.symbol
-
-             << " AccountID:" << change.data.accountID
-             << " Account:" << change.data.accountType.getValue()
-             << " OrderID:" << change.data.orderId
-             << " OrderType:" << change.data.type.getValue()
-             << " Price:" << change.data.orderId
-             << " Size:" << change.data.amount
-             << " Filled:" << change.data.filledAmount
-             << " Status:" << change.data.state.getValue()
-             << " ts:" << change.timestamp
-             << " lts:" << getCurrentTimeMsec()
-             << std::endl;
+   
+    subscriptionClient->subscribeAccountEvent(BalanceMode::available, [](AccountEvent accountEvent) {
+        cout << "---- Account Change: " << accountEvent.changeType.getValue() << " ----" << endl;
+        for (AccountChange change : accountEvent.accountChangeList) {
+                    cout << "Account: " << change.accountType.getValue();
+                    cout << "Currency: " << change.currency << endl;
+                    cout << "Balance: " << change.balance << endl;
+                    cout << "Balance type: " << change.balanceType.getValue() << endl;
+        }
     });
-
-
-    subscriptionClient->subscribeOrderUpdateEventNew("ltcusdt", [](const OrderUpdateEventNew& change) {
-        cout << "OrderUpdateMatch: " << change.symbol
-             << " matchID:" << change.matchId
-             << " OrderID:" << change.id
-             << " LocalID:" << change.localId
-             << " type:" << change.type.getValue()
-             << " role:" << change.role
-             << " Price:" << change.price
-             << " Size:" << change.unfilled
-             << " Filled:" << change.filled
-             << " Status:" << change.state.getValue()
-             << " ts:" << change.timestamp
-             << " lts:" << getCurrentTimeMsec()
-             << std::endl;
-    });
-
-
-
     subscriptionClient->startService();
-
-
 }

@@ -10,17 +10,19 @@
 
 using namespace Huobi;
 using namespace std;
+
 int main(int argc, char** argv) {
     SubscriptionClient* client = createSubscriptionClient();
-    client->subscribeCandlestickEvent("btcusdt", CandlestickInterval::min15,[](CandlestickEvent candlestickEvent){      
+    client->subscribeCandlestickEvent("btcusdt", CandlestickInterval::min15, [](CandlestickEvent candlestickEvent) {
 
-        cout<<"Timestamp: "<<candlestickEvent.data.timestamp<<endl;
-        cout<<"High: " << candlestickEvent.data.high<<endl;
-        cout<<"Low: " <<candlestickEvent.data.low<<endl;
-        cout<<"Open: " << candlestickEvent.data.open<<endl;
-        cout<<"Close: " << candlestickEvent.data.close<<endl;
-        cout<<"Volume: " << candlestickEvent.data.volume<<endl;
+        cout << "Timestamp: " << candlestickEvent.data.timestamp << endl;
+        cout << "High: " << candlestickEvent.data.high << endl;
+        cout << "Low: " << candlestickEvent.data.low << endl;
+        cout << "Open: " << candlestickEvent.data.open << endl;
+        cout << "Close: " << candlestickEvent.data.close << endl;
+        cout << "Volume: " << candlestickEvent.data.volume << endl;
     });
+
     client->startService();
 
 }

@@ -30,6 +30,10 @@ namespace Huobi {
          * The balance list of the specified currency. The content is Balance class.
          */
         std::vector<Balance> balances;
+         /*
+         * The subtype of isolated margin.
+         */
+        std::string subtype;
 
         std::vector<Balance> getBalance(const char* currency) {
             std::vector<Balance> result;

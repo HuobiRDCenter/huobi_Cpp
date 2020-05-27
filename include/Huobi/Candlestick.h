@@ -47,6 +47,12 @@ namespace Huobi {
          * The trading volume in base currency.
          */
         Decimal volume;
+        
+        /**
+         * The query id.
+         */
+        long id = 0;
+        
     };
 }
 

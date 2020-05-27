@@ -23,7 +23,7 @@ using namespace Huobi;
 
 TEST(TestWithdraw, request) {
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "eth");
+    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "eth",Decimal("0.01"));
     auto request = impl->withdraw(withdrawRequest);
     ASSERT_EQ("POST", request->method);
     ASSERT_TRUE(request->getUrl().find("/v1/dw/withdraw/api/create") != -1);
@@ -41,7 +41,7 @@ TEST(TestWithdraw, Result_Normal) {
             "  \"data\": 700\n"
             "}";
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
-    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "eth");
+    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "eth", Decimal("0.01"));
     auto request = impl->withdraw(withdrawRequest);
     JsonWrapper json = JsonDocument().parseFromString(data.c_str());
     auto result = request->jsonParser(json);
@@ -49,25 +49,25 @@ TEST(TestWithdraw, Result_Normal) {
 }
 
 TEST(TestWithdraw, NullAdress) {
-    WithdrawRequest withdrawRequest("", Decimal("0.05"), "eth");
+    WithdrawRequest withdrawRequest("", Decimal("0.05"), "eth",Decimal("0.01"));
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     EXPECT_THROW(impl->withdraw(withdrawRequest), HuobiApiException);
 }
 
 TEST(TestWithdraw, NullAmount) {
-    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0"), "eth");
+    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0"), "eth",Decimal("0.01"));
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     EXPECT_THROW(impl->withdraw(withdrawRequest), HuobiApiException);
 }
 
 TEST(TestWithdraw, NullCurrency) {
-    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "");
+    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "",Decimal("0.01"));
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     EXPECT_THROW(impl->withdraw(withdrawRequest), HuobiApiException);
 }
 
 TEST(TestWithdraw, InvalidCurrency) {
-    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "?");
+    WithdrawRequest withdrawRequest("0xde709f2102306220921060314715629080e2fb77", Decimal("0.05"), "?",Decimal("0.01"));
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     EXPECT_THROW(impl->withdraw(withdrawRequest), HuobiApiException);
 }

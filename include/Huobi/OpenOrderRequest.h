@@ -15,7 +15,7 @@ namespace Huobi {
          * The request of get open orders.
          *
          * \param symbol The symbol, like "btcusdt". (mandatory)
-         * \param accountType The order side, buy or sell. If no side defined, will return all open orders
+         * \param accountType The account type,  margin,otc,point,spot
          * of the account. (mandatory)
          */
         OpenOrderRequest(const std::string& symbol, AccountType accountType) :
@@ -26,24 +26,31 @@ namespace Huobi {
          * The request of get open orders.
          *
          * \param symbol The symbol, like "btcusdt". (mandatory)
-         * \param accountType The order side, buy or sell. If no side defined, will return all open orders
-         * of the account. (mandatory)
+         * \param accountType The account type, margin,otc,point,spot. (mandatory)
          * \param side The order side, buy or sell. If no side defined, will return all open orders of the
          * account. (optional)
-         * \param size The number of orders to return. Range is [1, 500]. Default is 10. (optional)
+         * \param fromId The query start id.
+         * \param size The number of orders to return. Range is [1, 500]. Default is 100. (optional)
          */
-        OpenOrderRequest(const std::string& symbol, AccountType accountType, int size, OrderSide side) :
-        symbol(symbol), accountType(accountType), size(size), side(side) {
+        OpenOrderRequest(const std::string& symbol, AccountType accountType, int size, OrderSide side, long fromId, QueryDirection direct) :
+        symbol(symbol), accountType(accountType), size(size), side(side), fromId(fromId), direct(direct) {
         }
 
 
         std::string symbol;
 
         AccountType accountType;
+        
+        std::string subtype;
 
-        int size = 10;
+        int size = 100;
 
         OrderSide side;
+
+        long fromId = 0;
+
+        QueryDirection direct;
+
 
     };
 

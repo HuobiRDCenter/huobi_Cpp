@@ -25,7 +25,7 @@ namespace Huobi {
     };
 
     int WebSocketConnection::connectionCounter = 0;
-    
+
     WebSocketConnection::WebSocketConnection(
             const std::string& apiKey,
             const std::string& secretKey,
@@ -54,7 +54,10 @@ namespace Huobi {
         ccinfo.context = context;
         ccinfo.address = host.c_str();
         if (request->isNeedSignature == true) {
-            ccinfo.path = "/ws/v1";
+            if (request->isV2)
+                ccinfo.path = "/ws/v2";
+            else
+                ccinfo.path = "/ws/v1";
         } else {
                 ccinfo.path = "/ws";
         }
@@ -98,8 +101,8 @@ namespace Huobi {
                 lwsl_user("Get close message\n");
                 sendBufferList.clear();
                 return false;
-            } 
-            
+            }
+
             uint8_t buf[LWS_PRE + 1024] = {0};
             int m;
             int n = lws_snprintf((char *) buf + LWS_PRE, 1024,
@@ -128,22 +131,35 @@ namespace Huobi {
         client = wsi;
         dog->onConnectionCreated(this);
         if (request->isNeedSignature) {
-            send(createSignature());
+            if (request->isV2)
+                send(createV2Signature());
+            else
+                send(createSignature());
         } else {
-            if (request->connectionHandler) {                
+            if (request->connectionHandler) {
                 request->connectionHandler(this);
             }
         }
     }
 
-    void WebSocketConnection::onMessage(const char* message) {
+    void WebSocketConnection::onMessage(char* in, size_t len) {
+
+        char* message = in;
+        if (!request->isV2) {
+            char buf[4096 * 100] = {0};
+            unsigned int l = 4096 * 100;
+            l = gzDecompress((char*) in, len, buf, l);
+            message = buf;
+        }
+
         lwsl_user("RX: %s \n", message);
         lastReceivedTime = TimeService::getCurrentTimeStamp();
 
         JsonDocument doc;
-        JsonWrapper json = doc.parseFromString(message);          
-        if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0)||      
-              (json.containKey("err-code")&&json.getInt("err-code")!=0) ) {
+        JsonWrapper json = doc.parseFromString(message);
+
+        if ((json.containKey("status") && strcmp(json.getString("status"), "ok") != 0) ||
+                (json.containKey("err-code") && json.getInt("err-code") != 0)) {
             std::string errorCode = json.getStringOrDefault("err-code", "Unknown error code");
             std::string errorMsg = json.getStringOrDefault("err-msg", "Unknown error message");
             HuobiApiException ex;
@@ -159,24 +175,56 @@ namespace Huobi {
             } else if (op == "ping") {
                 processPingOnTradingLine(json);
             } else if (op == "auth") {
-                if (request->connectionHandler) {                   
+                if (request->connectionHandler) {
                     request->connectionHandler(this);
                 }
+            } else if (op == "req") {
+                onReceive(json);
             }
-        } else if (json.containKey("ch")) {       
+        } else if (json.containKey("action")) {
+            std::string action = json.getString("action");
+            lwsl_user("action %s...\n", action.c_str());
+
+            if (json.containKey("ch") && std::string(json.getString("ch")) == "auth") {
+                lwsl_user("ch...\n");
+                if (json.getInt("code") == 200) {
+                    if (request->connectionHandler) {
+                        request->connectionHandler(this);
+                    }
+                } else {
+                    lwsl_user("RX: %s \n", message);
+                }
+            } else if (action == "sub") {
+                lwsl_user("sub...\n");
+
+            } else if (action == "ping") {
+                lwsl_user("ping.. \n");
+                processV2Ping(json.getJsonObjectOrArray("data"));
+            } else if (action == "push") {
+                 lwsl_user("push...\n");
+                onReceive(json);
+            } else if (action == "req") {
+                 lwsl_user("req...\n");
+                onReceive(json);
+            }
+
+        } else if (json.containKey("ch")) {
             onReceive(json);
         } else if (json.containKey("ping")) {
             processPingOnMarketLine(json);
         } else if (json.containKey("subbed")) {
 
-        }else {           
-            Logger::WriteLog("parse failed！：%s",message);
+        } else if (json.containKey("rep")) {
+            onReceive(json);
+        } else {
+            std::cout << "parse failed" << std::endl;
+            Logger::WriteLog("parse failed！：%s", message);
         }
     }
 
     void WebSocketConnection::onReceive(JsonWrapper& json) {
-        
         request->implCallback(json);
+
     }
 
     void WebSocketConnection::processPingOnTradingLine(JsonWrapper& json) {
@@ -195,6 +243,19 @@ namespace Huobi {
         std::string message = buf;
         lwsl_user("processPingOnMarketLine %s\n", message.c_str());
         send(message);
+    }
+
+    void WebSocketConnection::processV2Ping(JsonWrapper data) {
+        lwsl_user("data ");
+        long ts = data.getLong("ts");
+        JsonWriter writer;
+        writer.put("action", "pong");
+        writer.startObject("params");
+        writer.put("ts", ts);
+        writer.endObject();
+        std::string pong = writer.toJsonString();
+        lwsl_user("pong:%s\n ", pong.c_str());
+        send(pong);
     }
 
     std::string WebSocketConnection::createSignature() {
@@ -232,6 +293,46 @@ namespace Huobi {
         return writer.toJsonString();
     }
 
+    std::string WebSocketConnection::createV2Signature() {
+
+        time_t t = time(NULL);
+        struct tm *local = gmtime(&t);
+        char timeBuf[100] = {0};
+        sprintf(timeBuf, "%04d-%02d-%02dT%02d%%3A%02d%%3A%02d",
+                local->tm_year + 1900,
+                local->tm_mon + 1,
+                local->tm_mday,
+                local->tm_hour,
+                local->tm_min,
+                local->tm_sec);
+        char buf[100] = {0};
+        sprintf(buf, "%04d-%02d-%02dT%02d:%02d:%02d",
+                local->tm_year + 1900,
+                local->tm_mon + 1,
+                local->tm_mday,
+                local->tm_hour,
+                local->tm_min,
+                local->tm_sec);
+        std::string signa = ApiSignature::CreateV2Signature(host,
+                this->apiKey,
+                this->secretKey,
+                "/ws/v2", "GET", timeBuf, "");
+
+        JsonWriter writer;
+        writer.put("action", "req");
+        writer.put("ch", "auth");
+
+        writer.startObject("params");
+        writer.put("authType", "api");
+        writer.put("accessKey", this->apiKey);
+        writer.put("signatureMethod", "HmacSHA256");
+        writer.put("signatureVersion", "2.1");
+        writer.put("timestamp", buf);
+        writer.put("signature", signa.c_str());
+        writer.endObject();
+        return writer.toJsonString();
+    }
+
     long WebSocketConnection::getLastReceivedTime() {
 
         return lastReceivedTime;
@@ -253,11 +354,11 @@ namespace Huobi {
             lwsl_user("closing client\n");
             send("*");
             //lws_set_timeout(client, NO_PENDING_TIMEOUT, LWS_TO_KILL_ASYNC);
-            
+
         } else {
             lwsl_user("client is null\n");
         }
-        
+
         client = nullptr;
         this->delayInSecond = delayInSecond;
         lineStatus = LineStatus::LINE_DELAY;
@@ -267,14 +368,19 @@ namespace Huobi {
         Logger::WriteLog("[Sub][%d] Disconnected", connectionId);
         connectStatus = ConnectionStatus::CLOSED;
         client = nullptr;
+        // close();
     }
 
     void WebSocketConnection::close() {
         Logger::WriteLog("[Sub][%d] Closing normally", connectionId);
         lwsl_user("Closing normally \n");
+
         lws_set_timeout(client, PENDING_TIMEOUT_KILLED_BY_PARENT, LWS_TO_KILL_ASYNC);
+        // lwsl_user("Closing normally 1\n");
         lineStatus = LineStatus::LINE_IDEL;
+        //lwsl_user("Closing normally 2\n");
         dog->onClosedNormally(this);
+        // lwsl_user("Closing normally 3\n");
     }
 }
 

@@ -56,39 +56,49 @@ TEST(TestGetLoanHistory, request2) {
 
 TEST(TestGetLoanHistory, result) {
     std::string data = "{\n"
-       "\t\"status\": \"ok\",\n"
-       "\t\"data\": [{\n"
-       "\t\t\t\"loan-balance\": \"0.100000000000000000\",\n"
-       "\t\t\t\"interest-balance\": \"0.000200000000000000\",\n"
-       "\t\t\t\"interest-rate\": \"0.002000000000000000\",\n"
-       "\t\t\t\"loan-amount\": \"0.110000000000000000\",\n"
-       "\t\t\t\"accrued-at\": 1511169724000,\n"
-       "\t\t\t\"interest-amount\": \"0.001200000000000000\",\n"
-       "\t\t\t\"symbol\": \"ethbtc\",\n"
-       "\t\t\t\"currency\": \"btc\",\n"
-       "\t\t\t\"id\": 390,\n"
-       "\t\t\t\"state\": \"accrual\",\n"
-       "\t\t\t\"account-id\": 12345,\n"
-       "\t\t\t\"user-id\": 119910,\n"
-       "\t\t\t\"created-at\": 1511169724530\n"
-       "\t\t},\n"
-       "\t\t{\n"
-       "\t\t\t\"loan-balance\": \"1.100000000000000000\",\n"
-       "\t\t\t\"interest-balance\": \"1.000200000000000000\",\n"
-       "\t\t\t\"interest-rate\": \"1.002000000000000000\",\n"
-       "\t\t\t\"loan-amount\": \"1.110000000000000000\",\n"
-       "\t\t\t\"accrued-at\": 1511169724531,\n"
-       "\t\t\t\"interest-amount\": \"1.001200000000000000\",\n"
-       "\t\t\t\"symbol\": \"ethbtc\",\n"
-       "\t\t\t\"currency\": \"btc\",\n"
-       "\t\t\t\"id\": 391,\n"
-       "\t\t\t\"state\": \"accrual\",\n"
-       "\t\t\t\"account-id\": 45678,\n"
-       "\t\t\t\"user-id\": 119911,\n"
-       "\t\t\t\"created-at\": 1511169724531\n"
-       "\t\t}\n"
-       "\t]\n"
-       "}";
+            "\t\"status\": \"ok\",\n"
+            "\t\"data\": [{\n"
+            "\t\t\t\"loan-balance\": \"0.100000000000000000\",\n"
+            "\t\t\t\"interest-balance\": \"0.000200000000000000\",\n"
+            "\t\t\t\"interest-rate\": \"0.002000000000000000\",\n"
+            "\t\t\t\"loan-amount\": \"0.110000000000000000\",\n"
+            "\t\t\t\"accrued-at\": 1511169724000,\n"
+            "\t\t\t\"interest-amount\": \"0.001200000000000000\",\n"
+            "\t\t\t\"symbol\": \"ethbtc\",\n"
+            "\t\t\t\"currency\": \"btc\",\n"
+            "\t\t\t\"id\": 390,\n"
+            "\t\t\t\"state\": \"accrual\",\n"
+            "\t\t\t\"account-id\": 12345,\n"
+            "\t\t\t\"user-id\": 119910,\n"
+            "\t\t\t\"paid-point\": \"0.100000000000000000\",\n"
+            "\t\t\t\"paid-coin\": \"0.100000000000000000\",\n"
+            "\t\t\t\"deduct-currency\": \"ht\",\n"
+            "\t\t\t\"deduct-amount\": \"0.100000000000000000\",\n"
+            "\t\t\t\"deduct-rate\": \"0.100000000000000000\",\n"
+            "\t\t\t\"created-at\": 1511169724530\n"
+            "\t\t},\n"
+            "\t\t{\n"
+            "\t\t\t\"loan-balance\": \"1.100000000000000000\",\n"
+            "\t\t\t\"interest-balance\": \"1.000200000000000000\",\n"
+            "\t\t\t\"interest-rate\": \"1.002000000000000000\",\n"
+            "\t\t\t\"loan-amount\": \"1.110000000000000000\",\n"
+            "\t\t\t\"accrued-at\": 1511169724531,\n"
+            "\t\t\t\"interest-amount\": \"1.001200000000000000\",\n"
+            "\t\t\t\"symbol\": \"ethbtc\",\n"
+            "\t\t\t\"currency\": \"btc\",\n"
+            "\t\t\t\"id\": 391,\n"
+            "\t\t\t\"state\": \"accrual\",\n"
+            "\t\t\t\"account-id\": 45678,\n"
+            "\t\t\t\"user-id\": 119911,\n"
+            "\t\t\t\"paid-point\": \"0.100000000000000000\",\n"
+            "\t\t\t\"paid-coin\": \"0.100000000000000000\",\n"
+            "\t\t\t\"deduct-currency\": \"ht\",\n"
+            "\t\t\t\"deduct-amount\": \"0.100000000000000000\",\n"
+            "\t\t\t\"deduct-rate\": \"0.100000000000000000\",\n"
+            "\t\t\t\"created-at\": 1511169724531\n"
+            "\t\t}\n"
+            "\t]\n"
+            "}";
     RestApiImpl* impl = new RestApiImpl("12345", "67890");
     LoanOrderRequest req = LoanOrderRequest("btcusdt");
 
@@ -107,8 +117,8 @@ TEST(TestGetLoanHistory, result) {
     ASSERT_EQ(LoanOrderStates::accrual, loan[0].state);
     ASSERT_EQ(AccountType::spot, loan[0].accountType);
     ASSERT_EQ(119910L, loan[0].userId);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1511169724000l), loan[0].accruedTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1511169724530l), loan[0].createdTimestamp);
+    ASSERT_EQ(1511169724000, loan[0].accruedTimestamp);
+    ASSERT_EQ(1511169724530, loan[0].createdTimestamp);
 
     ASSERT_EQ(Decimal("1.1"), loan[1].loanBalance);
     ASSERT_EQ(Decimal("1.0002"), loan[1].interestBalance);
@@ -120,8 +130,8 @@ TEST(TestGetLoanHistory, result) {
     ASSERT_EQ(LoanOrderStates::accrual, loan[1].state);
     ASSERT_EQ(AccountType::margin, loan[1].accountType);
     ASSERT_EQ(119911L, loan[1].userId);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1511169724531l), loan[1].accruedTimestamp);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1511169724531l), loan[1].createdTimestamp);
+    ASSERT_EQ(1511169724531, loan[1].accruedTimestamp);
+    ASSERT_EQ(1511169724531, loan[1].createdTimestamp);
 }
 
 #endif /* TESTGETLOANHISTORY_H */

@@ -25,6 +25,7 @@ namespace Huobi {
                 vfprintf(log_fp, buf, arg);
                 fflush(log_fp);
                 va_end(arg);
+                fclose(log_fp);
                 return;
             } else {
                 printf("open file failed!\n");

@@ -38,6 +38,36 @@ namespace Huobi {
          * The symbol, like "btcusdt".
          */
         std::string symbol;
+        /**
+         * The symbol state ,possible values: [online，offline,suspend].
+         */
+        SymbolState state;
+        
+        /**
+         * The value precision
+         */
+        int valuePrecision;
+        
+        /**
+         * The min order amount
+         */
+        long minOrderAmt;
+        
+        /**
+         * The max order amount
+         */
+        long maxOrderAmt;
+        
+        /**
+         * The min order value
+         */
+        long minOrderValue;
+        
+        /**
+         * The leverage ratio
+         */
+        int leverageRatio;
+        
     };
 
 

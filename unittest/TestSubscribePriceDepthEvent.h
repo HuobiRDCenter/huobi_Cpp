@@ -29,7 +29,7 @@ TEST(TestSubscribePriceDepthEvent, request) {
     WebSocketApiImpl* impl = new WebSocketApiImpl();
     std::list<std::string> symbols;
     symbols.push_back("btcusdt");
-    auto request = impl->subscribePriceDepthEvent(symbols,[](const PriceDepthEvent&){}, nullptr);
+    auto request = impl->subscribePriceDepthEvent(symbols,DepthStep::step0,[](const PriceDepthEvent&){}, nullptr);
     MockWebsocketConnecttion* websocketConnection = new MockWebsocketConnecttion(request);
     request->connectionHandler(websocketConnection);
     std::string subscription = websocketConnection->pop();
@@ -58,12 +58,12 @@ TEST(TestSubscribePriceDepthEvent, Receive_Normal) {
     WebSocketApiImpl* impl = new WebSocketApiImpl();
     std::list<std::string> symbols;
     symbols.push_back("btcusdt");
-    auto request = (WebSocketRequestImpl<PriceDepthEvent>*)impl->subscribePriceDepthEvent(symbols,[](const PriceDepthEvent&){}, nullptr);
+    auto request = (WebSocketRequestImpl<PriceDepthEvent>*)impl->subscribePriceDepthEvent(symbols,DepthStep::step0,[](const PriceDepthEvent&){}, nullptr);
     JsonDocument doc;
     JsonWrapper json = doc.parseFromString(data.c_str());
     auto event = request->JsonParser(json);
     ASSERT_EQ("btcusdt", event.symbol);
-    ASSERT_EQ(TimeService::convertCSTInMillisecondToUTC(1550558788054l), event.timestamp);
+    ASSERT_EQ(1550558788054l, event.timestamp);
     ASSERT_EQ(3, event.data.bids.size());
     ASSERT_EQ(2, event.data.asks.size());
     ASSERT_EQ(Decimal("3891.94"), event.data.bids[0].price);

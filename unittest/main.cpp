@@ -51,7 +51,21 @@ using namespace Huobi;
 #include "TestErrorResponse.h"
 #include "TestDecimal.h"
 #include "TestGetMarginBalanceDetail.h"
-
+#include "TestSubmitCancelClientOrder.h"
+#include "TestGetOrderByClientOrderId.h"
+#include "TestGetFeeRate.h"
+#include "TestTransferFutures.h"
+#include "TestGetOrderHistory.h"
+#include "TestSubscribeOrderUpdateNewEvent.h"
+#include "TestGetMarketTrade.h"
+#include "TestRequestCandlestickEvent.h"
+#include "TestRequestPriceDepthEvent.h"
+#include "TestRequestTradeEvent.h"
+#include "TestRequest24HTradeStatistics.h"
+#include "TestRequestAccountList.h"
+#include "TestRequestOrdertListEvent.h"
+#include "TestRequestOrdertDetailEvent.h"
+#include "TestSubscribeMarketBBOEvent.h"
 int main(int argc, char **argv) {
 
     User* user = new User();

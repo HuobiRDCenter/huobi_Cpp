@@ -11,6 +11,12 @@
 #include "Huobi/PriceDepthEvent.h"
 #include "Huobi/OrderUpdateEvent.h"
 #include "Huobi/TradeStatisticsEvent.h"
+#include "Huobi/AccountListEvent.h"
+#include "Huobi/MarketBBOEvent.h"
+#include "Huobi/MarketDepthMBPEvent.h"
+#include "Huobi/TradeClearingEvent.h"
+#include "Huobi/AccountUpdateEvent.h"
+#include "Huobi/OrderUpdateV2Event.h"
 #include "SubscriptionOptions.h"
 
 
@@ -130,6 +136,85 @@ namespace Huobi {
                 const BalanceMode& mode,
                 const std::function<void(const AccountEvent&) >& callback,
                 const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        /**
+         * Subscribe order changing event. If a order is created, canceled etc, server will send the data
+         * to client and onReceive in callback will be called. It is faster than subscribeOrderUpdateEvent
+         *
+         * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt".
+         * \param errorHandler The error handler will be called if subscription failed or error happen
+         * between client and Huobi server.
+         */
+
+        virtual void subscribeOrderUpdateNewEvent(
+                const char* symbols,
+                const std::function<void(const OrderUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        /**
+         * Subscribe price depth event. If the price depth is updated, server will send the data to client
+         * and onReceive in callback will be called.
+         *
+         * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt".
+         * \param step The aggregation depth type,step0,step1,etc.
+         * \param callback The implementation is required. onReceive will be called if receive server's
+         * update.
+         * \param errorHandler The error handler will be called if subscription failed or error happen
+         * between client and Huobi server.
+         */
+
+        virtual void subscribePriceDepthEvent(
+                const char* symbols,
+                DepthStep step,
+                const std::function<void(const PriceDepthEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        /**
+         * Subscribe market bo event. If the bbo  is updated, server will send the data to client
+         * and onReceive in callback will be called.
+         *
+         * \param symbols The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt".
+         * \param callback The implementation is required. onReceive will be called if receive server's
+         * update.
+         * \param errorHandler The error handler will be called if subscription failed or error happen
+         * between client and Huobi server.
+         */
+        virtual void subscribeMarketBBOEvent(
+                const char* symbols,
+                const std::function<void(const MarketBBOEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void subscribeMarketDepthMBP(
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+
+        virtual void subscribeTradeClearingEvent(
+                const char* symbols,
+                const std::function<void(const TradeClearingEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void subscribeAccountUpdateEvent(
+                const AccountsUpdateMode& mode,
+                const std::function<void(const AccountUpdateEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void subscribeMarketDepthMBPrefresh(
+                const char* symbols,
+                MBPLevel level,
+                const std::function<void(const MarketDepthMBPEvent&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
+        virtual void subscribeOrderUpdateV2(
+                const char* symbol,
+                const std::function<void(const OrderUpdateV2Event&) >& callback,
+                const std::function<void(HuobiApiException&)>& errorHandler = std::function<void(HuobiApiException&)>()) = 0;
+
         /*
          * start sub,must excute after sub-function.
          */

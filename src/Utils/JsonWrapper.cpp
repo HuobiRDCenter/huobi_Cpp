@@ -30,6 +30,9 @@ namespace Huobi {
 
     const char* JsonWrapper::getString(const char* name) const {
         checkMandatoryField(name);
+        if (object[name].GetString() == nullptr) {
+            return "";
+        }
         return object[name].GetString();
     }
 
@@ -37,7 +40,7 @@ namespace Huobi {
         checkMandatoryField(name);
         return object[name].GetBool();
     }
-    
+
     const char* JsonWrapper::getStringOrDefault(const char* name, const char* def) const {
         if (!containKey(name)) {
             return def;
@@ -49,9 +52,12 @@ namespace Huobi {
         checkMandatoryField(name);
         return std::stol(object[name].GetString());
     }
-    
+
     long JsonWrapper::getLongOrDefault(const char* name, long def) const {
         if (!containKey(name)) {
+            return def;
+        }
+        if (object[name].GetString() == nullptr) {
             return def;
         }
         return std::stol(object[name].GetString());
@@ -59,6 +65,13 @@ namespace Huobi {
 
     int JsonWrapper::getInt(const char* name) const {
         checkMandatoryField(name);
+        return std::stoi(object[name].GetString());
+    }
+
+    int JsonWrapper::getIntOrDefault(const char* name, int def) const {
+        if (!containKey(name)) {
+            return def;
+        }
         return std::stoi(object[name].GetString());
     }
 
@@ -90,6 +103,13 @@ namespace Huobi {
     Decimal JsonWrapper::getDecimalAt(int index) const {
         checkSize(index);
         return Decimal(object[index].GetString());
+    }
+
+    Decimal JsonWrapper::getDecimalOrDefault(const char* name, Decimal def) const {
+        if (!containKey(name)) {
+            return def;
+        }
+        return Decimal(object[name].GetString());
     }
 
     const char* JsonWrapper::getStringAt(int index) const {

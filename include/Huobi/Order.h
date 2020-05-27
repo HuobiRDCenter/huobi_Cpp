@@ -16,8 +16,6 @@ namespace Huobi {
          */
         AccountType accountType;
 
-        int accountID;
-
         /**
          * The amount of base currency in this order.
          */
@@ -82,6 +80,23 @@ namespace Huobi {
          * The order state: submitted, partial-filled, cancelling, filled, canceled.
          */
         OrderState state;
+
+        /**
+         * The stop price: the trigger price of buy stop limit ,sell stop limit.
+         */
+        Decimal stopPrice;
+
+        /**
+         * The stop operator: buy stop limit or sell stop limit .
+         */
+        StopOrderOperator stopOrderOperator;
+
+        /**
+         * The next time for query ,it exists only if size out of range .
+         */
+        long nextTime = 0;
+
+        std::string clientOrderId;
     };
 
 }

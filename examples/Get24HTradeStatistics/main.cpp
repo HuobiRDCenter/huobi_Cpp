@@ -14,11 +14,10 @@ int main(int argc, char** argv) {
     RequestClient* client = createRequestClient();
     TradeStatistics statistics = client->get24HTradeStatistics("btcusdt");
     cout << "---- Statistics ----" << endl;
-    cout<<"Timestamp: " << statistics.timestamp<<endl;
-    cout<<"High: " <<statistics.high<<endl;
-    cout<<"Low: " << statistics.low<<endl;
-    cout<<"Open: " << statistics.open<<endl;
-    cout<<"Close: " << statistics.close<<endl;
-    cout<<"Volume: " << statistics.volume<<endl;
-
+    cout << "Timestamp: " << statistics.timestamp << endl;
+    cout << "High: " << statistics.high << endl;
+    cout << "Low: " << statistics.low << endl;
+    cout << "Open: " << statistics.open << endl;
+    cout << "Close: " << statistics.close << endl;
+    cout << "Volume: " << statistics.volume << endl;
 }

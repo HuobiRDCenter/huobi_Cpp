@@ -59,7 +59,6 @@ TEST(TestGetCurrentUserAllAccounts, Result) {
     ASSERT_EQ("eos", subAccounts[0].currency);
     ASSERT_EQ("btc", subAccounts[1].currency);
     ASSERT_EQ("usdt", subAccounts[2].currency);
-    printf(subAccounts[0].balance.toString().c_str());
     ASSERT_EQ(Decimal("1954559.8095"), subAccounts[0].balance);
     ASSERT_EQ(Decimal("0"), subAccounts[1].balance);
     ASSERT_EQ(Decimal("2925209.4113"), subAccounts[2].balance);

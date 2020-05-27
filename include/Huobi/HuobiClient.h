@@ -60,6 +60,20 @@
 #include "Huobi/Withdraw.h"
 #include "Huobi/WithdrawRequest.h"
 #include "Huobi/MarginBalanceDetail.h"
+#include "Huobi/FeeRate.h"
+#include "Huobi/WithdrawRecordRequest.h"
+#include "Huobi/DepositRecordRequest.h"
+#include "Huobi/OrdersHistoryRequest.h"
+#include "Huobi/WsRequestClient.h"
+#include "Huobi/AccountListEvent.h" 
+#include "Huobi/OrderListEvent.h"
+#include "Huobi/OrderListEventRequest.h"
+#include "Huobi/OrderDetailEvent.h"
+#include "Huobi/MarketBBOEvent.h"
+#include "Huobi/BatchOrderResult.h"
+#include "Huobi/SubUserManageResult.h"
+#include "Huobi/BatchCancelOrdersResult.h"
+
 
 #endif /* HUOBICLIENT_H */
 

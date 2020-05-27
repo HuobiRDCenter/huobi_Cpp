@@ -40,7 +40,7 @@ namespace Huobi {
         void reConnect(int delayInSecond);
         void close();
         void onOpen(lws* wsi);
-        void onMessage(const char* message);
+        void onMessage( char* message,size_t len);
         void send(const std::string& message);
         bool flushSendBuffer(lws* ws);
         long getLastReceivedTime();
@@ -54,9 +54,11 @@ namespace Huobi {
 
     private:
         std::string createSignature();
+        std::string createV2Signature();
         void onReceive(JsonWrapper& json);
         void processPingOnTradingLine(JsonWrapper& json);
         void processPingOnMarketLine(JsonWrapper& json);
+        void processV2Ping(JsonWrapper data);
     private:
         std::string apiKey;
         std::string secretKey;

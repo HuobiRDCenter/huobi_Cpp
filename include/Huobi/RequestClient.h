@@ -32,6 +32,38 @@
 #include "Huobi/EtfSwapConfig.h"
 #include "Huobi/EtfSwapHistory.h"
 #include "Huobi/MarginBalanceDetail.h"
+#include "Huobi/FeeRate.h"
+#include "Huobi/WithdrawRecordRequest.h"
+#include "Huobi/DepositRecordRequest.h"
+#include "Huobi/TransferFuturesRequest.h"
+#include "Huobi/OrdersHistoryRequest.h"
+
+#include "Huobi/CurrencyChain.h"
+#include "Huobi/CurrencyChainsRequest.h"
+#include "Huobi/DepositAddress.h"
+#include "Huobi/DepositAddressRequest.h"
+#include "Huobi/WithdrawQuota.h"
+#include "Huobi/WithdrawQuotaRequest.h"
+#include "Huobi/AccountHistory.h"
+#include "Huobi/AccountHistoryRequest.h"
+#include "Huobi/CrossMarginTransferRequest.h"
+#include "Huobi/CrossMarginApplyLoanRequest.h"
+#include "Huobi/CrossMarginRepayLoanRequest.h"
+#include "Huobi/CrossMarginLoadOrder.h"
+#include "Huobi/CrossMarginLoanOrdersRequest.h"
+#include "Huobi/CrossMarginAccount.h"
+#include "Huobi/BatchOrderResult.h"
+#include "Huobi/SubUserManageResult.h"
+#include "Huobi/BatchCancelOrdersResult.h"
+#include "Huobi/TransactFeeRate.h"
+#include "Huobi/MarginLoanInfo.h"
+#include "Huobi/CrossMarginLoanInfo.h"
+#include "Huobi/CrossMaginGetLoanBalanceRequest.h"
+#include "Huobi/Ticker.h"
+#include "Huobi/AccountLedger.h"
+#include "Huobi/AccountLedgerRequest.h"
+#include "Huobi/QuerySubUserDepositRequest.h"
+
 #include "RequestOptions.h"
 
 namespace Huobi {
@@ -140,7 +172,7 @@ namespace Huobi {
          * \param symbol   The symbol, like "btcusdt"
          * \param orderIds The list of order id
          */
-        virtual void* cancelOrders(const char* symbol, std::list<long> orderIds) = 0;
+        virtual BatchCancelOrdersResult cancelOrders(const char* symbol, std::list<long> orderIds) = 0;
         /**
          * request to cancel open orders.
          *
@@ -160,25 +192,22 @@ namespace Huobi {
         /**
          * Get the withdraw records of an account
          *
-         * \param currency The currency, like "btc". (mandatory)
-         * \param fromId   The beginning withdraw record id. (mandatory)
-         * \param size     The size of record. (mandatory)
+         * \param request The request for withdraw records.
          * \return The list of withdraw records.
          */
-        virtual std::vector<Withdraw> getWithdrawHistory(const char* currency, long fromId, int size) = 0;
+        virtual std::vector<Withdraw> getWithdrawHistory(WithdrawRecordRequest& request) = 0;
         /**
          * Get the deposit records of an account
          *
          * \param currency The currency, like "btc". (mandatory)
-         * \param fromId   The beginning deposit record id. (mandatory)
-         * \param size     The size of record. (mandatory)
+         * \param request The request for deposit records.
          * \return The list of deposit records.
          */
-        virtual std::vector<Deposit> getDepositHistory(const char* currency, long fromId, int size) = 0;
+        virtual std::vector<Deposit> getDepositHistory(DepositRecordRequest& request) = 0;
         /**
          * Transfer asset from specified account to another account.
          *
-         * \param transferRequest The symbol, like "btcusdt"
+         * \param transferRequest The request for transfer . 
          * \return The transfer id.
          */
         virtual long transfer(TransferRequest& transferRequest) = 0; //todo
@@ -228,12 +257,21 @@ namespace Huobi {
          */
         virtual Account getAccountBalance(AccountType accountType) = 0;
         /**
+         * Get the account of the  isolated margin by subtype.
+         *
+         * \param accountType The specified account  type
+         * \param accountType The specified subtype  
+         * \return The information of the account that is specified type.
+         */
+        virtual Account getAccountBalance(AccountType accountType, std::string subtype) = 0;
+        /**
          * Provide open orders of a symbol for an account<br> When neither account-id nor symbol defined
          * in the request, the system will return all open orders (max 500) for all symbols and all
          * accounts of the user, sorted by order ID in descending.
          *
          * \param openOrderRequest open order request
          */
+
         virtual std::vector<Order> getOpenOrders(OpenOrderRequest& openOrderRequest) = 0;
         /**
          * Get detail match results of an order
@@ -337,15 +375,158 @@ namespace Huobi {
          * @return The margin loan account detail.
          */
         virtual std::vector<MarginBalanceDetail> getMarginBalanceDetail(const char* symbol) = 0;
+        /**
+         * Submit cancel request for cancelling an order by client-order-id
+         * 
+         * @param client_order_id: client defined order id. (mandatory)
+         * @return The order id.
+         */
+        virtual long cancelOrderByClientOrderId(const char* client_order_id) = 0;
+        /**
+         * Get the details of an order by client_order_id  
+         * \param client_order_id: client defined order id. (mandatory)
+         * \return The information of order
+         */
+        virtual Order getOrderByClientOrderId(const char* client_order_id) = 0;
+
+        /**
+         * Get the fee of symbols, support less than 10
+         * \param : The symbols, like "btcusdt". Use comma to separate multi symbols, like
+         * "btcusdt,ethusdt". (mandatory)
+         * \return The information of fee.
+         */
+        virtual std::vector<FeeRate> getFeeRate(const char* symbols) = 0;
+        /**
+         * Get all Huobi support symbols
+         * \return The information of symbols.
+         */
+        virtual std::vector<Symbols> getSymbols() = 0;
+        /**
+         * Get all Huobi support currencies.
+         * \return The list of currencies.
+         */
+        virtual std::vector<std::string> getCurrencies() = 0;
+
+        /**
+         * Transfer asset between futures account to pro account.
+         *
+         * \param transferRequest The request for transfer . 
+         * \return The transfer id.
+         */
+        virtual long transferBetweenFuturesAndPro(TransferFuturesRequest& transferRequest) = 0;
+        /**
+         * Get historical orders in 48 hours.
+         *
+         * \param req The request for getting historial orders in 48 hours.
+         * \return The order list.
+         */
+        virtual std::vector<Order> getOrderHistory(OrdersHistoryRequest& req) = 0;
+
+        /**
+         * Get the lastest trade with their price, volume and direction.
+         *
+         * \param symbol The symbol, like "btcusdt". (mandatory)
+         * \return The last trade with price and amount.
+         */
+        virtual Trade getMarketTrade(const char* symbol) = 0;
+        /*
+         * API user could query static reference information for each currency, as well as its corresponding chain(s).
+         * \param  request. The request of reference information.
+         * \return The list of reference information 
+         */
+        virtual std::vector<CurrencyChain> getReferenceCurrencies(CurrencyChainsRequest& request) = 0;
+        /*
+         * API user could query deposit address of corresponding chain, for a specific crypto currency (except IOTA)
+         * \param  request.  The request of deposit address.
+         * \return The list of deposit address
+         */
+        virtual std::vector<DepositAddress> getDepositAddress(DepositAddressRequest& request) = 0;
+        /*
+         * API user could query withdraw quota for currencies.
+         * \param request.  The request of withdraw quota .
+         * \return The withdraw quota .
+         */
+        virtual WithdrawQuota getWithdrawQuota(WithdrawQuotaRequest& request) = 0;
+        /*
+         *API the amount changes of specified user's account.
+         * \param request.  The request of account history .
+         * \return The account history . 
+         */
+        virtual std::vector<AccountHistory> getAccountHistory(AccountHistoryRequest& request) = 0;
+
+        /*
+         * This endpoint transfer specific asset from spot trading account to cross margin account.
+         * \param request.  The request of transfer .
+         * \return The order id . 
+         */
+        virtual long crossMaginTransferIn(CrossMarginTransferRequest& request) = 0;
+        /*
+         * This endpoint transfer specific asset from cross margin account to spot trading account.
+         * \param request.  The request of transfer .
+         * \return The order id . 
+         */
+        virtual long crossMaginTransferOut(CrossMarginTransferRequest& request) = 0;
+        /*
+         * This endpoint place an order to apply a margin loan.
+         * \param request.  The request of apply loan .
+         * \return The order id . 
+         */
+        virtual long crossMaginApplyLoan(CrossMarginApplyLoanRequest& request) = 0;
+        /*
+         * This endpoint repays margin loan with you asset in your margin account.
+         * \param request.  The request of repay loan .     
+         */
+        virtual void* crossMaginRepayLoan(CrossMarginRepayLoanRequest& request) = 0;
+        /*
+         *  This endpoint returns margin orders based on a specific searching criteria.
+         * \param request.  The request of query loan order . 
+         * \return The list of loan orders.
+         */
+
+        virtual std::vector<CrossMarginLoadOrder> crossMaginGetLoanOrders(CrossMarginLoanOrdersRequest& request) = 0;
+        /*
+         *This endpoint returns the balance of the margin loan account.
+         * \param request.  The request of query the balance of the margin loan account . 
+         * \return The the balance of the margin loan account.
+         */
+        virtual CrossMarginAccount crossMaginGetLoanBalance() = 0;
+
+        virtual CrossMarginAccount crossMaginGetLoanBalance(CrossMaginGetLoanBalanceRequest& request) = 0;
+
+        virtual std::vector<BatchOrderResult> batchOrders(std::list<NewOrderRequest> requests) = 0;
+
+        virtual SubUserManageResult subUserManage(long subUid, LockAction action) = 0;
+
+        virtual BatchCancelOrdersResult cancelClientIdOrders(const char* symbol, std::list<std::string> clientOrderIds) = 0;
+
+        virtual std::vector<TransactFeeRate> getTransactFeeRate(const char* symbols) = 0;
+
+        virtual std::vector<MarginLoanInfo> getLoanInfo(const char* symbols) = 0;
+
+        virtual std::vector<MarginLoanInfo> getLoanInfo() = 0;
+
+        virtual std::vector<CrossMarginLoanInfo> getCrossMarginLoanInfo() = 0;
+
+        virtual std::string getSystemStatus() = 0;
+
+        virtual std::vector<Ticker> getMarketTickers() = 0;
+
+        virtual std::vector<AccountLedger> getAccountLedger(AccountLedgerRequest& accountLedgerRequest) = 0;
+
+        virtual std::vector<DepositAddress> getSubUserDepositAddress(long subUid, const char *currency) = 0;
+
+        virtual std::vector<Deposit> querySubUserDeposit(QuerySubUserDepositRequest &request) = 0;
+
+
     };
-    
+
     RequestClient* createRequestClient();
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey);
 
-    RequestClient* createRequestClient(RequestOptions& op) ;
+    RequestClient* createRequestClient(RequestOptions& op);
 
     RequestClient* createRequestClient(const char* apiKey, const char* secretKey, RequestOptions& op);
-    
+
 }
 #endif /* SYNCCLIENT_H */
