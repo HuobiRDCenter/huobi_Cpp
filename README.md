@@ -1,12 +1,8 @@
-# Huobi C++ SDK
+# Huobi C++ SDK v2
 
-This is Huobi C++ SDK, This is a lightweight c++ library, you can import to your C++ project and use this SDK to query all market data, trading and manage your account.
+This is Huobi C++ SDK v2, you can import to your C++ project and use this SDK to query all market data, trading and manage your account. The SDK supports RESTful API invoking, and subscribing the market, account and order update from the WebSocket connection.
 
-The SDK supports both synchronous RESTful API invoking, and subscribe the market data from the Websocket connection.
-
-## Huobi C++ SDK Releases
-
-Go to [Releases](https://github.com/HuobiRDCenter/huobi_Cpp/releases) page to view and download each release.
+If you already use SDK v1, it is strongly suggested migrate to v2 as we refactor the implementation to make it simpler and easy to maintain. We will stop the maintenance of v1 in the near future. Please refer to the instruction on how to migrate v1 to v2 in section [Migrate from v1](#Migrate-from-v1)
 
 ## Table of Contents
 
@@ -87,15 +83,55 @@ Go to [Releases](https://github.com/HuobiRDCenter/huobi_Cpp/releases) page to vi
   
   
 
-## Beginning
+## Quick Start
+
+After you install this SDK properly, you can follow below steps in your C++ project
+
+* Create the client instance.
+* Call the method provided by client.
+
+```c++
+// Create ReferenceClient instance and get the timestamp
+ReferenceClient client;
+cout << client.getTimestamp() << endl;
+
+// Create MarketClient instance and get btcusdt latest 1-min candlestick
+MarketClient client;
+char *symbol = "btcusdt";
+CandlestickRequest candlestickRequest;
+candlestickRequest.symbol = symbol;
+candlestickRequest.period = "1min";
+vector<Candlestick> klines = client.getCandlestick(candlestickRequest);
+for (Candlestick candlestick:klines) {
+  cout << "open " << candlestick.open << endl;
+  cout << "close " << candlestick.close << endl;
+}
+```
+
+For how to install the SDK, please read the [Usage](#Usage) section below.
+
+## Usage
+
+### Folder structure
+
+This is the folder structure of SDK source code and the description
+
+- **demo**: The demo has main function, it provides the examples how to use **client** instance to access API and read response.
+- **include**: The header file of the implementation
+  - **client**: The client class declaration, it is responsible to access data
+  - **rapidjson**: The rapid json library
+  - **request**: The request struct implementation
+  - **response**: The response struct implementation
+- **src**: The core of the SDK
+  - **client**: The client class implementation.
 
 ### Installation
 
 *The SDK is compiled by C++ 11*.
 
-编译器可以使用gcc也可以使用clang.
+The compiler can be `gcc`or `clang`.
 
-Currently, The SDK has the compatibility on linux system(centos 7 and ubuntu 18.04) only.
+Currently, The SDK has the compatibility on linux system (centos 7 and ubuntu 18.04) only.
 
 Later, macOS and windows.
 
@@ -107,363 +143,126 @@ If not, you can follow <https://cmake.org/install/> to install it.
 
 The minimum required version of CMake is 2.8, but we suggest to use the lastest CMake version.
 
-#### Install 3rd party
+#### Install 3rd party libraries
 
 Please make sure the 3rd party libraries have been installed in your system. If not, please install them.
 
-OpenSSL - <https://github.com/openssl/openssl>
-
-curl - <https://github.com/curl/curl>
-
-libwebsocket - <https://libwebsockets.org/git/libwebsockets/tree/?h=v3.1-stable>
-
-
-#### 安装依赖包
-
-ubuntu 18.04:
-````
-$ sudo apt install cmake
-#openssl 1.1.1
-$ sudo apt install openssl
-$ sudo apt install libssl-dev
-#curl
-$ sudo apt install curl libcurl4-openssl-dev
-#zip
-$ sudo apt install zlib1g-dev
-````
-
-centos 7   
-
-````
-$ sudo yum install cmake
-#openssl 1.0.2
-$ sudo yum install openssl openssl-devel
-#curl
-$ sudo yum install libcurl libcurl-devel
-#libwebsockets v3.1.0
-$ sudo yum install epel-release
-$ sudo yum install libwebsockets libwebsockets-devel
-#zip
-$ sudo yum install zlib zlib-devel
-
-$ sudo yum install centos-release-scl-rh centos-release-scl scl-utils-build scl-utils
-$ sudo yum check-update
-
-#安装clang 最低3.4.2 最高5.0.1 此处使用5.0.1
-$ sudo yum install devtoolset-7-llvm
-$ echo "source /opt/rh/llvm-toolset-7/enable" >> $HOME/.bashrc
-$ source $HOME/.bashrc
-#安装gcc 最低4.9.2 最高7.3.1 此处使用7.3.1
-$ sudo yum install devtoolset-7-toolchain
-$ echo "source /opt/rh/devtoolset-7/enable" >> $HOME/.bashrc
-$ source $HOME/.bashrc
-````
-
-macOS 10.14.5
-
-````
-#openssl 1.0.2
-$ brew install openssl
-#libwebsockets v3.1.0
-$ brew install libwebsockets
-#curl
-$ brew install curl curl-openssl
-#zlib
-$ brew install zlib
-#gtest
-$ brew install --HEAD https://gist.githubusercontent.com/huobiapi/e81f3714d37c7d92c3e9e6b6566a4cbe/raw/39f1a42024cecb40d0436b03acd67c0abe6d9571/gtest.rb
-````
-
-
-
-从源码编译安装libwebsockets v3.1.0:
-
-参考: <https://libwebsockets.org/>
-````
-$ git clone https://github.com/warmcat/libwebsockets.git
-$ git reset --hard 89eedcaa94e1c8a97ea3af10642fd224bcea068f
-$ cd libwebsockets
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make
-$ sudo make install
-````
+- OpenSSL - https://github.com/openssl/openssl
+- curl - https://github.com/curl/curl
+- cpprest - https://github.com/microsoft/cpprestsdk
+- zip - https://zlib.net/
 
 #### Build SDK
 
-You should check the C++ 11 build environment.
-
-To build the SDK, you should build the decnumber firstly.
-
-``````
-$ git clone https://github.com/huobiapi/libdecnumber.git
-$ cd libdecnumber
-$ mkdir build
-$ cd build
-#使用clang
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG
-#使用gcc
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
-$ make
-$ sudo make install
-``````
-
-Then build the SDK library
+Refer to below steps to build the SDK library
 
 ```
 $ git clone https://github.com/huobiapi/huobi_Cpp.git
 $ cd huobi_Cpp
 $ mkdir build
 $ cd build
-#使用clang
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG
-#使用gcc
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
+$ cmake .. -DCMAKE_PREFIX_PATH=/opt/cpprest-2.10.16/lib64/cmake/
+ // You need to replace it with your own path
 $ make
 $ sudo make install
 ```
 
-#### Run example 
+### Run examples
+
+After installing the SDK, you are able to run the examples under **/demo** folder. if you want to access private data, you need below additional two steps:
+
+1. Create an **API Key** first from Huobi official website
+2. Assign your API access key and secret key in file **/include/define.h** as below:
+
+```c++
+#define APIKEY "hrf5gdfghe-e74bebd8-2f4a33bc-e7963"
+#define SECRETKEY "fecbaab2-35befe7e-2ea695e8-67e56"
+```
+
+If you don't need to access private data, you can ignore the API key. Regarding the difference between public data and private data you can find details in [Client](#Client) section below.
+
+There are different types of demo, refer below steps to run the 'market' demo
 
 ```
 <In huobi_Cpp folder>
-$ cd examples
-$ cd GetCandlestickData
+$ cd demo
+$ cd market
 $ mkdir build
 $ cd build
-#使用clang
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=CLANG
-#使用gcc
-$ cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_COMPILER_TYPE=GCC
+$ cmake .. -DCMAKE_PREFIX_PATH=/opt/cpprest-2.10.16/lib64/cmake/
+ // You need to replace it with your own path
 $ make
 ```
 
+### Client
 
+In this SDK, the client is the struct to access the Huobi API. In order to isolate the private data with public data, and isolated different kind of data, the client category is designated to match the API category. 
 
-### Quick Start
+All the client is listed in below table. Each client is very small and simple, it is only responsible to operate its related data, you can pick up multiple clients to create your own application based on your business.
 
-In your c++ project, you can follow below steps:
+| Data Category   | Client                | Privacy | API Protocol |
+| --------------- | --------------------- | ------- | ------------ |
+| Reference       | ReferenceClient       | Public  | Rest         |
+| Market          | MarketClient          | Public  | Rest         |
+| Account         | AccountClient         | Private | Rest         |
+| Wallet          | WalletClient          | Private | Rest         |
+| Trade           | TradeClient           | Private | Rest         |
+| IsolatedMargin  | IsolatedMarginClient  | Private | Rest         |
+| CrossMargin     | CrossMarginClient     | Private | Rest         |
+| WebSocketMarket | WebSocketMarketClient | Public  | WebSocket    |
+| WebSocketAsset  | WebSocketAssetClient  | Private | WebSocket v2 |
+| WebSocketOrders | WebSocketOrdersClient | Private | WebSocket v2 |
 
-* include Huobi/HuobiClient.h (All classes are under namespace Huobi)
-* Create the client instance.
-* Call the interfaces provided by client.
-* If you want to release the memory of client, delete it directly.
+#### Public and Private
 
-```c++
-using namespace Huobi;
+There are two types of privacy that is correspondent with privacy of API:
 
-RequestClient* request = createRequestClient();
-
-// Get the timestamp from Huobi server and print on console
-long timestamp = request->getExchangeTimestamp();
-std::cout << timestamp << std::endl;
-
-// Get the latest btcusdt‘s candlestick data and print the highest price on console
-std::vector<Candlestick> candlestickVes = request->getLatestCandlestick("btcusdt", CandlestickInterval::day1, 20);
-for (Candlestick item : candlestickVes)
-    std::cout << item.high << std::endl;
-```
-
-Please NOTE:
-
-All timestamp which is got from SDK is the Unix timestamp based on UTC.
-
-
-
-### Request vs. Subscription
-
-Huobi API supports 2 types of invoking.
-
-1. Request method: You can use request method to trade, withdraw and loan. You can also use it to get the market related data from Huobi server.
-2. Subscription method: You can subscribe the market updated data and account change from Huobi server. For example, if you subscribed the price depth update, you will receive the price depth message when the price depth updates on Huobi server.
-
-We recommend developers to use request method to trade, withdraw and loan, to use subscription method to access the market related data.
-
-
-
-### Clients
-
-There are 2 clients, one is for request method, ```RequestClient``` , another is for subscription method ```SubscriptionClient```. 
-
-* **RequestClient**: It is a synchronous request, it will invoke the Huobi API via synchronous method, all invoking will be blocked until receiving the response from server.
-
-* **SubscriptionClient**: It is the subscription, it is used for subscribing any market data update and account change.  It is asynchronous, so you must implement  ```callback()``` function. The server will push any update for the client. if client receive the update, the ```callback()``` function will be called. See [Subscription usage](#Subscription) for detail. 
-
-  
-
-### Create client
-
-You can assign the API key and Secret key when you create the client. See below:
+**Public client**: It invokes public API to get public data (Reference data and Market data), therefore you can create a new instance without applying an API Key.
 
 ```c++
-RequestClient* request = createRequestClient(
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx",
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx");
+// Create a ReferenceClient instance
+ReferenceClient client;
+
+// Create a MarketClient instance
+MarketClient client;
 ```
+
+**Private client**: It invokes private API to access private data, you need to follow the API document to apply an API Key first, and pass the API Key to the init function
 
 ```c++
-SubscriptionClient* subscription = createSubscriptionClient(
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx",
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx");
+// Create an AccountClient instance with APIKey
+AccountClient accountClient{APIKEY, SECRETKEY};
+
+// Create a TradeClient instance with API Key
+TradeClient tradeClient{APIKEY, SECRETKEY};
 ```
 
-The API key and Secret key are used for authentication.
+The API key is used for authentication. If the authentication cannot pass, the invoking of private interface will fail.
 
-Some APIs related with account, trading, deposit and withdraw etc require the authentication. We can name them after private interface.
+#### Rest and WebSocket
 
-The APIs only return the market data  don't need the authentication. We can name them after public interface.
+There are two protocols of API, Rest and WebSocket
 
-If you want to invoke both public interface and private interface. You must apply API Key and Secret Key from Huobi and put them into the client you created.
+**Rest**: It invokes Rest API and get once-off response, it has two basic types of method: GET and POST
 
-If the authentication cannot pass, the invoking of private interface will fail.
+**WebSocket**: It establishes WebSocket connection with server and data will be pushed from server actively. There are two types of method for WebSocket client:
 
-If you want to invoke public interface only. You can create the client as follow:
+- Request method: The method name starts with "req-", it will receive the once-off data after sending the request.
+- Subscription: The method name starts with "sub-", it will receive update after sending the subscription.
 
-```c++
-RequestClient* request = createRequestClient();
-```
+### Migrate from v1
 
-```c++
-SubscriptionClient* subscription = createSubscriptionClient();
-```
+#### Why v2
 
+The major difference between v1 and v2 is that the client category.
 
+In SDK v1, the client is categorized as two protocol, request client and subscription client. For example, for Rest API, you can operate everything in request client. It is simple to choose which client you use, however, when you have a client instance, you will have dozens of method, and it is not easy to choose the proper method.
 
-### Custom host
+The thing is different in SDK v2, the client class is categorized as seven data categories, so that the responsibility for each client is clear. For example, if you only need to access market data, you can use MarketClient without applying API Key, and all the market data can be retrieved from MarketClient. If you want to operate your order, then you know you should use TradeClient and all the order related methods are there. Since the category is exactly same as the API document, so it is easy to find the relationship between API and SDK. In SDK v2, each client is smaller and simpler, which means it is easier to maintain and less bugs.
 
-To support huobi cloud, you can specify the custom host.
+#### How to migrate
 
-1. Set your custom host to ```RequestClient``` or ```SubscriptionClient```.
-2. Set the url or uri string to client when creating the client instance.
-
-See below example
-
-```c++
-//Set custom host for request
-RequestOptions reqOp;
-reqOp.url = "https://www.xxx.yyy/";
-RequestClient* request = createRequestClient(
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx",
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx",
-  reqOp);
-
-// Set custom host for subscription
-SubscriptionOptions subOp;
-subOp.url = "wss://www.xxx.yyy";
-SubscriptionClient* subscription = createSubscriptionClient(
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx",
-  "xxxxxxxx-xxxxxxxx-xxxxxxxx-xxxxx",
-  subOp);
-```
-
-If you do not set yout custom host, below default host will be used:
-
-For request: <https://api.huobi.pro>
-
-For subscription: <wss://api.huobi.pro>
-
-
-
-## Usage
-
-### Request
-
-To invoke the interface by synchronous, you can create the ```RequestClient``` and call the API directly.
-
-```c++
-RequestClient* request = createRequestClient();
-// Get the best bid and ask for btcusdt, print the best ask price and amount on console.
-BestQuote bestQuote = request->getBestQuote("btcusdt");
-std::cout<< bestQuote.askPrice << std::endl;
-std::cout<< bestQuote.askAmount << std::endl;
-```
-
-
-
-### Subscription
-
-To receive the subscribed data, you can create the ```SubscriptionClient```. When subscribing the event, you should define your callback function. See below example:
-
-```c++
-SubscriptionClient* subscription = createSubscriptionClient();
-// Subscribe the candlestickEvent update for btcusdt.
-subscription->subscribeCandlestickEvent(
-  "btcusdt",
-  CandlestickInterval::min15,
-  [](const CandlestickEvent& candlestickEvent){             
-    		std::cout <<"Timestamp: " << candlestickEvent.data.timestamp << std::endl;
-        std::cout <<"High: " << candlestickEvent.data.high << std::endl;
-        std::cout <<"Low: " << candlestickEvent.data.low << std::endl;
-    });
-subscription->startService();
-```
-
-The subscription method supports multi-symbol string. Each symbol should be separated by a comma.
-
-```c++
-SubscriptionClient* subscription = createSubscriptionClient();
-subscription->subscribeCandlestickEvent(
-  "btcusdt,ethusdt",
-  CandlestickInterval::min15,
-  [](const CandlestickEvent& candlestickEvent){      
-        std::cout << "Timestamp: " <<candlestickEvent.data.timestamp << std::endl;
-        std::cout << "High: " <<candlestickEvent.data.high << std::endl;
-    });
-subscription->startService();
-```
-
-After invoking the subscription interface, you must call ```startService()``` to start the subscription. Please note the ```startService()``` will start a loop and block the current thread.
-
-
-
-### Error handling
-
-####For request
-
-In error case, such as you set the invalid symbol to ```getBestQuote()```. The ```HuobiApiException``` will be thrown. See below example:
-
-```c++
-RequestClient* request = createRequestClient();
-try {
-       request->getBestQuote("???");
-    } catch (HuobiApiException exception) {
-    			 std::cout << exception.errorCode << std::endl;
-    			 std::cout << exception.errorMsg << std::endl;
-    }
-```
-
-####For Subscription
-
-If you want to check the error, you should implement your ```errorHandler```. See below example:
-
-```c++
-SubscriptionClient*client = createSubscriptionClient();
-client->subscribeCandlestickEvent(
-  "btcusdt",
-  CandlestickInterval::min15,
-  [](CandlestickEvent candlestickEvent){
-    std::cout <<"Timestamp: "<< candlestickEvent.data.timestamp << std::endl;
-    std::cout <<"High: "<< candlestickEvent.data.high << std::endl;},
-  [](HuobiApiException exception){
-    std::cout << exception.errorCode << std::endl;
-    std::cout << exception.errorMsg << std::endl;
-  });
-client->startService();
-```
-
-Any error made during subscription will be output to a log file, If you do not define your ```errorHandler```, the error will be output to log only.
-
-#### Log
-
-The SDK is using the common logging module, you can set the log mode ``` setlogMode() ```,0 is no log,1 is print in console, 2 is print in the specified file, you can set the file ``` setLogfilelocate()```, bigger than 2 is same as 0. The default is 2.Using ``` WriteLog()``` if you want record log somewhere. You can follow below steps before create the client:
-
-```c++
- Logger::setlogMode(2);
- Logger::setLogfilelocate("your log locate");
-```
-
-
+You don't need to change your business logic, what you need is to find the v1 request client and subscription client, and replace with the proper v2 client. The additional cost is that you need to have additional initialization for each v2 client.
 
 ## Request example
 
@@ -472,410 +271,224 @@ The SDK is using the common logging module, you can set the log mode ``` setlogM
 #### Exchange timestamp
 
 ```c++
-RequestClient* request = createRequestClient();
-long timestamp = request->getExchangeTimestamp();
-std::cout << timestamp << std::endl;
+ReferenceClient client;
+cout << client.getTimestamp() << endl;
 ```
 
-#### Symbol and currencies
-
-```c++
-RequestClient* request = createRequestClient();
-ExchangeInfo exchangeInfo = request->getExchangeInfo();
-for (Symbols symbols : exchangeInfo.symbolsList) {
-  std::cout << symbols.symbol << std::endl;
-}
-for (std::string currency : exchangeInfo.currencies) {
-  std::cout << currency << std::endl;
-}
-```
 #### Symbols
 
 ```c++
-RequestClient* request = createRequestClient();
-std::vector<Symbols> symbolsList = request->getSymbols();
-for (Symbols symbols : symbolsList) {
-  std::cout << symbols.symbol << std::endl;
-  std::cout << symbols.pricePrecision << std::endl;  
-}
+ReferenceClient client;
+vector<Symbol> symbols = client.getSymbols();
 ```
 #### Currencies
 
 ```c++
-RequestClient* request = createRequestClient();
-std::vector<std::string> stringList =request->getCurrencies();
-for (std::string currency : stringList) {
-  std::cout << currency << std::endl;
-}
+ReferenceClient client;
+vector<std::string> currencies = client.getCurrencies();
 ```
 
 #### Currency & Chains
 
 ```c++
-RequestClient* request = createRequestClient();
-CurrencyChainsRequest currencyChainsRequest;
-std::vector<CurrencyChain> chains =request->getReferenceCurrencies();
-for (CurrencyChain currencyChain : chains) {
-    std::cout << "currency: " << currencyChain.currency << std::endl;
-    std::cout << "instStatus: " << currencyChain.instStatus << std::endl;
-  }
+ReferenceClient client;
+ReferenceCurrenciesRequest referenceCurrenciesRequest;
+vector<ReferenceCurrencies> vec = client.getReferenceCurrencies(referenceCurrenciesRequest);
 ```
 
 
 ### Market data
 
-#### Candlestick/KLine
+#### Candlestick
 
 ```c++
-RequestClient* request = createRequestClient();
-std::vector<Candlestick>candelves = request->getLatestCandlestick(
-  "btcusdt",
-  CandlestickInterval::min1);
-  for (Candlestick candlestick : candelves) {
-    std::cout << "High: " << candlestick.high << std::endl;
-    std::cout << "Low: " << candlestick.low << std::endl;
-  }
+MarketClient client;
+char *symbol = "btcusdt";
+CandlestickRequest candlestickRequest;
+candlestickRequest.symbol = symbol;
+candlestickRequest.period = "1min";
+vector<Candlestick> klines = client.getCandlestick(candlestickRequest);
 ```
 
 #### Depth
 
 ```c++
-RequestClient* request = createRequestClient();
-PriceDepth depth = request->getPriceDepth("btcusdt", 5);
-for (DepthEntry entry : depth.bids) {
-  std::cout <<"price: "<< entry.price << std::endl;
-}
+MarketClient client;
+DepthRequest depthRequest;
+depthRequest.symbol = symbol;
+Depth depth = client.getDepth(depthRequest);
+cout << "ask price: " << depth.asks[0].price << endl;
+cout << "bid price: " << depth.bids[0].price << endl;
 ```
 
 #### Latest trade
 
 ```c++
-RequestClient* request = createRequestClient();
-Trade trade = request->getLastTrade("ethusdt");
-std::cout << trade.price << std::endl;
-```
-
-#### Best bid/ask
-
-```c++
-RequestClient* request = createRequestClient();
-BestQuote bestQuote = request->getBestQuote("btcusdt");
-std::cout<< bestQuote.askPrice << std::endl;
-std::cout<< bestQuote.askAmount << std::endl;
+MarketClient client;
+TradeRequest tradeRequest{symbol};
+vector<Trade> trade = client.getTrade(tradeRequest);
 ```
 
 #### Historical  Trade
 
 ```c++
- RequestClient* request = createRequestClient();
- std::vector<Trade> tradeVes=request->getHistoricalTrade("ethusdt", 3);
- std::cout << tradeVes[0].price << std::endl;
+MarketClient client;
+HistoryTradeRequest historyTradeRequest;
+historyTradeRequest.symbol = symbol;
+vector<Trade> tradeHistory = client.getHistoryTrade(historyTradeRequest);
+cout << "trade price: " << tradeHistory[0].price << endl;
 ```
 
-#### 24H statistics
-
-```c++
-RequestClient* request = createRequestClient();
-TradeStatistics tradeStatistics = request->get24HTradeStatistics("ethusdt");
-std::cout << trade_statistics.open << std::endl;
-```
-#### Market Trade
-```c++
-RequestClient* request = createRequestClient();
-Trade trade = request->getMarketTrade("ethusdt");
-std::cout << trade.price << std::endl;
-```
 ### Account
 
 *Authentication is required.*
 
 #### Account balance
 ```c++
-RequestClient* request = createRequestClient("your apikey", "your secretKey");
-Account account = request->getAccountBalance(Account::spot);
-std::cout << account.getBalance("btc")[0].balance << std::endl;
-```
-
-#### Transfer
-```c++
-RequestClient* request = createRequestClient("your apikey", "your secretKey");
-TransferMasterRequest req(12345L, TransferMasterType::master_transfer_in, "btc", Decimal(1.0));
-request->transferBetweenParentAndSub(req);
+AccountClient accountClient{APIKEY, SECRETKEY};
+vector<Balance> balanceVec = accountClient.getBalance(12345);
 ```
 
 #### Get Account History
 ```c++
-RequestClient* request = createRequestClient("your apikey", "your secretKey");
-AccountHistoryRequest req(12345L);
-request->getAccountHistory(req);
+AccountClient accountClient{APIKEY, SECRETKEY};
+AccountHistoryRequest accountHistoryRequest{12345, "usdt"};
+accountHistoryRequest.transactTypes = "trade";
+accountHistoryRequest.size = 10;
+vector<AccountHistory> accountHistory = accountClient.getHistory(accountHistoryRequest);
 ```
-
-#### Subuser account balance
-
-```c++
-RequestClient* request = createRequestClient("your apikey", "your secretKey");
-request->getSpecifyAccountBalance(12345L);
-```
-#### Subuser aggregate balance
-```c++
-RequestClient* request = createRequestClient("your apikey", "your secretKey");
-request->getCurrentUserAggregatedBalance();
-```
-
-#### Subuser management
-
-```c++
-RequestClient* request = createRequestClient("your apikey", "your secretKey");
-request->subUserManage(12345L,LockAction::lock);
-```
-
 
 ### Wallet
 
-#### Withdraw
-
 *Authentication is required.*
 
+#### Withdraw
+
 ```c++
-RequestClient* request = createRequestClient("your apikey","your secretKey");
-WithdrawRequest withdrawReq("xxx", Decimal(0.1), "btc");
-long id  = request->withdraw(withdrawReq);
-std::cout<<id<<std::endl;
+WalletClient walletClient{APIKEY, SECRETKEY};
+WithdrawCreateRequest withdrawCreateRequest;
+withdrawCreateRequest.amount = "5";
+withdrawCreateRequest.currency = "usdt";
+withdrawCreateRequest.address = "xxxxx";
+withdrawCreateRequest.chain = "trc20usdt";
+withdrawCreateRequest.fee = "0.0";
+long withdrawId = walletClient.withdrawCreate(withdrawCreateRequest);
 ```
 
 #### Cancel withdraw
 
-*Authentication is required.*
-
 ```c++
-request->cancelWithdraw("btc", id);
+WalletClient walletClient{APIKEY, SECRETKEY};
+long cancelwithdraw = walletClient.withdrawCancel(withdrawId);
 ```
 
 #### Withdraw and deposit history
 
-*Authentication is required.*
-
 ```c++
-std::vector<Withdraw> withdrawVes = request->getWithdrawHistory("btc", id, 10);
-std::cout << withdrawVes[0].amount << std::endl;
-std::vector<Deposit> depositVes = request->getDepositHistory("btc", id, 10);
-std::cout << depositVes[0].amount << std::endl;
+WalletClient walletClient{APIKEY, SECRETKEY};
+QueryDepositWithdrawRequest queryDepositWithdrawRequest;
+queryDepositWithdrawRequest.type = "withdraw";
+vector<DepositWithdraw> record = walletClient.queryDepositWithdraw(queryDepositWithdrawRequest);
+queryDepositWithdrawRequest.type = "deposit";
+vector<DepositWithdraw> record = walletClient.queryDepositWithdraw(queryDepositWithdrawRequest);
 ```
-#### Query Deposit Address
-
-```c++
-DepositAddressRequest depositAddressRequest("btc");
-request->getDepositAddress(depositAddressRequest);
-```
-
-#### Query Withdraw Quota
-```c++
-WithdrawQuotaRequest withdrawQuotaRequest("btc");
-request->getWithdrawQuota(withdrawQuotaRequest);
-```
-
 ### Trading
+
+*Authentication is required.*
 
 #### Create order
 
-*Authentication is required.*
-
 ```c++
- NewOrderRequest order("btcusdt",AccountType::spot,OrderType::buy_limit,
-                       Decimal(1),Decimal(0.1));
- long id = request->createOrder(order);
- std::cout << id << std::endl;
+TradeClient tradeClient{APIKEY, SECRETKEY};
+PlaceOrderRequest placeOrderRequest;
+placeOrderRequest.accountId = 12345;
+placeOrderRequest.symbol = "htusdt";
+placeOrderRequest.type = "buy-market";
+placeOrderRequest.amount = "5.0";
+placeOrderRequest.clientOrderId = "client_order-id";
+long orderId = tradeClient.placeOrder(placeOrderRequest);
 ```
 
 #### Cancel order
 
-*Authentication is required.*
-
 ```c++
-request->cancelOrder("btcusdt", orderId);
+TradeClient tradeClient{APIKEY, SECRETKEY};
+tradeClient.submitCancelOrder("order-id");
 ```
 
 #### Cancel open orders
 
-*Authentication is required.*
-
 ```c++
-  CancelOpenOrderRequest cancel("btcusdt",AccountType::spot);
-  BatchCancelResult result = request->cancelOpenOrders(cancel);
-  std::cout << result.successCount << std::endl;
+TradeClient tradeClient{APIKEY, SECRETKEY};
+BatchCancelOpenOrdersRequest batchCancelOpenOrdersRequest;
+batchCancelOpenOrdersRequest.accountId = accountId;
+BatchCancelOpenOrders batchCancelOpenOrders = tradeClient.batchCancelOpenOrders(batchCancelOpenOrdersRequest);
 ```
 
 #### Get order info
 
-*Authentication is required.*
-
 ```c++
-Order order = request->getOrder("symbol", orderId);
-std::cout << order.price << std::endl;
+TradeClient tradeClient{APIKEY, SECRETKEY};
+Order order = tradeClient.getOrder(orderId);
 ```
 
 #### Historical orders
 
-*Authentication is required.*
-
 ```c++
-HistoricalOrdersRequest historicalOrder("btcusdt", OrderState::canceled);
- std::vector<Order> orderVes = request->getHistoricalOrders(historicalOrder);
- std::cout << orderVes[0].price << std::endl;
-```
-
-
-#### Get order info by client order id
-
-*Authentication is required.*
-
-```c++
-Order order = request->getOrderByClientOrderId(clientOrderId);
-std::cout << order.price << std::endl;
-```
-
-#### Cancel order by client order id
-
-*Authentication is required.*
-
-```c++
-request->cancelOrderByClientOrderId(clientOrderId);
-```
-
-#### FeeRate
-
-*Authentication is required.*
-
-```c++
-std::vector<FeeRate> feeRates = request->getFeeRate("btcusdt");
-for (FeeRate feeRate : feeRates) {
-  std::cout << feeRate.symbol << std::endl;
-  std::cout << feeRate.maker_fee << std::endl;  
-  std::cout << feeRate.taker_fee << std::endl;  
-} 
-```
-
-#### Order history
-
-*Authentication is required.*
-
-*Get historical orders in the last 48 hours.*
-
-```c++
- OrdersHistoryRequest ordersHistory;
- std::vector<Order> orderVes = request->getOrderHistory(ordersHistory);
- std::cout << orderVes[0].price << std::endl;
-```
-#### Batch orders
-```c++
-NewOrderRequest order("btcusdt",AccountType::spot,OrderType::buy_limit,
-                       Decimal(1),Decimal(0.1)); 
-std::list<NewOrderRequest> orders;
-orders.push_back(order);
-request->batchOrders(orders);
-```
-
-#### Batch cancel
-```c++
-std::list<long> orderIds;
-orderIds.push_back(12345L);
-std::list<std::string> clientOrderIds;
-clientOrderIds.push_back("1234");
-request->cancelOrders("btcusdt",orderIds);
-request->cancelClientIdOrders("btcusdt",clientOrderIds);
+TradeClient tradeClient{APIKEY, SECRETKEY};
+OrdersHistoryRequest ordersHistoryRequest;
+std::vector<Order> historicalOrders = tradeClient.getOrdersHistory(ordersHistoryRequest);
 ```
 
 ### Margin Loan
 
-####Apply loan
-
 *Authentication is required.*
 
+These are examples for cross margin
+
+####Apply loan
+
 ```c++
-long id = applyLoan("btcusdt", "btc", Decimal(10.0));
-std::cout << id << std::endl;
+CrossMarginClient crossMarginClient{APIKEY, SECRETKEY};
+CrossMarginTransferOrApplyRequest crossMarginTransferOrApplyRequest{currency, amount};
+long marginId = crossMarginClient.marginOrders(crossMarginTransferOrApplyRequest);
 ```
 
 #### Repay loan
 
-*Authentication is required.*
-
 ```c++
-long id = repayLoan(loadId,Decimal(10.0));
-std::cout << id << std::endl;
+CrossMarginClient crossMarginClient{APIKEY, SECRETKEY};
+std::string amount = "100.0";
+crossMarginClient.repay(marginId, amount.c_str());
 ```
 
 ####Loan history
 
-*Authentication is required.*
-
 ```c++
- LoanOrderRequest loanReq("btcusdt");
- std::vector<Loan> loanVes = request->getLoanHistory(loanReq);
- std::cout << loanVes[0].loanAmount << std::endl;
+CrossMarginClient crossMarginClient{APIKEY, SECRETKEY};
+CrossMarginLoanOrdersRequest crossMarginLoanOrdersRequest;
+vector<CrossMarginLoanOrder> crossMarginLoanOrders = crossMarginClient.getLoanOrders(crossMarginLoanOrdersRequest);
 ```
 
-#### Transfer Asset btween Spot Trading Account and Cross Margin Account
-
-*Authentication is required.*
-
-```c++
- request->crossMaginTransferIn(crossMarginTransferRequest);
- request->crossMaginTransferOut(crossMarginTransferRequest);
-```
-#### Request a Margin Loan
-
-*Authentication is required.*
-
-```c++
- request->crossMaginApplyLoan(crossMarginApplyLoanRequest);
-```
-#### Search Past Margin Orders
-*Authentication is required.*
-
-```c++
- request->crossMaginGetLoanOrders(crossMarginLoanOrdersRequest);
-```
-
-#### Repay Margin Loan
-
-*Authentication is required.*
-
-```c++
- request->crossMaginRepayLoan(crossMarginRepayLoanRequest);
-```
-
-#### Get the Balance of the Margin Loan Account
-
-*Authentication is required.*
-
-```c++
- request->crossMaginGetLoanBalance();
-```
 
 ## Subscription example
 
 ### Subscribe trade update
 
 ```c++
-subscriptionClient->subscribeTradeEvent(
-  "btcusdt",
-  [](const TradeEvent& tradeEvent) {
-    std::cout << tradeEvent.symbol << std::endl;
-    for (Trade trade : tradeEvent.tradeList) {
-      std::cout<<trade.price<<std::endl;
-  }
+websocketMarketClient client;
+client.subTrade("htusdt", [](Trade trade) {
+  cout << trade.price << endl;
+  cout << trade.tradeId << endl;
 });
 ```
 
-###Subscribe candlestick/KLine update
+###Subscribe candlestick update
 
 ```c++
-subscriptionClient->subscribeCandlestickEvent(
-  "btcusdt",
-  CandlestickInterval::min15,
-  [](const CandlestickEvent& candlestickEvent){
-    std::cout << "High: " << candlestickEvent.data.high << std::endl;
+websocketMarketClient client;
+client.subKline("htusdt", "1min", [](Candlestick candlestick) {
+  cout << candlestick.amount << endl;
 });
 ```
 
@@ -884,10 +497,9 @@ subscriptionClient->subscribeCandlestickEvent(
 *Authentication is required.*
 
 ```c++
-subscriptionClient->subscribeOrderUpdateEvent(
-  "btcusdt",
-  [](const OrderUpdateEvent& orderEvent) {
-    std::cout << orderEvent.data.price << std::endl;
+websocketOrdersClient client{APIKEY, SECRETKEY};
+client.subOrders("htusdt", [](OrdersUpdate ordersUpdate) {
+  cout << ordersUpdate.symbol << endl;
 });
 ```
 
@@ -896,105 +508,9 @@ subscriptionClient->subscribeOrderUpdateEvent(
 *Authentication is required.*
 
 ```c++
-subscriptionClient->subscribeAccountEvent(
-  BalanceMode::available,
-  [](const AccountEvent& accountEvent) {
-    for (AccountChange change : accountEvent.accountChangeList) {
-      std::cout << "Account: " << change.accountType.getValue() << std::endl;
-    }
+websocketAssetClient client{APIKEY, SECRETKEY};
+client.subAccounts(1, [](AccountsUpdate accountsUpdate) {
+  cout << accountsUpdate.changeType << endl;
 });
 ```
-### Subscribe order update  (new)
-
-*Authentication is required.*
-*Recommend to use this new sub ,lower data latency and more accurate message order.*
-
-```c++
-subscriptionClient->subscribeOrderUpdateNewEvent(
-  "btcusdt",
-  [](const OrderUpdateEvent& orderEvent) {
-    std::cout << orderEvent.data.price << std::endl;
-});
-```
-#### Subscribe account update(V2)
-*Authentication is required.*
-
-
-```c++
-subscriptionClient->subscribeAccountUpdateEvent(AccountsUpdateMode::balanceAndaAvailable, [](AccountUpdateEvent event) {
-        cout << "---- accountId: " << event.accountId << " ----" << endl;
-        cout << "---- accountType: " << event.accountType.getValue() << " ----" << endl;
-        cout << "---- available: " << event.available << " ----" << endl;
-        cout << "---- balance: " << event.balance << " ----" << endl;
-        cout << "---- changeTime: " << event.changeTime << " ----" << endl;
-        cout << "---- changeType: " << event.changeType.getValue() << " ----" << endl;
-        cout << "---- currency: " << event.currency << " ----" << endl;
-
-    });
-```
-#### Subscribe trade clearing
-*Authentication is required.*
-
-
-```c++
- subscriptionClient->subscribeTradeClearingEvent("htusdt", [](TradeClearingEvent event) {
-        cout << "---- aggressor: " << event.aggressor << " ----" << endl;
-        cout << "---- feeDeduct: " << event.feeDeduct << " ----" << endl;
-        cout << "---- feeDeductType: " << event.feeDeductType << " ----" << endl;
-        cout << "---- orderId: " << event.orderId << " ----" << endl;
-        cout << "---- orderSide: " << event.orderSide.getValue() << " ----" << endl;
-        cout << "---- orderType: " << event.orderType.getValue() << " ----" << endl;
-        cout << "---- symbol: " << event.symbol << " ----" << endl;
-        cout << "---- tradeId: " << event.tradeId << " ----" << endl;
-        cout << "---- tradePrice: " << event.tradePrice << " ----" << endl;
-        cout << "---- tradeTime: " << event.tradeTime << " ----" << endl;
-        cout << "---- tradeVolume: " << event.tradeVolume << " ----" << endl;
-        cout << "---- transactFee: " << event.transactFee << " ----" << endl;
-    });
-```
-#### Subscribe market mbp
-```c++
- subscriptionClient->subscribeMarketDepthMBP("btcusdt", MBPLevel::LEVEL150, [](MarketDepthMBPEvent event) {
-    cout << "---- seqNum: " << event.seqNum << " ----" << endl;
-    });
-```
-
-### Start subscription
-
-You can should start subscription by calling ```startService()```.
-
-```c++
-subscriptionClient->startService();
-```
-
-
-### 使用docker构建sdk开发环境:
-
-进入到根目录:
-````
-$ cd huobi_Cpp
-````
-
-构建镜像:
-````
-#ubuntu
-$ docker build -t huobisdkubuntu -f ./docker/ubuntu/Dockerfile .
-#centos
-$ docker build -t huobisdkcentos -f ./docker/centos/Dockerfile .
-````
-
-启动：
-````
-#ubuntu
-$ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdkubuntu
-#centos
-$ docker run -itd --network host -v $PWD:/home/jovyan/work huobisdkcentos
-````
-
-进入容器内部:
-
-````
-$ docker exec -it $(docker ps -qa | head -1) /bin/bash
-````
-
 

@@ -1,7 +1,0 @@
-/root/huobi/CMakeFiles/install/strip.dir
-/root/huobi/CMakeFiles/install/local.dir
-/root/huobi/CMakeFiles/install.dir
-/root/huobi/CMakeFiles/list_install_components.dir
-/root/huobi/CMakeFiles/rebuild_cache.dir
-/root/huobi/CMakeFiles/edit_cache.dir
-/root/huobi/CMakeFiles/HuobiClient.dir

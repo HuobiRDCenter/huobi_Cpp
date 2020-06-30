@@ -1,0 +1,2 @@
+#define huobi_VERSION_MAJOR @huobi_VERSION_MAJOR@
+#define huobi_VERSION_MINOR @huobi_VERSION_MINOR@
