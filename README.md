@@ -7,28 +7,20 @@ If you already use SDK v1, it is strongly suggested migrate to v2 as we refactor
 ## Table of Contents
 
 - [Quick Start](#Quick-Start)
-
 - [Usage](#Usage)
-
   - [Folder structure](#Folder-structure)
   - [Installation](#Installation)
   - [Run examples](#Run-examples)
-
   - [Client](#client)
-
 - [Migrate from v1](#Migrate-from-v1)
-
 - [Request example](#Request-example)
-
   - [Reference data](#Reference-data)
   - [Market data](#Market-data)
   - [Account](#account)
   - [Wallet](#wallet)
   - [Trading](#trading)
   - [Margin Loan](#margin-loan)
-
 - [Subscription example](#Subscription-example)
-
   - [Subscribe trade update](#Subscribe-trade-update)
   - [Subscribe candlestick update](#subscribe-candlestick-update)
   - [Subscribe order update](#Subscribe-order-update)
