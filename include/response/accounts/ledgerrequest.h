@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/17.
-//
+
 
 #ifndef HUOBI_ACCOUNTLEDGER_H
 #define HUOBI_ACCOUNTLEDGER_H

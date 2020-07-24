@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/21.
-//
+
 
 #ifndef HUOBI_DEPOSITWITHDRAW_H
 #define HUOBI_DEPOSITWITHDRAW_H

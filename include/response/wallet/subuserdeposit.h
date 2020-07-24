@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/21.
-//
+
 
 #ifndef HUOBI_SUBUSERDEPOSIT_H
 #define HUOBI_SUBUSERDEPOSIT_H

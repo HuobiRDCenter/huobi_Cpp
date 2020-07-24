@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/29.
-//
+
 
 #include "client/websocketHelper.h"
 
@@ -171,6 +169,7 @@ void websocketHelper::func(websocket_client &client, int &lastRecvTime, string t
             }
         } catch (std::exception &e) {
             cout << "disconnection... " << endl;
+            client.close();
             break;
         }
 

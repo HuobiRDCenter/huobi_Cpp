@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/20.
-//
+
 
 #ifndef HUOBI_ACCOUNTANDBALANCE_H
 #define HUOBI_ACCOUNTANDBALANCE_H

@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/15.
-//
+
 
 #include <curl/curl.h>
 #include "signature.h"

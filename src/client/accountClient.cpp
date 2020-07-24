@@ -1,7 +1,5 @@
 #include  <client/accountClient.h>
-//
-// Created by 袁雪琪 on 2020/4/16.
-//
+
 
 vector<Account> AccountClient::getAccounts() {
     string url = SPLICE("/v1/account/accounts?");

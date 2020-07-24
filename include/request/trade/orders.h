@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/22.
-//
+
 
 #ifndef HUOBI_GETORDERSREQUEST_H
 #define HUOBI_GETORDERSREQUEST_H

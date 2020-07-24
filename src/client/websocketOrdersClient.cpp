@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/5/7.
-//
+
 #include "client/websocketOrdersClient.h"
 
 
@@ -12,6 +10,7 @@ void websocketOrdersClient::subOrders(const char *symbol, const std::function<vo
         OrdersUpdate ordersUpdate;
         ordersUpdate.eventType = data["eventType"].GetString();
         ordersUpdate.symbol = data["symbol"].GetString();
+        if (data.HasMember("orderId"))
         ordersUpdate.orderId = atol(data["orderId"].GetString());
         if (data.HasMember("clientOrderId"))
             ordersUpdate.clientOrderId = data["clientOrderId"].GetString();

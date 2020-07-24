@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/13.
-//
+
 
 #ifndef HUOBI_CANDLESTICK_H
 #define HUOBI_CANDLESTICK_H

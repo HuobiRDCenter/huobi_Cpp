@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/23.
-//
+
 
 #include "client/isolatedMarginClient.h"
 

@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/24.
-//
+
 
 #ifndef HUOBI_CROSSMARGINBALANCE_H
 #define HUOBI_CROSSMARGINBALANCE_H

@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/15.
-//
+
 
 #ifndef HUOBI_TRADE_H
 #define HUOBI_TRADE_H

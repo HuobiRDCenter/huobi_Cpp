@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/15.
-//
+
 
 #ifndef HUOBI_RESTFUL_H
 #define HUOBI_RESTFUL_H

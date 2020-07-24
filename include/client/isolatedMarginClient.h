@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/23.
-//
+
 
 #ifndef HUOBI_ISOLATEDMARGINCLIENT_H
 #define HUOBI_ISOLATEDMARGINCLIENT_H

@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/5/7.
-//
+
 
 #ifndef HUOBI_WEBSOCKETASSETCLIENT_H
 #define HUOBI_WEBSOCKETASSETCLIENT_H

@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/9.
-//
+
 
 #ifndef HUOBI_MARKETCLIENT_H
 #define HUOBI_MARKETCLIENT_H

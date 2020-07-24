@@ -1,8 +1,6 @@
 #include <client/marketClient.h>
 
-//
-// Created by 袁雪琪 on 2020/4/9.
-//
+
 
 vector<Candlestick> MarketClient::getCandlestick(CandlestickRequest &request) {
     string url = SPLICE("/market/history/kline?");

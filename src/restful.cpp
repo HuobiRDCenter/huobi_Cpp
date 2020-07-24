@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/15.
-//
+
 #include "restful.h"
 
 int64_t Rest::getCurrentTime()

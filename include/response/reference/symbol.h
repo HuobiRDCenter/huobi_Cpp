@@ -1,6 +1,3 @@
-//
-// Created by 袁雪琪 on 2020/4/23.
-//
 
 #ifndef HUOBI_SYMBOL_H
 #define HUOBI_SYMBOL_H

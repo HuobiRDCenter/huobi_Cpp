@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/29.
-//
+
 #include <gzDecompress.h>
 #include "client/websocketMarketClient.h"
 
@@ -14,7 +12,7 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
     }
     while (1) {
         try {
-            string msg = client.receive().then([](websocket_incoming_message in_msg) {
+            char* msg = client.receive().then([](websocket_incoming_message in_msg) {
                 char buf[BUFF] = {0};
                 unsigned int l = BUFF;
                 in_msg.body().streambuf().getn((unsigned char *) buf, l);
@@ -24,7 +22,7 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
             }).get();
             lastRecvTime = Rest::getCurrentTime();
             Document d;
-            Value &value = d.Parse<kParseNumbersAsStringsFlag>(msg.c_str());
+            Value &value = d.Parse<kParseNumbersAsStringsFlag>(msg);
             if (value.HasMember("ping")) {
                 client.send(websocketHelper::pong(msg));
             } else {
@@ -39,6 +37,7 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
             }
         } catch (std::exception &e) {
             cout << "disconnection... " << endl;
+            client.close();
             break;
         }
 

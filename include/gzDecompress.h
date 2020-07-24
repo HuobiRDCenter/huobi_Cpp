@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/29.
-//
+
 
 #ifndef HUOBI_GZDECOMPRESS_H
 #define HUOBI_GZDECOMPRESS_H

@@ -1,6 +1,4 @@
-//
-// Created by 袁雪琪 on 2020/4/23.
-//
+
 
 #ifndef HUOBI_CROSSMARGINCLIENT_H
 #define HUOBI_CROSSMARGINCLIENT_H
