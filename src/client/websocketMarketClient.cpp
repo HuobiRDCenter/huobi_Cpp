@@ -18,7 +18,7 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
                 in_msg.body().streambuf().getn((unsigned char *) buf, l);
                 char sbuf[BUFF] = {0};
                 gzDecompress(buf, in_msg.length(), sbuf, BUFF);
-                return sbuf;
+                return pplx::task_from_result(sbuf);
             }).get();
             lastRecvTime = Rest::getCurrentTime();
             Document d;
