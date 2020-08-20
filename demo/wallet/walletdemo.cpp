@@ -1,5 +1,3 @@
-
-
 #include <client/walletClient.h>
 
 using namespace std;

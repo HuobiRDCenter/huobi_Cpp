@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_CANDLESTICK_H
 #define HUOBI_CANDLESTICK_H
 

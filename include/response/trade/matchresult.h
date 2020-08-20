@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_MATCHRESULT_H
 #define HUOBI_MATCHRESULT_H
 

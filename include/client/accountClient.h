@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_ACCOUNTCLIENT_H
 #define HUOBI_ACCOUNTCLIENT_H
 

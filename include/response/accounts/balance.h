@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_BALANCE_H
 #define HUOBI_BALANCE_H
 

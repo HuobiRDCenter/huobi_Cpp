@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_MARKETCLIENT_H
 #define HUOBI_MARKETCLIENT_H
 

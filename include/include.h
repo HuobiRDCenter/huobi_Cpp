@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_INCLUDE_H
 #define HUOBI_INCLUDE_H
 

@@ -1,5 +1,3 @@
-
-
 #include <client/tradeClient.h>
 
 using namespace std;

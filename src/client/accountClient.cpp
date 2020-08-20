@@ -1,6 +1,5 @@
 #include  <client/accountClient.h>
 
-
 vector<Account> AccountClient::getAccounts() {
     string url = SPLICE("/v1/account/accounts?");
     url.append(signature.createSignatureParam(GET, "/v1/account/accounts", std::map<std::string, const char *>()));

@@ -1,5 +1,3 @@
-
-
 #include <client/crossMarginClient.h>
 
 using namespace std;

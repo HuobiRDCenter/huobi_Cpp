@@ -1,4 +1,3 @@
-
 #include <client/accountClient.h>
 
 using namespace std;

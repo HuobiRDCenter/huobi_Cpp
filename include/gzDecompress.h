@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_GZDECOMPRESS_H
 #define HUOBI_GZDECOMPRESS_H
 #include <zlib.h>

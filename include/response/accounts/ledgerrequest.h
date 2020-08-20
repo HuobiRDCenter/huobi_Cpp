@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_ACCOUNTLEDGER_H
 #define HUOBI_ACCOUNTLEDGER_H
 

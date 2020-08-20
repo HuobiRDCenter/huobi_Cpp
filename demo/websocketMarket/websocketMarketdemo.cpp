@@ -1,11 +1,10 @@
-
 #include <iostream>
 #include <client/websocketMarketClient.h>
 
 using namespace std;
 
 int main() {
-    websocketMarketClient client;
+    WebsocketMarketClient client;
     const char *symbol = "htusdt";
     client.subKline(symbol, "1min", [](Candlestick candlestick) {
         cout << candlestick.amount << endl;

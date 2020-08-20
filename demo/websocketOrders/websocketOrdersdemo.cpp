@@ -1,12 +1,10 @@
-
-
 #include <iostream>
 #include <client/websocketOrdersClient.h>
 
 using namespace std;
 
 int main() {
-    websocketOrdersClient client{APIKEY, SECRETKEY};
+    WebsocketOrdersClient client{APIKEY, SECRETKEY};
 
     client.subOrders("htusdt", [](OrdersUpdate ordersUpdate) {
         cout << ordersUpdate.symbol << endl;

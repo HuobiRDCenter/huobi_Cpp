@@ -1,12 +1,10 @@
-
-
 #ifndef HUOBI_DEFINE_H
 #define HUOBI_DEFINE_H
 
 #define GET "GET"
 #define POST "POST"
 
-#define HOST "api.huobi.de.com"
+#define HOST "api.huobi.pro"
 #define SPLICE(x) "https://" HOST x
 #define WEBSOCKET_HOST "wss://api.huobi.pro/ws"
 #define WEBSOCKET_V2_HOST "wss://api.huobi.pro/ws/v2"

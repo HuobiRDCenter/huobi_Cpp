@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_WALLETCLIENT_H
 #define HUOBI_WALLETCLIENT_H
 

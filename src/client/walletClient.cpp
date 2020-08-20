@@ -1,5 +1,3 @@
-
-
 #include <client/walletClient.h>
 
 std::vector<DepositAddress> WalletClient::getDepositAddress(const char *currency) {

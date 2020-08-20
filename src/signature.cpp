@@ -1,5 +1,3 @@
-
-
 #include <curl/curl.h>
 #include "signature.h"
 #include "restful.h"

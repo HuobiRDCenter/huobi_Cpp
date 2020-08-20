@@ -1,11 +1,9 @@
-
-
 #include "client/websocketAssetClient.h"
 
-void websocketAssetClient::subAccounts(int mode, const std::function<void(const AccountsUpdate &)> &handler) {
+void WebsocketAssetClient::subAccounts(int mode, const std::function<void(const AccountsUpdate &)> &handler) {
     string topic;
     topic.append("accounts.update#").append(to_string(mode));
-    std::thread th(websocketHelper::monitor, topic, signature, [handler](Value &value) {
+    std::thread th(WebsocketHelper::monitor, topic, signature, [handler](Value &value) {
         Value &data = value["data"];
         AccountsUpdate accountsUpdate;
         accountsUpdate.accountId = atol(data["accountId"].GetString());

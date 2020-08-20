@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_BATCHCANCELOPENORDERS_H
 #define HUOBI_BATCHCANCELOPENORDERS_H
 struct BatchCancelOpenOrders {

@@ -1,5 +1,3 @@
-
-
 #include <client/crossMarginClient.h>
 
 long CrossMarginClient::transferIn(CrossMarginTransferOrApplyRequest &request) {

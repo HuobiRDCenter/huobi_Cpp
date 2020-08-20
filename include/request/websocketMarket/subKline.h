@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_SUBKLINEREQUEST_H
 #define HUOBI_SUBKLINEREQUEST_H
 struct SubKlineRequest{

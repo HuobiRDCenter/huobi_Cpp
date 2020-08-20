@@ -1,7 +1,5 @@
 #include <client/marketClient.h>
 
-
-
 vector<Candlestick> MarketClient::getCandlestick(CandlestickRequest &request) {
     string url = SPLICE("/market/history/kline?");
     url.append("symbol=").append(request.symbol)

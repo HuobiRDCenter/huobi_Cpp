@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_BBO_H
 #define HUOBI_BBO_H
 struct BBO {

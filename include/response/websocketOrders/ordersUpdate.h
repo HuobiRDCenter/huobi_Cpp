@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_ORDERSUPDATE_H
 #define HUOBI_ORDERSUPDATE_H
 struct OrdersUpdate {

@@ -1,5 +1,3 @@
-
-
 #include <client/tradeClient.h>
 
 long TradeClient::placeOrder(PlaceOrderRequest &request) {

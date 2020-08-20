@@ -1,5 +1,3 @@
-
-
 #include <client/isolatedMarginClient.h>
 
 using namespace std;

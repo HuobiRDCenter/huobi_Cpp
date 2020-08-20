@@ -1,11 +1,10 @@
-
 #include "client/websocketOrdersClient.h"
 
 
-void websocketOrdersClient::subOrders(const char *symbol, const std::function<void(const OrdersUpdate &)> &handler) {
+void WebsocketOrdersClient::subOrders(const char *symbol, const std::function<void(const OrdersUpdate &)> &handler) {
     string topic;
     topic.append("orders#").append(symbol);
-    std::thread th(websocketHelper::monitor, topic, signature, [handler](Value &value) {
+    std::thread th(WebsocketHelper::monitor, topic, signature, [handler](Value &value) {
         Value &data = value["data"];
         OrdersUpdate ordersUpdate;
         ordersUpdate.eventType = data["eventType"].GetString();
