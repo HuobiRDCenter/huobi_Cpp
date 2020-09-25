@@ -18,5 +18,9 @@ struct OrdersUpdate {
     bool aggressor;
     std::string remainAmt;
     long lastActTime;
+    std::string orderSide;
+    int errCode;
+    std::string errMessage;
+    std::string orderValue;
 };
 #endif //HUOBI_ORDERSUPDATE_H

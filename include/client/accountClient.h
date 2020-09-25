@@ -20,13 +20,9 @@ struct AccountClient {
 
     long futuresTransfer(FuturesTransferRequest &request);
 
-    long subuserTransfer(SubuserTransferRequest &request);
-
-    vector<Balance> getSubuserAggregateBalance();
-
     vector<AccountAndBalance> getSubuidAccount(long subUid);
 
-    void manageSubUser(ManageSubUserRequest &request);
+    AccountTransferResponse accountTransfer(AccountTransferRequest &request);
 
 private:
     Signature signature;

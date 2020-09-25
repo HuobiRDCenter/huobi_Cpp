@@ -23,8 +23,6 @@ struct WalletClient {
 
     std::vector<DepositWithdraw> queryDepositWithdraw(QueryDepositWithdrawRequest &request);
 
-    std::vector<SubUserDeposit> querySubUserDeposit(QuerySubUserDepositRequest &request);
-
 private:
     Signature signature;
 };

@@ -151,45 +151,6 @@ long AccountClient::futuresTransfer(FuturesTransferRequest &request) {
     return atol(data.GetString());
 }
 
-long AccountClient::subuserTransfer(SubuserTransferRequest &request) {
-    string url = SPLICE("/v1/subuser/transfer?");
-    rapidjson::StringBuffer strBuf;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
-    writer.StartObject();
-    writer.Key("sub-uid");
-    writer.String(to_string(request.subUid).c_str());
-    writer.Key("currency");
-    writer.String(request.currency.c_str());
-    writer.Key("type");
-    writer.String(request.type.c_str());
-    writer.Key("amount");
-    writer.String(request.amount.c_str());
-    writer.EndObject();
-    url.append(signature.createSignatureParam(POST, "/v1/subuser/transfer", std::map<std::string, const char *>()));
-    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
-    Document d;
-    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
-    return atol(data.GetString());
-}
-
-vector<Balance> AccountClient::getSubuserAggregateBalance() {
-    string url = SPLICE("/v1/subuser/aggregate-balance?");
-    url.append(signature.createSignatureParam(GET, "/v1/subuser/aggregate-balance",
-                                              std::map<std::string, const char *>()));
-    string response = Rest::perform_get(url.c_str());
-    Document d;
-    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
-    vector<Balance> vec;
-    for (int i = 0; i < data.Size(); i++) {
-        Balance balance;
-        balance.balance = atol(data[i]["balance"].GetString());
-        balance.type = data[i]["type"].GetString();
-        balance.currency = data[i]["currency"].GetString();
-        vec.push_back(balance);
-    }
-    return vec;
-}
-
 vector<AccountAndBalance> AccountClient::getSubuidAccount(long subUid) {
     char uri[1024];
     sprintf(uri, "/v1/account/accounts/%ld", subUid);
@@ -218,16 +179,35 @@ vector<AccountAndBalance> AccountClient::getSubuidAccount(long subUid) {
     return vec;
 }
 
-void AccountClient::manageSubUser(ManageSubUserRequest &request) {
-    string url = SPLICE("/v2/sub-user/management?");
+
+AccountTransferResponse AccountClient::accountTransfer(AccountTransferRequest &request) {
+    string url = SPLICE("/v1/account/transfer?");
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
     writer.StartObject();
-    writer.Key("subUid");
-    writer.String(to_string(request.subUid).c_str());
-    writer.Key("action");
-    writer.String(request.action.c_str());
+    writer.Key("from-user");
+    writer.String(to_string(request.fromUser).c_str());
+    writer.Key("from-account-type");
+    writer.String(request.fromAccountType.c_str());
+    writer.Key("from-account");
+    writer.String(to_string(request.fromAccount).c_str());
+    writer.Key("to-user");
+    writer.String(to_string(request.toUser).c_str());
+    writer.Key("to-account-type");
+    writer.String(request.toAccountType.c_str());
+    writer.Key("to-account");
+    writer.String(to_string(request.toAccount).c_str());
+    writer.Key("currency");
+    writer.String(request.currency.c_str());
+    writer.Key("amount");
+    writer.String(request.amount.c_str());
     writer.EndObject();
-    url.append(signature.createSignatureParam(POST, "/v2/sub-user/management", std::map<std::string, const char *>()));
+    url.append(signature.createSignatureParam(POST, "/v1/account/transfer", std::map<std::string, const char *>()));
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    AccountTransferResponse accountTransferResponse;
+    accountTransferResponse.transactId = atoi(data["transact-id"].GetString());
+    accountTransferResponse.transactTime = atoi(data["transact-time"].GetString());
+    return accountTransferResponse;
 }

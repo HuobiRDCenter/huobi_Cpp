@@ -5,7 +5,7 @@ project(huobi LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 set(huobi_VERSION_MAJOR 2)
-set(huobi_VERSION_MINOR 1)
+set(huobi_VERSION_MINOR 2)
 
 configure_file(
         "${PROJECT_SOURCE_DIR}/huobiConfig.h.in"
@@ -15,6 +15,7 @@ configure_file(
 include_directories("${PROJECT_SOURCE_DIR}/include")
 
 include_directories(/usr/local/include)
+include_directories(/usr/local/opt/openssl@1.1/include)
 include_directories(/opt/cpprest-2.10.16/include)
 
 

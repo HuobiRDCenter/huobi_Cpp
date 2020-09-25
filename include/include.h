@@ -24,19 +24,21 @@
 #include <response/accounts/history.h>
 #include <request/accounts/historyrequest.h>
 #include <request/accounts/ledger.h>
-#include <response/accounts/ledgerrequest.h>
+#include <response/accounts/accountledger.h>
 #include <request/accounts/futurestransfer.h>
-#include <request/accounts/subusertransfer.h>
+#include <request/subUser/subusertransfer.h>
 #include <response/accounts/accountandbalance.h>
-#include <request/accounts/managesubuser.h>
+#include <request/subUser/managesubuser.h>
+#include <request/accounts/accounttransferrequest.h>
+#include <response/accounts/accounttransferresponse.h>
 
 #include <response/wallet/depositaddress.h>
 #include <response/wallet/withdrawquota.h>
 #include <request/wallet/withdraw.h>
 #include <response/wallet/depositwithdraw.h>
 #include <request/wallet/querydepositwithdraw.h>
-#include <request/wallet/querysubuserdeposit.h>
-#include <response/wallet/subuserdeposit.h>
+#include <request/subUser/querysubuserdeposit.h>
+#include <response/subUser/subuserdeposit.h>
 
 #include <request/trade/placeorder.h>
 #include <request/trade/openorders.h>
@@ -71,11 +73,20 @@
 #include <response/crossmargin/balance.h>
 
 
-#include "request/websocketMarket/subKline.h"
-#include "response/websocketMarket/MBP.h"
-#include "response/websocketMarket/BBO.h"
-#include "response/websocketAsset/accountsUpdate.h"
-#include "response/websocketOrders/ordersUpdate.h"
+#include <request/websocketMarket/subKline.h>
+#include <response/websocketMarket/MBP.h>
+#include <response/websocketMarket/BBO.h>
+#include <response/websocketAsset/accountsUpdate.h>
+#include <response/websocketOrders/ordersUpdate.h>
+
+
+#include <request/subUser/subUserCreationRequest.h>
+#include <response/subUser/createSubUserResponse.h>
+#include <request/subUser/subUserTradableMarketRequest.h>
+#include <response/subUser/subUserTradableMarketResponse.h>
+#include <request/subUser/subUserTransferabilityRequest.h>
+#include <response/subUser/subUserTransferabilityResponse.h>
+
 
 #include <thread>
 

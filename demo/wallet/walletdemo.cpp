@@ -39,10 +39,5 @@ int main() {
         cout << withdraw.amount << endl;
     }
 
-    QuerySubUserDepositRequest querySubUserDepositRequest{12345};
-    vector<SubUserDeposit> subUserDepositVec = walletClient.querySubUserDeposit(querySubUserDepositRequest);
-    for (SubUserDeposit deposit:subUserDepositVec) {
-        cout << deposit.amount << endl;
-    }
     return 0;
 }
