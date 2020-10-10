@@ -1,9 +1,6 @@
-
-
 #include "client/websocketHelper.h"
 
-
-websocket_outgoing_message websocketHelper::pong(string ping) {
+websocket_outgoing_message WebsocketHelper::pong(string ping) {
     websocket_outgoing_message out_msg;
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(ping.c_str());
@@ -12,13 +9,13 @@ websocket_outgoing_message websocketHelper::pong(string ping) {
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
     writer.StartObject();
     writer.Key("pong");
-    writer.String(to_string(pong).c_str());
+    writer.Int64(pong);
     writer.EndObject();
     out_msg.set_utf8_message(strBuf.GetString());
     return out_msg;
 }
 
-websocket_outgoing_message websocketHelper::buildSubTopic(string topic) {
+websocket_outgoing_message WebsocketHelper::buildSubTopic(string topic) {
     websocket_outgoing_message out_msg;
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
@@ -32,7 +29,7 @@ websocket_outgoing_message websocketHelper::buildSubTopic(string topic) {
     return out_msg;
 }
 
-websocket_outgoing_message websocketHelper::buildReqTopic(string topic, long from, long to) {
+websocket_outgoing_message WebsocketHelper::buildReqTopic(string topic, long from, long to) {
     websocket_outgoing_message out_msg;
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
@@ -56,7 +53,7 @@ websocket_outgoing_message websocketHelper::buildReqTopic(string topic, long fro
 }
 
 websocket_outgoing_message
-websocketHelper::buildSignatureTopic(Signature signature) {
+WebsocketHelper::buildSignatureTopic(Signature signature) {
     time_t nowtime = time(0);
     struct tm *utc = gmtime(&nowtime);
     char buf[50];
@@ -90,7 +87,7 @@ websocketHelper::buildSignatureTopic(Signature signature) {
     return out_msg;
 }
 
-websocket_outgoing_message websocketHelper::v2pong(string ping) {
+websocket_outgoing_message WebsocketHelper::v2pong(string ping) {
     websocket_outgoing_message out_msg;
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(ping.c_str())["data"];
@@ -103,14 +100,14 @@ websocket_outgoing_message websocketHelper::v2pong(string ping) {
     writer.Key("data");
     writer.StartObject();
     writer.Key("ts");
-    writer.String(to_string(pong).c_str());
+    writer.Int64(pong);
     writer.EndObject();
     writer.EndObject();
     out_msg.set_utf8_message(strBuf.GetString());
     return out_msg;
 }
 
-websocket_outgoing_message websocketHelper::buildV2SubTopic(string topic) {
+websocket_outgoing_message WebsocketHelper::buildV2SubTopic(string topic) {
     websocket_outgoing_message out_msg;
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
@@ -124,12 +121,12 @@ websocket_outgoing_message websocketHelper::buildV2SubTopic(string topic) {
     return out_msg;
 }
 
-void websocketHelper::monitor(string topic, Signature signature, const std::function<void(Value &)> &handler) {
+void WebsocketHelper::monitor(string topic, Signature signature, const std::function<void(Value &)> &handler) {
     int lastRecvTime = 0;
     int now;
     while (1) {
         websocket_client client;
-        std::thread th(websocketHelper::func, std::ref(client), std::ref(lastRecvTime), topic, signature,handler);
+        std::thread th(WebsocketHelper::func, std::ref(client), std::ref(lastRecvTime), topic, signature, handler);
         th.detach();
         while (1) {
             now = Rest::getCurrentTime();
@@ -145,10 +142,10 @@ void websocketHelper::monitor(string topic, Signature signature, const std::func
 
 
 
-void websocketHelper::func(websocket_client &client, int &lastRecvTime, string topic, Signature signature,
+void WebsocketHelper::func(websocket_client &client, int &lastRecvTime, string topic, Signature signature,
                            const std::function<void(Value &)> &handler) {
     client.connect(WEBSOCKET_V2_HOST).wait();
-    client.send(websocketHelper::buildSignatureTopic(signature)).wait();
+    client.send(WebsocketHelper::buildSignatureTopic(signature)).wait();
 
     while (1) {
         try {
@@ -161,9 +158,9 @@ void websocketHelper::func(websocket_client &client, int &lastRecvTime, string t
             Value &value = d.Parse<kParseNumbersAsStringsFlag>(msg.c_str());
             string action = value["action"].GetString();
             if (!action.compare("ping")) {
-                client.send(websocketHelper::v2pong(msg));
+                client.send(WebsocketHelper::v2pong(msg));
             } else if (!action.compare("req")) {
-                client.send(websocketHelper::buildV2SubTopic(topic)).wait();
+                client.send(WebsocketHelper::buildV2SubTopic(topic)).wait();
             } else if (!action.compare("push")) {
                 handler(value);
             }

@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_MBP_H
 #define HUOBI_MBP_H
 struct MBP {

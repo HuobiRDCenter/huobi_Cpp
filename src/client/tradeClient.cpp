@@ -1,5 +1,3 @@
-
-
 #include <client/tradeClient.h>
 
 long TradeClient::placeOrder(PlaceOrderRequest &request) {
@@ -333,6 +331,7 @@ std::vector<Matchresult> TradeClient::getMatchresults(long orderId) {
         matchresult.feeDeductCurrency = atol(data[i]["fee-deduct-currency"].GetString());
         matchresult.filledPoints = atol(data[i]["filled-points"].GetString());
         matchresult.role = atol(data[i]["role"].GetString());
+        matchresult.feeCurrency = data[i]["feeCurrency"].GetString();
         vec.push_back(matchresult);
     }
     return vec;
@@ -495,6 +494,7 @@ std::vector<Matchresult> TradeClient::getMatchresultsHistory(MatchresultsHistory
         matchresult.feeDeductCurrency = atol(data[i]["created-at"].GetString());
         matchresult.filledPoints = atol(data[i]["created-at"].GetString());
         matchresult.role = atol(data[i]["created-at"].GetString());
+        matchresult.feeCurrency = data[i]["feeCurrency"].GetString();
         vec.push_back(matchresult);
     }
     return vec;

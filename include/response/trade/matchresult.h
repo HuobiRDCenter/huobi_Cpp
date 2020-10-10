@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_MATCHRESULT_H
 #define HUOBI_MATCHRESULT_H
 
@@ -20,5 +19,7 @@ struct Matchresult {
     std::string role;
     std::string filledPoints;
     std::string feeDeductCurrency;
+    std::string feeCurrency;
+
 };
 #endif //HUOBI_MATCHRESULT_H

@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_WEBSOCKETMARKETCLIENT_H
 #define HUOBI_WEBSOCKETMARKETCLIENT_H
 
@@ -11,7 +9,7 @@ using namespace web;
 using namespace web::websockets::client;
 using namespace rapidjson;
 
-struct websocketMarketClient {
+struct WebsocketMarketClient {
     void subKline(const char *symbol, const char *period, const std::function<void(const Candlestick &)> &handler);
 
     void reqKline(const char *symbol, const char *period, long from, long to,

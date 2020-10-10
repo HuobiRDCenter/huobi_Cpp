@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_ORDER_H
 #define HUOBI_ORDER_H
 

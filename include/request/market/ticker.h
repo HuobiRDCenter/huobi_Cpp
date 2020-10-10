@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_TICKERREQUEST_H
 #define HUOBI_TICKERREQUEST_H
 struct TickerRequest {

@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_HISTORYTRADEREQUEST_H
 #define HUOBI_HISTORYTRADEREQUEST_H
 struct HistoryTradeRequest {

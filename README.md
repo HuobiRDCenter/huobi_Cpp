@@ -12,7 +12,7 @@ If you already use SDK v1, it is strongly suggested migrate to v2 as we refactor
   - [Installation](#Installation)
   - [Run examples](#Run-examples)
   - [Client](#client)
-- [Migrate from v1](#Migrate-from-v1)
+  - [Migrate from v1](#Migrate-from-v1)
 - [Request example](#Request-example)
   - [Reference data](#Reference-data)
   - [Market data](#Market-data)

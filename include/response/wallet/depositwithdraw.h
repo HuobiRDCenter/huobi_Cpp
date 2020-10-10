@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_DEPOSITWITHDRAW_H
 #define HUOBI_DEPOSITWITHDRAW_H
 
@@ -18,5 +17,7 @@ struct DepositWithdraw {
     long updatedAt;
     std::string state;
     std::string chain;
+    std::string errCode;
+    std::string errMessage;
 };
 #endif //HUOBI_DEPOSITWITHDRAW_H

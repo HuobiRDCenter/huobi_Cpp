@@ -1,10 +1,9 @@
-
 #include "restful.h"
 
 int64_t Rest::getCurrentTime()
 {
     struct timeval tv;
-    gettimeofday(&tv,NULL);    //该函数在sys/time.h头文件中
+    gettimeofday(&tv, NULL);    //该函数在sys/time.h头文件中
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 

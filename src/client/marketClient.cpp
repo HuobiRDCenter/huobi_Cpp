@@ -1,7 +1,5 @@
 #include <client/marketClient.h>
 
-
-
 vector<Candlestick> MarketClient::getCandlestick(CandlestickRequest &request) {
     string url = SPLICE("/market/history/kline?");
     url.append("symbol=").append(request.symbol)
@@ -158,4 +156,26 @@ Candlestick MarketClient::getDetail(const char *symbol) {
     candlestick.high = tick["high"].GetString();
     candlestick.open = tick["open"].GetString();
     return candlestick;
+}
+
+MarketStatus MarketClient::getMarketStatus() {
+    string response = Rest::perform_get(SPLICE("/v2/market-status"));
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+
+    MarketStatus marketStatus;
+    marketStatus.marketStatus = atoi(data["marketStatus"].GetString());
+    if (data.HasMember("haltStartTime")) {
+        marketStatus.haltStartTime = atol(data["haltStartTime"].GetString());
+    }
+    if (data.HasMember("haltEndTime")) {
+        marketStatus.haltEndTime = atol(data["haltEndTime"].GetString());
+    }
+    if (data.HasMember("haltReason")) {
+        marketStatus.haltReason = atoi(data["haltReason"].GetString());
+    }
+    if (data.HasMember("affectedSymbols")) {
+        marketStatus.affectedSymbols = data["affectedSymbols"].GetString();
+    }
+    return marketStatus;
 }

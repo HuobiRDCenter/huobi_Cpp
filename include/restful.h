@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_RESTFUL_H
 #define HUOBI_RESTFUL_H
 

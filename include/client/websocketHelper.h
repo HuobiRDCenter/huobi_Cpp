@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_WEBSOCKETHELPER_H
 #define HUOBI_WEBSOCKETHELPER_H
 
@@ -10,7 +8,7 @@ using namespace web;
 using namespace web::websockets::client;
 using namespace rapidjson;
 
-struct websocketHelper {
+struct WebsocketHelper {
     static websocket_outgoing_message pong(string ping);
 
     static websocket_outgoing_message buildSubTopic(string topic);

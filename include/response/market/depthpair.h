@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_DEPTHPAIR_H
 #define HUOBI_DEPTHPAIR_H
 

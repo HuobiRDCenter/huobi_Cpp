@@ -1,5 +1,3 @@
-
-
 #include <client/walletClient.h>
 
 std::vector<DepositAddress> WalletClient::getDepositAddress(const char *currency) {
@@ -144,23 +142,24 @@ std::vector<DepositWithdraw> WalletClient::queryDepositWithdraw(QueryDepositWith
         depositWithdraw.state = data[i]["state"].GetString();
         depositWithdraw.createdAt = atol(data[i]["created-at"].GetString());
         depositWithdraw.updatedAt = atol(data[i]["updated-at"].GetString());
+        if (data[i].HasMember("errCode"))
+            depositWithdraw.errCode = data[i]["fee"].GetString();
+        if (data[i].HasMember("errMessage"))
+            depositWithdraw.errMessage = data[i]["state"].GetString();
         vec.push_back(depositWithdraw);
     }
     return vec;
 }
 
-std::vector<SubUserDeposit> WalletClient::querySubUserDeposit(QuerySubUserDepositRequest &request) {
+std::vector<GetWithdrawAddressResponse> WalletClient::getWithdrawAddress(GetWithdrawAddressRequest &request) {
     std::map<std::string, const char *> paramMap;
-    string url = SPLICE("/v2/sub-user/query-deposit?");
-    paramMap["subUid"] = to_string(request.subUid).c_str();
-    if (!request.currency.empty()) {
-        paramMap["currency"] = request.currency.c_str();
+    string url = SPLICE("/v2/account/withdraw/address?");
+    paramMap["currency"] = request.currency.c_str();
+    if (!request.chain.empty()) {
+        paramMap["chain"] = request.chain.c_str();
     }
-    if (request.startTime) {
-        paramMap["startTime"] = to_string(request.startTime).c_str();
-    }
-    if (request.endTime) {
-        paramMap["endTime"] = to_string(request.endTime).c_str();
+    if (!request.note.empty()) {
+        paramMap["note"] = request.note.c_str();
     }
     if (request.limit) {
         paramMap["limit"] = to_string(request.limit).c_str();
@@ -168,28 +167,21 @@ std::vector<SubUserDeposit> WalletClient::querySubUserDeposit(QuerySubUserDeposi
     if (request.fromId) {
         paramMap["fromId"] = to_string(request.fromId).c_str();
     }
-    if (!request.sort.empty()) {
-        paramMap["sort"] = request.sort.c_str();
-    }
-
-    url.append(signature.createSignatureParam(GET, "/v2/sub-user/query-deposit", paramMap));
+    url.append(signature.createSignatureParam(GET, "/v2/account/withdraw/address", paramMap));
     string response = Rest::perform_get(url.c_str());
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
-    vector<SubUserDeposit> vec;
+    vector<GetWithdrawAddressResponse> vec;
     for (int i = 0; i < data.Size(); i++) {
-        SubUserDeposit subUserDeposit;
-        subUserDeposit.id = atol(data[i]["id"].GetString());
-        subUserDeposit.currency = data[i]["currency"].GetString();
-        subUserDeposit.chain = data[i]["chain"].GetString();
-        subUserDeposit.txHash = data[i]["txHash"].GetString();
-        subUserDeposit.amount = data[i]["amount"].GetString();
-        subUserDeposit.address = data[i]["address"].GetString();
-        subUserDeposit.addressTag = data[i]["addressTag"].GetString();
-        subUserDeposit.state = data[i]["state"].GetString();
-        subUserDeposit.createTime = atol(data[i]["createTime"].GetString());
-        subUserDeposit.updatedTime = atol(data[i]["updateTime"].GetString());
-        vec.push_back(subUserDeposit);
+        GetWithdrawAddressResponse getWithdrawAddressResponse;
+        getWithdrawAddressResponse.currency = data[i]["currency"].GetString();
+        getWithdrawAddressResponse.chain = data[i]["chain"].GetString();
+        getWithdrawAddressResponse.note = data[i]["note"].GetString();
+        if (data[i].HasMember("addressTag"))
+            getWithdrawAddressResponse.addressTag = data[i]["addressTag"].GetString();
+        if (data[i].HasMember("address"))
+            getWithdrawAddressResponse.address = data[i]["address"].GetString();
+        vec.push_back(getWithdrawAddressResponse);
     }
     return vec;
 }

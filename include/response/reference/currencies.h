@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_CURRENCIES_H
 #define HUOBI_CURRENCIES_H
 

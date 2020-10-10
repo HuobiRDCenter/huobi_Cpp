@@ -1,4 +1,3 @@
-
 #include "client/referenceClient.h"
 
 void ReferenceClient::getStatus() {

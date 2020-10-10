@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_OPENORDER_H
 #define HUOBI_OPENORDER_H
 

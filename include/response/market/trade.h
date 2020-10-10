@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_TRADE_H
 #define HUOBI_TRADE_H
 

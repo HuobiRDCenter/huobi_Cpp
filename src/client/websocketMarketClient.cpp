@@ -1,4 +1,3 @@
-
 #include <gzDecompress.h>
 #include "client/websocketMarketClient.h"
 
@@ -6,17 +5,19 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
             const std::function<void(Value &)> &handler) {
     client.connect(WEBSOCKET_HOST).wait();
     if (isSub) {
-        client.send(websocketHelper::buildSubTopic(topic)).wait();
+        client.send(WebsocketHelper::buildSubTopic(topic)).wait();
     } else {
-        client.send(websocketHelper::buildReqTopic(topic, from, to)).wait();
+        client.send(WebsocketHelper::buildReqTopic(topic, from, to)).wait();
     }
+
+    char* sbuf = new char[BUFF];
     while (1) {
         try {
-            char* msg = client.receive().then([](websocket_incoming_message in_msg) {
+            char* msg = client.receive().then([sbuf](websocket_incoming_message in_msg) {
                 char buf[BUFF] = {0};
                 unsigned int l = BUFF;
                 in_msg.body().streambuf().getn((unsigned char *) buf, l);
-                char sbuf[BUFF] = {0};
+                memset(sbuf, 0, BUFF);
                 gzDecompress(buf, in_msg.length(), sbuf, BUFF);
                 return sbuf;
             }).get();
@@ -24,7 +25,7 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
             Document d;
             Value &value = d.Parse<kParseNumbersAsStringsFlag>(msg);
             if (value.HasMember("ping")) {
-                client.send(websocketHelper::pong(msg));
+                client.send(WebsocketHelper::pong(msg));
             } else {
                 cout << "server response: " << msg << endl;
                 if (value.HasMember("ch")) {
@@ -40,8 +41,8 @@ void market(websocket_client &client, int &lastRecvTime, bool isSub, const char 
             client.close();
             break;
         }
-
     }
+    delete[] sbuf;
 }
 
 void monitor(bool isSub, string topic, long from, long to,
@@ -67,7 +68,7 @@ void monitor(bool isSub, string topic, long from, long to,
 }
 
 
-void websocketMarketClient::subKline(const char *symbol, const char *period,
+void WebsocketMarketClient::subKline(const char *symbol, const char *period,
                                      const std::function<void(const Candlestick &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".kline.").append(period);
@@ -86,7 +87,7 @@ void websocketMarketClient::subKline(const char *symbol, const char *period,
     th.detach();
 }
 
-void websocketMarketClient::reqKline(const char *symbol, const char *period, long from, long to,
+void WebsocketMarketClient::reqKline(const char *symbol, const char *period, long from, long to,
                                      const std::function<void(const Candlestick &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".kline.").append(period);
@@ -108,7 +109,7 @@ void websocketMarketClient::reqKline(const char *symbol, const char *period, lon
 
 }
 
-void websocketMarketClient::subDepth(const char *symbol, const char *type,
+void WebsocketMarketClient::subDepth(const char *symbol, const char *type,
                                      const std::function<void(const Depth &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".depth.").append(type);
@@ -134,7 +135,7 @@ void websocketMarketClient::subDepth(const char *symbol, const char *type,
     th.detach();
 }
 
-void websocketMarketClient::reqDepth(const char *symbol, const char *type,
+void WebsocketMarketClient::reqDepth(const char *symbol, const char *type,
                                      const std::function<void(const Depth &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".depth.").append(type);
@@ -160,7 +161,7 @@ void websocketMarketClient::reqDepth(const char *symbol, const char *type,
     th.detach();
 }
 
-void websocketMarketClient::subMBP(const char *symbol, int levels, const std::function<void(const MBP &)> &handler) {
+void WebsocketMarketClient::subMBP(const char *symbol, int levels, const std::function<void(const MBP &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".mbp.").append(to_string(levels));
     std::thread th(monitor, true, topic, 0, 0, [handler](Value &tick) {
@@ -186,7 +187,7 @@ void websocketMarketClient::subMBP(const char *symbol, int levels, const std::fu
     th.detach();
 }
 
-void websocketMarketClient::reqMBP(const char *symbol, int levels, const std::function<void(const MBP &)> &handler) {
+void WebsocketMarketClient::reqMBP(const char *symbol, int levels, const std::function<void(const MBP &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".mbp.").append(to_string(levels));
     std::thread th(monitor, false, topic, 0, 0, [handler](Value &data) {
@@ -212,7 +213,7 @@ void websocketMarketClient::reqMBP(const char *symbol, int levels, const std::fu
 }
 
 void
-websocketMarketClient::subMBPrefresh(const char *symbol, int levels, const std::function<void(const MBP &)> &handler) {
+WebsocketMarketClient::subMBPrefresh(const char *symbol, int levels, const std::function<void(const MBP &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".mbp.refresh.").append(to_string(levels));
     std::thread th(monitor, true, topic, 0, 0, [handler](Value &tick) {
@@ -237,7 +238,7 @@ websocketMarketClient::subMBPrefresh(const char *symbol, int levels, const std::
     th.detach();
 }
 
-void websocketMarketClient::subBBO(const char *symbol, const std::function<void(const BBO &)> &handler) {
+void WebsocketMarketClient::subBBO(const char *symbol, const std::function<void(const BBO &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".bbo");
     std::thread th(monitor, true, topic, 0, 0, [handler](Value &tick) {
@@ -254,7 +255,7 @@ void websocketMarketClient::subBBO(const char *symbol, const std::function<void(
     th.detach();
 }
 
-void websocketMarketClient::subTrade(const char *symbol, const std::function<void(const Trade &)> &handler) {
+void WebsocketMarketClient::subTrade(const char *symbol, const std::function<void(const Trade &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".trade.detail");
     std::thread th(monitor, true, topic, 0, 0, [handler](Value &tick) {
@@ -272,7 +273,7 @@ void websocketMarketClient::subTrade(const char *symbol, const std::function<voi
     th.detach();
 }
 
-void websocketMarketClient::reqTrade(const char *symbol, const std::function<void(const Trade &)> &handler) {
+void WebsocketMarketClient::reqTrade(const char *symbol, const std::function<void(const Trade &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".trade.detail");
     std::thread th(monitor, false, topic, 0, 0, [handler](Value &data) {
@@ -290,7 +291,7 @@ void websocketMarketClient::reqTrade(const char *symbol, const std::function<voi
     th.detach();
 }
 
-void websocketMarketClient::subDetail(const char *symbol, const std::function<void(const Candlestick &)> &handler) {
+void WebsocketMarketClient::subDetail(const char *symbol, const std::function<void(const Candlestick &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".detail");
     std::thread th(monitor, true, topic, 0, 0, [handler](Value &tick) {
@@ -308,7 +309,7 @@ void websocketMarketClient::subDetail(const char *symbol, const std::function<vo
     th.detach();
 }
 
-void websocketMarketClient::reqDetail(const char *symbol, const std::function<void(const Candlestick &)> &handler) {
+void WebsocketMarketClient::reqDetail(const char *symbol, const std::function<void(const Candlestick &)> &handler) {
     string topic;
     topic.append("market.").append(symbol).append(".detail");
     std::thread th(monitor, false, topic, 0, 0, [handler](Value &data) {

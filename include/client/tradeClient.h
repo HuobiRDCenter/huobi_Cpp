@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_TRADECLIENT_H
 #define HUOBI_TRADECLIENT_H
 

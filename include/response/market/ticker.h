@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_TICKER_H
 #define HUOBI_TICKER_H
 

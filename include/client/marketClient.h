@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_MARKETCLIENT_H
 #define HUOBI_MARKETCLIENT_H
 
@@ -23,6 +21,9 @@ struct MarketClient {
     std::vector<Trade> getHistoryTrade(HistoryTradeRequest &request);
 
     Candlestick getDetail(const char *symbol);
+
+    MarketStatus getMarketStatus();
+
 };
 
 #endif //HUOBI_MARKETCLIENT_H

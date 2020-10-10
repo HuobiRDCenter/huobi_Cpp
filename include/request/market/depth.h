@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_DEPTHREQUEST_H
 #define HUOBI_DEPTHREQUEST_H
 

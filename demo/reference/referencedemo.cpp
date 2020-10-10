@@ -1,5 +1,3 @@
-
-
 #include <iostream>
 #include <client/referenceClient.h>
 

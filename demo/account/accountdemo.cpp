@@ -1,4 +1,3 @@
-
 #include <client/accountClient.h>
 
 using namespace std;
@@ -23,14 +22,8 @@ int main() {
     FuturesTransferRequest futuresTransferRequest{"usdt", "0.2", "futures-to-pro"};
     cout << accountClient.futuresTransfer(futuresTransferRequest) << endl;
 
-    vector<Balance> subbalanceVec = accountClient.getSubuserAggregateBalance();
-    cout << subbalanceVec[0].currency << endl;
-
     vector<AccountAndBalance> accountAndBalanceVec= accountClient.getSubuidAccount(12345);
     cout << accountAndBalanceVec[0].symbol << endl;
-
-    ManageSubUserRequest manageSubUserRequest{12345, "lock"};
-    accountClient.manageSubUser(manageSubUserRequest);
 
     return 0;
 }

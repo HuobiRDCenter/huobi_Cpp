@@ -1,12 +1,10 @@
-
-
 #include <iostream>
 #include <client/websocketAssetClient.h>
 
 using namespace std;
 
 int main() {
-    websocketAssetClient client{APIKEY, SECRETKEY};
+    WebsocketAssetClient client{APIKEY, SECRETKEY};
 
     client.subAccounts(1, [](AccountsUpdate accountsUpdate) {
         cout << accountsUpdate.changeType << endl;

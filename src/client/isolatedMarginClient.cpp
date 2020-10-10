@@ -1,5 +1,3 @@
-
-
 #include "client/isolatedMarginClient.h"
 
 long IsolatedMarginClient::transferIn(IsolatedMarginTransferOrApplyRequest &request) {

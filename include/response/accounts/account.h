@@ -1,5 +1,4 @@
 
-
 #ifndef HUOBI_ACCOUNT_H
 #define HUOBI_ACCOUNT_H
 

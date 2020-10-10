@@ -1,5 +1,3 @@
-
-
 #ifndef HUOBI_WALLETCLIENT_H
 #define HUOBI_WALLETCLIENT_H
 
@@ -25,7 +23,7 @@ struct WalletClient {
 
     std::vector<DepositWithdraw> queryDepositWithdraw(QueryDepositWithdrawRequest &request);
 
-    std::vector<SubUserDeposit> querySubUserDeposit(QuerySubUserDepositRequest &request);
+    std::vector<GetWithdrawAddressResponse> getWithdrawAddress(GetWithdrawAddressRequest& request);
 
 private:
     Signature signature;
