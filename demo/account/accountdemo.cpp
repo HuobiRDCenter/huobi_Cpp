@@ -4,7 +4,7 @@ using namespace std;
 
 int main() {
     AccountClient accountClient{APIKEY, SECRETKEY};
-    vector<Account> accounts= accountClient.getAccounts();
+    vector<Account> accounts = accountClient.getAccounts();
     cout << accounts[0].type << endl;
 
     vector<Balance> balanceVec = accountClient.getBalance(12345);
@@ -22,9 +22,12 @@ int main() {
     FuturesTransferRequest futuresTransferRequest{"usdt", "0.2", "futures-to-pro"};
     cout << accountClient.futuresTransfer(futuresTransferRequest) << endl;
 
-    vector<AccountAndBalance> accountAndBalanceVec= accountClient.getSubuidAccount(12345);
+    vector<AccountAndBalance> accountAndBalanceVec = accountClient.getSubuidAccount(12345);
     cout << accountAndBalanceVec[0].symbol << endl;
-
+    AssetValuationRequest request;
+    request.accountType = "spot";
+    AssetValuation assetValuation = accountClient.getAssetValuation(request);
+    cout << "i have " << assetValuation.balance << " in " << assetValuation.timestamp << endl;
     return 0;
 }
 

@@ -33,6 +33,10 @@
 #include <request/subUser/managesubuser.h>
 #include <request/accounts/accounttransferrequest.h>
 #include <response/accounts/accounttransferresponse.h>
+#include <request/accounts/pointTransferRequest.h>
+#include <response/accounts/pointAccount.h>
+#include <request/accounts/assetValuationRequest.h>
+#include <response/accounts/assetValuation.h>
 
 #include <response/wallet/depositaddress.h>
 #include <response/wallet/withdrawquota.h>
@@ -81,6 +85,7 @@
 #include <response/websocketMarket/BBO.h>
 #include <response/websocketAsset/accountsUpdate.h>
 #include <response/websocketOrders/ordersUpdate.h>
+#include <response/websocketTrade/tradeClearing.h>
 
 
 #include <request/subUser/subUserCreationRequest.h>

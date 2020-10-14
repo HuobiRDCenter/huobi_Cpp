@@ -5,7 +5,7 @@ project(huobi LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 set(huobi_VERSION_MAJOR 2)
-set(huobi_VERSION_MINOR 2)
+set(huobi_VERSION_MINOR 3)
 
 configure_file(
         "${PROJECT_SOURCE_DIR}/huobiConfig.h.in"

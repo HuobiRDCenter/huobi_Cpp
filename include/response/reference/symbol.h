@@ -17,5 +17,11 @@ struct Symbol {
     double maxOrderAmt;
     double minOrderValue;
     int leverageRatio;
+    double limitOrderMinOrderAmt;
+    double limitOrderMaxOrderAmt;
+    double sellMarketMinOrderAmt ;
+    double sellMarketMaxOrderAmt ;
+    double buyMarketMaxOrderAmt;
+    double maxOrderValue;
 };
 #endif //HUOBI_SYMBOL_H

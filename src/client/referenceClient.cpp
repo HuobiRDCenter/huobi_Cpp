@@ -22,6 +22,12 @@ std::vector<Symbol> ReferenceClient::getSymbols() {
         symbol.minOrderAmt = atof(data[i]["min-order-amt"].GetString());
         symbol.maxOrderAmt = atof(data[i]["max-order-amt"].GetString());
         symbol.minOrderValue = atof(data[i]["min-order-value"].GetString());
+        symbol.limitOrderMinOrderAmt = atof(data[i]["limit-order-min-order-amt"].GetString());
+        symbol.limitOrderMaxOrderAmt = atof(data[i]["limit-order-max-order-amt"].GetString());
+        symbol.sellMarketMinOrderAmt = atof(data[i]["sell-market-min-order-amt"].GetString());
+        symbol.sellMarketMaxOrderAmt = atof(data[i]["sell-market-max-order-amt"].GetString());
+        symbol.buyMarketMaxOrderAmt = atof(data[i]["buy-market-max-order-amt"].GetString());
+        symbol.maxOrderValue = atof(data[i]["max-order-value"].GetString());
         if (data[i].HasMember("leverage-ratio"))
             symbol.leverageRatio = atoi(data[i]["leverage-ratio"].GetString());
         vec.push_back(symbol);

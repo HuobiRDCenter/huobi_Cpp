@@ -10,7 +10,7 @@ void WebsocketOrdersClient::subOrders(const char *symbol, const std::function<vo
         ordersUpdate.eventType = data["eventType"].GetString();
         ordersUpdate.symbol = data["symbol"].GetString();
         if (data.HasMember("orderId"))
-        ordersUpdate.orderId = atol(data["orderId"].GetString());
+            ordersUpdate.orderId = atol(data["orderId"].GetString());
         if (data.HasMember("clientOrderId"))
             ordersUpdate.clientOrderId = data["clientOrderId"].GetString();
         if (data.HasMember("orderPrice"))
@@ -36,6 +36,17 @@ void WebsocketOrdersClient::subOrders(const char *symbol, const std::function<vo
             ordersUpdate.remainAmt = data["remainAmt"].GetString();
         if (data.HasMember("lastActTime"))
             ordersUpdate.lastActTime = atol(data["lastActTime"].GetString());
+        if (data.HasMember("orderSide"))
+            ordersUpdate.orderSide = data["orderSide"].GetString();
+        if (data.HasMember("errCode"))
+            ordersUpdate.errCode = atoi(data["errCode"].GetString());
+        if (data.HasMember("errMessage"))
+            ordersUpdate.errMessage = data["errMessage"].GetString();
+        if (data.HasMember("orderValue"))
+            ordersUpdate.orderValue = data["orderValue"].GetString();
+        if (data.HasMember("type"))
+            ordersUpdate.type = data["type"].GetString();
+
         handler(ordersUpdate);
     });
     th.detach();

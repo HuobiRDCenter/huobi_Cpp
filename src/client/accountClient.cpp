@@ -211,3 +211,68 @@ AccountTransferResponse AccountClient::accountTransfer(AccountTransferRequest &r
     accountTransferResponse.transactTime = atoi(data["transact-time"].GetString());
     return accountTransferResponse;
 }
+
+long AccountClient::pointTransfer(PointTransferRequest &request) {
+    string url = SPLICE("/v2/point/transfer?");
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    writer.StartObject();
+    writer.Key("fromUid");
+    writer.String(to_string(request.fromUid).c_str());
+    writer.Key("toUid");
+    writer.String(to_string(request.toUid).c_str());
+    writer.Key("groupId");
+    writer.Int64(request.groupId);
+    writer.Key("amount");
+    writer.String(request.amount.c_str());
+    writer.EndObject();
+    url.append(signature.createSignatureParam(POST, "/v2/point/transfer", std::map<std::string, const char *>()));
+    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    return atol(data["transactId"].GetString());
+}
+
+PointAccount AccountClient::getPointAccount(long subUid) {
+    std::map<std::string, const char *> paramMap;
+    string url = SPLICE("/v2/point/account?");
+    paramMap["subUid"] = to_string(subUid).c_str();
+    url.append(signature.createSignatureParam(GET, "/v2/point/account", paramMap));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    PointAccount pointAccount;
+    pointAccount.accountId = atol(data["accountId"].GetString());
+    pointAccount.accountStatus = data["accountStatus"].GetString();
+    pointAccount.acctBalance = data["acctBalance"].GetString();
+    for (int i = 0; i < data["groupIds"].Size(); i++) {
+        Group group;
+        group.groupId = atol(data["groupIds"][i]["groupId"].GetString());
+        group.expiryDate = atol(data["groupIds"][i]["expiryDate"].GetString());
+        group.remainAmt = data["groupIds"][i]["remainAmt"].GetString();
+        pointAccount.groupIds.push_back(group);
+    }
+    return pointAccount;
+}
+
+AssetValuation AccountClient::getAssetValuation(AssetValuationRequest &request) {
+    std::map<std::string, const char *> paramMap;
+    string url = SPLICE("/v2/account/asset-valuation?");
+    paramMap["accountType"] = request.accountType.c_str();
+    if (!request.valuationCurrency.empty()) {
+        paramMap["valuationCurrency"] = request.valuationCurrency.c_str();
+    }
+    if (request.subUid) {
+        paramMap["subUid"] = to_string(request.subUid).c_str();
+    }
+    url.append(signature.createSignatureParam(GET, "/v2/account/asset-valuation", paramMap));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    AssetValuation assetValuation;
+    assetValuation.timestamp = atol(data["timestamp"].GetString());
+    assetValuation.balance = data["balance"].GetString();
+    return assetValuation;
+}
+
+

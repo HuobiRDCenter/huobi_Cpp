@@ -9,7 +9,6 @@ using namespace std;
 struct AccountClient {
     AccountClient(char *accessKey, char *secretKey) : signature{accessKey, secretKey} {
     }
-
     vector<Account> getAccounts();
 
     vector<Balance> getBalance(long accountId);
@@ -23,6 +22,12 @@ struct AccountClient {
     vector<AccountAndBalance> getSubuidAccount(long subUid);
 
     AccountTransferResponse accountTransfer(AccountTransferRequest &request);
+
+    long pointTransfer(PointTransferRequest &request);
+
+    PointAccount getPointAccount(long subUid);
+
+    AssetValuation getAssetValuation(AssetValuationRequest &request);
 
 private:
     Signature signature;
