@@ -167,3 +167,86 @@ CrossMarginBalance CrossMarginClient::getBalance(long subUid) {
     }
     return crossMarginBalance;
 }
+
+std::vector<CrossMarginGeneraReplaylLoan> CrossMarginClient::generalRepay(CrossMarginGeneralReplayLoanOptionalRequest &request) {
+    string url = SPLICE("/v2/account/repayment?");
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    writer.StartObject();
+    writer.Key("accountId");
+    writer.String(request.accountId.c_str());
+    writer.Key("currency");
+    writer.String(request.currency.c_str());
+    writer.Key("amount");
+    writer.String(request.amount.c_str());
+    if (!request.transactId.empty()) {
+        writer.Key("transactId");
+        writer.String(request.transactId.c_str());
+    }
+    writer.EndObject();
+    url.append(
+            signature.createSignatureParam(POST, "/v2/account/repayment",
+                                           std::map<std::string, const char *>()));
+    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+
+    std::vector<CrossMarginGeneraReplaylLoan> vec;
+    for (int i = 0; i < data.Size(); i++) {
+        CrossMarginGeneraReplaylLoan loan;
+        loan.repayId = atol(data[i]["repayId"].GetString());
+        loan.repayTime = atol(data[i]["repayTime"].GetString());
+        vec.push_back(loan);
+    }
+    return vec;
+}
+
+std::vector <CrossMarginGeneraReplaylLoanRecord> CrossMarginClient::generalMarginLoanOrders(CrossMarginGeneralReplayLoanRecordsOptionalRequest &request) {
+    std::map<std::string, const char *> paramMap;
+    string url = SPLICE("/v2/account/repayment?");
+    if (!request.repayId.empty()) {
+        paramMap["repayId"] = request.repayId.c_str();
+    }
+    if (!request.accountId.empty()) {
+        paramMap["accountId"] = request.accountId.c_str();
+    }
+    if (!request.currency.empty()) {
+        paramMap["currency"] = request.currency.c_str();
+    }
+    if (request.startDate) {
+        paramMap["startDate"] = to_string(request.startDate).c_str();
+    }
+    if (request.endDate) {
+        paramMap["endDate"] = to_string(request.endDate).c_str();
+    }
+    if (!request.sort.empty()) {
+        paramMap["sort"] = request.sort.c_str();
+    }
+    if (request.limit) {
+        paramMap["limit"] = to_string(request.limit).c_str();
+    }
+    if (request.fromId) {
+        paramMap["fromId"] = to_string(request.fromId).c_str();
+    }
+    url.append(signature.createSignatureParam(GET, "/v2/account/repayment", paramMap));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    vector<CrossMarginGeneraReplaylLoanRecord> vec;
+    for (int i = 0; i < data.Size(); i++) {
+        CrossMarginGeneraReplaylLoanRecord record;
+        record.repayId = atol(data[i]["repayId"].GetString());
+        record.repayTime = atol(data[i]["repayTime"].GetString());
+        record.accountId = atol(data[i]["accountId"].GetString());
+        record.currency = data[i]["currency"].GetString();
+        record.repaidAmount = data[i]["repaidAmount"].GetString();
+        record.transactIds.transactId = atol(data[i]["transactIds"]["transactId"].GetString());
+        record.transactIds.repaidPrincipal = data[i]["transactIds"]["repaidPrincipal"].GetString();
+        record.transactIds.repaidInterest = data[i]["transactIds"]["repaidInterest"].GetString();
+        record.transactIds.paidHt = data[i]["transactIds"]["paidHt"].GetString();
+        record.transactIds.paidPoint = data[i]["transactIds"]["paidPoint"].GetString();
+        vec.push_back(record);
+    }
+    return vec;
+}
+

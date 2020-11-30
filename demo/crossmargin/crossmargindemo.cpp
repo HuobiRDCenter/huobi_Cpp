@@ -30,5 +30,32 @@ int main() {
     for (CrossMarginLoanOrder crossMarginLoanOrder:crossMarginLoanOrders) {
         cout << crossMarginLoanOrder.createdAt << endl;
     }
+
+    CrossMarginGeneralReplayLoanOptionalRequest replayLoanOptionalRequest;
+    replayLoanOptionalRequest.accountId="123456";
+    replayLoanOptionalRequest.currency="usdt";
+    replayLoanOptionalRequest.amount="100";
+    vector<CrossMarginGeneraReplaylLoan> crossMarginGeneraReplaylLoans = crossMarginClient.generalRepay(replayLoanOptionalRequest);
+    for (CrossMarginGeneraReplaylLoan crossMarginGeneraReplaylLoan:crossMarginGeneraReplaylLoans) {
+        cout << "repayId:" << crossMarginGeneraReplaylLoan.repayId << ", ";
+        cout << "repayTime:" << crossMarginGeneraReplaylLoan.repayTime << endl;
+    }
+
+    CrossMarginGeneralReplayLoanRecordsOptionalRequest crossMarginGeneralReplayLoanRecordsOptionalRequest;
+    vector<CrossMarginGeneraReplaylLoanRecord> crossMarginGeneraReplaylLoanRecords = crossMarginClient.generalMarginLoanOrders(crossMarginGeneralReplayLoanRecordsOptionalRequest);
+    for (CrossMarginGeneraReplaylLoanRecord crossMarginGeneraReplaylLoanRecord:crossMarginGeneraReplaylLoanRecords) {
+        cout << "repayId:" << crossMarginGeneraReplaylLoanRecord.repayId << ", ";
+        cout << "repayTime:" << crossMarginGeneraReplaylLoanRecord.repayTime << ", ";
+        cout << "accountId:" << crossMarginGeneraReplaylLoanRecord.accountId << ", ";
+        cout << "currency:" << crossMarginGeneraReplaylLoanRecord.currency << ", ";
+        cout << "repaidAmount:" << crossMarginGeneraReplaylLoanRecord.repaidAmount << ", ";
+        cout << "transactIds:{ ";
+            cout << "transactId:" << crossMarginGeneraReplaylLoanRecord.transactIds.transactId << ", ";
+            cout << "repaidPrincipal:" << crossMarginGeneraReplaylLoanRecord.transactIds.repaidPrincipal << ", ";
+            cout << "repaidInterest:" << crossMarginGeneraReplaylLoanRecord.transactIds.repaidInterest << ", ";
+            cout << "paidHt:" << crossMarginGeneraReplaylLoanRecord.transactIds.paidHt << ", ";
+            cout << "paidPoint:" << crossMarginGeneraReplaylLoanRecord.transactIds.paidPoint;
+        cout << " } " << endl;
+    }
     return 0;
 }

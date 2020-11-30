@@ -76,8 +76,12 @@
 
 #include <request/crossMargin/transferorapply.h>
 #include <request/crossMargin/loanorders.h>
+#include <request/crossmargin/crossMarginGeneralReplayLoanOptionalRequest.h>
+#include <request/crossmargin/crossMarginGeneralReplayLoanRecordsOptionalRequest.h>
 #include <response/crossmargin/loanorder.h>
 #include <response/crossmargin/balance.h>
+#include <response/crossmargin/crossMarginGeneralReplyLoanResponse.h>
+#include <response/crossmargin/crossMarginGeneralReplyLoanRecordsResponse.h>
 
 
 #include <request/websocketMarket/subKline.h>

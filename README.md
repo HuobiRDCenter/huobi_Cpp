@@ -111,6 +111,16 @@ $ make
 $ sudo make install
 ```
 
+if you see the following error when executing "make" command
+```
+ld: library not found for -lssl
+```
+
+It indicates your openssl library was not installed expectedly, you can try below command to fix:
+```
+$ brew link openssl --force
+```
+
 ### Run examples
 
 After installing the SDK, you are able to run the examples under **/demo** folder. if you want to access private data, you need below additional two steps:

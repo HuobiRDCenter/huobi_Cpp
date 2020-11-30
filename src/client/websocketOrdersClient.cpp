@@ -9,6 +9,8 @@ void WebsocketOrdersClient::subOrders(const char *symbol, const std::function<vo
         OrdersUpdate ordersUpdate;
         ordersUpdate.eventType = data["eventType"].GetString();
         ordersUpdate.symbol = data["symbol"].GetString();
+        if (data.HasMember("accountId"))
+            ordersUpdate.accountId = atol(data["accountId"].GetString());
         if (data.HasMember("orderId"))
             ordersUpdate.orderId = atol(data["orderId"].GetString());
         if (data.HasMember("clientOrderId"))

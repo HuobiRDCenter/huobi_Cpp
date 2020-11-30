@@ -4,6 +4,7 @@
 struct OrdersUpdate {
     std::string eventType;
     std::string symbol;
+    long accountId;
     long orderId;
     std::string clientOrderId;
     std::string orderPrice;

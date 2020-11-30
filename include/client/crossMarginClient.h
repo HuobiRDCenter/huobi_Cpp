@@ -25,6 +25,10 @@ struct CrossMarginClient {
 
     CrossMarginBalance getBalance(long subUid);
 
+    std::vector<CrossMarginGeneraReplaylLoan> generalRepay(CrossMarginGeneralReplayLoanOptionalRequest &request);
+
+    std::vector<CrossMarginGeneraReplaylLoanRecord> generalMarginLoanOrders(CrossMarginGeneralReplayLoanRecordsOptionalRequest &request);
+
 private:
     Signature signature;
 };
