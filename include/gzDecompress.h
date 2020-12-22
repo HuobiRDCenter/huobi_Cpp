@@ -28,6 +28,6 @@ int gzDecompress(const char *src, int srcLen, const char *dst, int dstLen) {
         return err;
     }
     inflateEnd(&strm);
-    return err;
+    return ret;
 }
 #endif //HUOBI_GZDECOMPRESS_H
