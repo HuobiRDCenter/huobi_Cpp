@@ -40,6 +40,7 @@ struct SubUserClient {
 
     std::vector<SubUserAccount> getSubUserAccountList(long subUid);
 
+    long getUid();
 
 private:
     Signature signature;

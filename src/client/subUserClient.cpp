@@ -384,3 +384,12 @@ std::vector<SubUserAccount> SubUserClient::getSubUserAccountList(long subUid) {
     }
     return vec;
 }
+
+long SubUserClient::getUid() {
+    string url = SPLICE("/v2/user/uid?");
+    url.append(signature.createSignatureParam(GET, "/v2/user/uid", std::map<std::string, const char *>()));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    return atol(data.GetString());
+}

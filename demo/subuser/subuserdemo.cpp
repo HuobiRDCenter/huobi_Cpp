@@ -33,6 +33,9 @@ int main() {
     vector<SubUserTransferabilityResponse> subUserTransferabilityResponseVec = subUserClient.subUserTransferability(subUserTransferabilityRequest);
     cout << subUserTransferabilityResponseVec[0].transferrable << endl;
 
+    long uid = subUserClient.getUid();
+    cout << uid << endl;
+
     return 0;
 }
 
