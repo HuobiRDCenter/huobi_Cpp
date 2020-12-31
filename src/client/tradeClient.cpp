@@ -328,10 +328,11 @@ std::vector<Matchresult> TradeClient::getMatchresults(long orderId) {
         matchresult.type = data[i]["type"].GetString();
         matchresult.price = data[i]["price"].GetString();
         matchresult.createdAt = atol(data[i]["created-at"].GetString());
-        matchresult.feeDeductCurrency = atol(data[i]["fee-deduct-currency"].GetString());
-        matchresult.filledPoints = atol(data[i]["filled-points"].GetString());
-        matchresult.role = atol(data[i]["role"].GetString());
+        matchresult.feeDeductCurrency = data[i]["fee-deduct-currency"].GetString();
+        matchresult.filledPoints = data[i]["filled-points"].GetString();
+        matchresult.role = data[i]["role"].GetString();
         matchresult.feeCurrency = data[i]["feeCurrency"].GetString();
+        matchresult.feeDeductState = data[i]["fee-deduct-state"].GetString();
         vec.push_back(matchresult);
     }
     return vec;
@@ -491,10 +492,11 @@ std::vector<Matchresult> TradeClient::getMatchresultsHistory(MatchresultsHistory
         matchresult.type = data[i]["type"].GetString();
         matchresult.price = data[i]["price"].GetString();
         matchresult.createdAt = atol(data[i]["created-at"].GetString());
-        matchresult.feeDeductCurrency = atol(data[i]["created-at"].GetString());
-        matchresult.filledPoints = atol(data[i]["created-at"].GetString());
-        matchresult.role = atol(data[i]["created-at"].GetString());
+        matchresult.feeDeductCurrency = atol(data[i]["fee-deduct-currency"].GetString());
+        matchresult.filledPoints = atol(data[i]["filled-points"].GetString());
+        matchresult.role = atol(data[i]["role"].GetString());
         matchresult.feeCurrency = data[i]["feeCurrency"].GetString();
+        matchresult.feeDeductState =  data[i]["fee-deduct-state"].GetString();
         vec.push_back(matchresult);
     }
     return vec;

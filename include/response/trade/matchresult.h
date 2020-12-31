@@ -20,6 +20,7 @@ struct Matchresult {
     std::string filledPoints;
     std::string feeDeductCurrency;
     std::string feeCurrency;
+    std::string feeDeductState;
 
 };
 #endif //HUOBI_MATCHRESULT_H
