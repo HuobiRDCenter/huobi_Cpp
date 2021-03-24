@@ -76,8 +76,8 @@
 
 #include <request/crossMargin/transferorapply.h>
 #include <request/crossMargin/loanorders.h>
-#include <request/crossmargin/crossMarginGeneralReplayLoanOptionalRequest.h>
-#include <request/crossmargin/crossMarginGeneralReplayLoanRecordsOptionalRequest.h>
+#include <request/crossMargin/crossMarginGeneralReplayLoanOptionalRequest.h>
+#include <request/crossMargin/crossMarginGeneralReplayLoanRecordsOptionalRequest.h>
 #include <response/crossmargin/loanorder.h>
 #include <response/crossmargin/balance.h>
 #include <response/crossmargin/crossMarginGeneralReplyLoanResponse.h>
