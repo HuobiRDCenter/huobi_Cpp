@@ -11,5 +11,6 @@ struct WithdrawCreateRequest {
     std::string fee;
     std::string addressTag;
     std::string chain;
+    std::string clientOrderId;
 };
 #endif //HUOBI_WITHDRAWCREATEREQUEST_H

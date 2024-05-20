@@ -7,6 +7,8 @@
 struct User {
     long uid;
     std::string userState;
+    std::string subUserName;
+    std::string note;
 };
 
 #endif //HUOBI_USER_H

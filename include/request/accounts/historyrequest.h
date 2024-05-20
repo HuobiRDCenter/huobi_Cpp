@@ -11,5 +11,6 @@ struct AccountHistoryRequest {
     long endTime = 0;
     std::string sort;
     int size = 0;
+    long fromId = 0;
 };
 #endif //HUOBI_ACCOUNTHISTORYREQUEST_H

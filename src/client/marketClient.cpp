@@ -82,6 +82,7 @@ Depth MarketClient::getDepth(DepthRequest &request) {
     Value &bids = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["tick"]["bids"];
     Depth depth;
     depth.ts = atol(d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["ts"].GetString());
+    depth.version = atol(d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["version"].GetString());
     for (int i = 0; i < asks.Size(); i++) {
         DepthPair depthPair;
         depthPair.price = asks[i][0].GetString();
@@ -155,6 +156,8 @@ Candlestick MarketClient::getDetail(const char *symbol) {
     candlestick.vol = tick["vol"].GetString();
     candlestick.high = tick["high"].GetString();
     candlestick.open = tick["open"].GetString();
+    if (tick.HasMember("version"))
+        candlestick.version = atol(tick["version"].GetString());
     return candlestick;
 }
 

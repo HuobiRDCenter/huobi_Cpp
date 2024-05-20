@@ -16,6 +16,7 @@ struct IsolatedMarginLoanOrder {
     std::string interestAmount;
     std::string interestBalance;
     std::string state;
+    long updatedAt;
     long createdAt;
     long accruedAt;
     std::string paidPoint;
@@ -23,5 +24,7 @@ struct IsolatedMarginLoanOrder {
     std::string deductCurrency;
     std::string deductAmount;
     std::string deductRate;
+    std::string hourInterestRate;
+    std::string dayInterestRate;
 };
 #endif //HUOBI_ISOLATEDMARGINLOANORDER_H

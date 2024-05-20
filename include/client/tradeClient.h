@@ -13,9 +13,9 @@ struct TradeClient {
 
     long placeOrder(PlaceOrderRequest &request);
 
-    std::vector<long> batchOrders(std::vector<PlaceOrderRequest> &request);
+    std::vector<PlaceOrderResponse> batchOrders(std::vector<PlaceOrderRequest> &request);
 
-    void submitCancelOrder(long orderId);
+    void submitCancelOrder(long orderId, string symbol);
 
     void submitCancelClientOrder(const char *clientOrderId);
 
@@ -38,6 +38,10 @@ struct TradeClient {
     std::vector<Matchresult> getMatchresultsHistory(MatchresultsHistoryRequest &request);
 
     std::vector<TransactFeeRate> getTransactFeeRate(std::string symbols);
+
+    long autoPlace(AutoPlaceRequest &request);
+
+    CancelAllAfterResponse cancelAllAfter(int timeout);
 
 private:
     Signature signature;

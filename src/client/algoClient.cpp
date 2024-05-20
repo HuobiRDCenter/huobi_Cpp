@@ -43,7 +43,7 @@ std::string AlgoClient::createAlgoOrder(CreateAlgoOrderRequest &request) {
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
-    return data.GetString();
+    return data["clientOrderId"].GetString();
 }
 
 std::vector<AlgoOrder> AlgoClient::openingAlgoOrders(OpeningAlgoOrdersRequest &request) {

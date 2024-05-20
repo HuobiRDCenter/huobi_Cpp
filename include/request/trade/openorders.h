@@ -11,5 +11,6 @@ struct OpenOrdersRequest {
     std::string side;
     long from = 0;
     std::string direct;
+    std::string types;
 };
 #endif //HUOBI_OPENORDERSREQUEST_H

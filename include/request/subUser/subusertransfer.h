@@ -8,5 +8,6 @@ struct SubuserTransferRequest {
     std::string currency;
     std::string amount;
     std::string type;
+    std::string clientOrderId;
 };
 #endif //HUOBI_SUBUSERTRANSFERREQUEST_H

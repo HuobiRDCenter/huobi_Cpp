@@ -15,6 +15,7 @@ struct SubUserAccount {
     std::string accountType;
     std::string activation;
     std::vector<AccountId> accountIds;
+    bool  transferrable;
 };
 
 #endif //HUOBI_SUBUSERACCOUNT_H

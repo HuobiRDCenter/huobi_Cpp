@@ -14,5 +14,6 @@ struct PlaceOrderRequest {
     std::string stopPrice;
     std::string source;
     std::string operator_;
+    long selfMatchPrevent;
 };
 #endif //HUOBI_PLACEORDERREQUEST_H

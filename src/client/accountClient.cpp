@@ -30,9 +30,15 @@ vector<Balance> AccountClient::getBalance(long accountId) {
     vector<Balance> vec;
     for (int i = 0; i < list.Size(); i++) {
         Balance balance;
-        balance.balance = atol(list[i]["balance"].GetString());
+        balance.balance = list[i]["balance"].GetString();
         balance.type = list[i]["type"].GetString();
         balance.currency = list[i]["currency"].GetString();
+        if (list[i].HasMember("debt"))
+            balance.debt = list[i]["debt"].GetString();
+        if (list[i].HasMember("currency"))
+            balance.available = list[i]["currency"].GetString();
+        if (list[i].HasMember("seq-num"))
+            balance.seq_num = list[i]["seq-num"].GetString();
         vec.push_back(balance);
     }
     return vec;
@@ -60,6 +66,9 @@ vector<AccountHistory> AccountClient::getHistory(AccountHistoryRequest &request)
     }
     if (request.size) {
         paramMap["size"] = to_string(request.size).c_str();
+    }
+    if (request.fromId) {
+        paramMap["from-id"] = to_string(request.fromId).c_str();
     }
 
     url.append(signature.createSignatureParam(GET, "/v1/account/history", paramMap));
@@ -119,7 +128,7 @@ vector<AccountLedger> AccountClient::getLedger(AccountLedgerRequest &request) {
         accountLedger.currency = data[i]["currency"].GetString();
         accountLedger.transactAmt = data[i]["transactAmt"].GetString();
         accountLedger.transactTime = atol(data[i]["transactTime"].GetString());
-        accountLedger.transactType = data[i]["transactType"].GetString();
+        accountLedger.transactId = atol(data[i]["transactId"].GetString());
         accountLedger.transferType = data[i]["transferType"].GetString();
         if (data[i].HasMember("transferer"))
             accountLedger.transferer = atol(data[i]["transferer"].GetString());
@@ -172,6 +181,10 @@ vector<AccountAndBalance> AccountClient::getSubuidAccount(long subUid) {
             balance.currency = data[i]["list"][j]["currency"].GetString();
             balance.type = data[i]["list"][j]["type"].GetString();
             balance.balance = data[i]["list"][j]["balance"].GetString();
+            if (data[i]["list"].HasMember("debt"))
+                balance.debt = data[i]["debt"].GetString();
+            if (data[i]["list"].HasMember("available"))
+                balance.available = data[i]["available"].GetString();
             accountAndBalance.list.push_back(balance);
         }
         vec.push_back(accountAndBalance);
@@ -207,12 +220,12 @@ AccountTransferResponse AccountClient::accountTransfer(AccountTransferRequest &r
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
     AccountTransferResponse accountTransferResponse;
-    accountTransferResponse.transactId = atoi(data["transact-id"].GetString());
-    accountTransferResponse.transactTime = atoi(data["transact-time"].GetString());
+    accountTransferResponse.transactId = atol(data["transact-id"].GetString());
+    accountTransferResponse.transactTime = atol(data["transact-time"].GetString());
     return accountTransferResponse;
 }
 
-long AccountClient::pointTransfer(PointTransferRequest &request) {
+AccountTransferResponse AccountClient::pointTransfer(PointTransferRequest &request) {
     string url = SPLICE("/v2/point/transfer?");
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
@@ -230,7 +243,10 @@ long AccountClient::pointTransfer(PointTransferRequest &request) {
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
-    return atol(data["transactId"].GetString());
+    AccountTransferResponse accountTransferResponse;
+    accountTransferResponse.transactId = atol(data["transact-id"].GetString());
+    accountTransferResponse.transactTime = atol(data["transact-time"].GetString());
+    return accountTransferResponse;
 }
 
 PointAccount AccountClient::getPointAccount(long subUid) {
@@ -275,4 +291,72 @@ AssetValuation AccountClient::getAssetValuation(AssetValuationRequest &request) 
     return assetValuation;
 }
 
+AccountValuation AccountClient::getAccountValuation(AccountValuationRequest &request) {
+    std::map<std::string, const char *> paramMap;
+    string url = SPLICE("/v2/account/valuation?");
+    if (!request.accountType.empty()) {
+        paramMap["accountType"] = request.accountType.c_str();
+    }
+    if (!request.valuationCurrency.empty()) {
+        paramMap["valuationCurrency"] = request.valuationCurrency.c_str();
+    }
+    url.append(signature.createSignatureParam(GET, "/v2/account/valuation", paramMap));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    AccountValuation accountValuation;
+    if (data.HasMember("totalBalance"))
+        accountValuation.totalBalance = data["totalBalance"].GetString();
+    if (data.HasMember("todayProfit"))
+        accountValuation.todayProfit = data["todayProfit"].GetString();
+    if (data.HasMember("todayProfitRate"))
+        accountValuation.todayProfitRate = data["todayProfitRate"].GetString();
 
+    // 填充 `profitAccountBalanceList`
+    if (data.HasMember("profitAccountBalanceList")) {
+        for (int i = 0; i < data["profitAccountBalanceList"].Size(); i++) {
+            AccountValuation::ProfitAccountBalance balance;
+            if (data["profitAccountBalanceList"][i].HasMember("distributionType"))
+                balance.distributionType = data["profitAccountBalanceList"][i]["distributionType"].GetString();
+            if (data["profitAccountBalanceList"][i].HasMember("balance"))
+                balance.balance = atof(data["profitAccountBalanceList"][i]["balance"].GetString());
+            if (data["profitAccountBalanceList"][i].HasMember("success"))
+                balance.success = !std::string("true").compare(data["profitAccountBalanceList"][i]["success"].GetString());
+            if (data["profitAccountBalanceList"][i].HasMember("accountBalance"))
+                balance.accountBalance = data["profitAccountBalanceList"][i]["accountBalance"].GetString();
+            accountValuation.profitAccountBalanceList.push_back(balance);
+        }
+    }
+
+    // 填充 `Updated` 结构体
+    if (data.HasMember("updated")) {
+        if (data["updated"].HasMember("success"))
+            accountValuation.updated.success = !std::string("true").compare(data["updated"]["success"].GetString());
+        if (data["updated"].HasMember("time"))
+            accountValuation.updated.time = atol(data["updated"]["time"].GetString());
+    }
+    return accountValuation;
+}
+
+long AccountClient::accountTransferV2(AccountTransferV2Request &request) {
+    string url = SPLICE("/v2/account/transfer?");
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    writer.StartObject();
+    writer.Key("from");
+    writer.String(request.from.c_str());
+    writer.Key("to");
+    writer.String(request.to.c_str());
+    writer.Key("currency");
+    writer.String(request.currency.c_str());
+    writer.Key("amount");
+    writer.String(to_string(request.amount).c_str());
+    writer.Key("margin-account");
+    writer.String(request.marginAccount.c_str());
+    writer.EndObject();
+    url.append(signature.createSignatureParam(POST, "/v2/account/transfer", std::map<std::string, const char *>()));
+    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    return atol(data.GetString());
+}

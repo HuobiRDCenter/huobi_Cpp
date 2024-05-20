@@ -12,5 +12,6 @@ struct AccountsUpdate {
     std::string changeType;
     std::string accountType;
     long changeTime = 0;
+    long seqNum = 0;
 };
 #endif //HUOBI_ACCOUNTSUPDATE_H
