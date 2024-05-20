@@ -118,6 +118,7 @@ void WebsocketMarketClient::subDepth(const char *symbol, const char *type,
         Value &asks = tick["asks"];
         Value &bids = tick["bids"];
         depth.ts = atol(tick["ts"].GetString());
+        depth.version = atol(tick["version"].GetString());
         for (int i = 0; i < asks.Size(); i++) {
             DepthPair depthPair;
             depthPair.price = asks[i][0].GetString();
@@ -144,6 +145,7 @@ void WebsocketMarketClient::reqDepth(const char *symbol, const char *type,
         Value &asks = data["asks"];
         Value &bids = data["bids"];
         depth.ts = atol(data["ts"].GetString());
+        depth.version = atol(data["version"].GetString());
         for (int i = 0; i < asks.Size(); i++) {
             DepthPair depthPair;
             depthPair.price = asks[i][0].GetString();
@@ -304,6 +306,7 @@ void WebsocketMarketClient::subDetail(const char *symbol, const std::function<vo
         candlestick.vol = tick["vol"].GetString();
         candlestick.high = tick["high"].GetString();
         candlestick.open = tick["open"].GetString();
+        candlestick.version = atol(tick["version"].GetString());
         handler(candlestick);
     });
     th.detach();
@@ -322,6 +325,7 @@ void WebsocketMarketClient::reqDetail(const char *symbol, const std::function<vo
         candlestick.vol = data["vol"].GetString();
         candlestick.high = data["high"].GetString();
         candlestick.open = data["open"].GetString();
+        candlestick.version = atol(tick["version"].GetString());
         handler(candlestick);
     });
     th.detach();

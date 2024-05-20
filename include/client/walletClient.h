@@ -25,6 +25,8 @@ struct WalletClient {
 
     std::vector<GetWithdrawAddressResponse> getWithdrawAddress(GetWithdrawAddressRequest& request);
 
+    GetWithdrawClientOrderIdResponse getWithdrawClientOrderId(string clientOrderId);
+
 private:
     Signature signature;
 };

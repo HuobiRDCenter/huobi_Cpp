@@ -86,6 +86,10 @@ long WalletClient::withdrawCreate(WithdrawCreateRequest &request) {
         writer.Key("addr-tag");
         writer.String(request.addressTag.c_str());
     }
+    if (!request.clientOrderId.empty()) {
+        writer.Key("client-order-id");
+        writer.String(request.clientOrderId.c_str());
+    }
     writer.EndObject();
     url.append(
             signature.createSignatureParam(POST, "/v1/dw/withdraw/api/create", std::map<std::string, const char *>()));
@@ -184,4 +188,58 @@ std::vector<GetWithdrawAddressResponse> WalletClient::getWithdrawAddress(GetWith
         vec.push_back(getWithdrawAddressResponse);
     }
     return vec;
+}
+
+GetWithdrawClientOrderIdResponse WalletClient::getWithdrawClientOrderId(string clientOrderId) {
+    std::map<std::string, const char *> paramMap;
+    string url = SPLICE("/v1/query/withdraw/client-order-id?");
+    paramMap["clientOrderId"] = clientOrderId.c_str();
+    url.append(signature.createSignatureParam(GET, "/v1/query/withdraw/client-order-id", paramMap));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    GetWithdrawClientOrderIdResponse getWithdrawClientOrderIdResponse;
+    if (data.HasMember("address"))
+        getWithdrawClientOrderIdResponse.address = data["address"].GetString();
+    if (data.HasMember("client-order-id"))
+        getWithdrawClientOrderIdResponse.clientOrderId = data["client-order-id"].GetString();
+    if (data.HasMember("address-tag"))
+        getWithdrawClientOrderIdResponse.addressTag = data["address-tag"].GetString();
+    if (data.HasMember("amount"))
+        getWithdrawClientOrderIdResponse.amount = atof(data["amount"].GetString());
+    if (data.HasMember("blockchain-confirm"))
+        getWithdrawClientOrderIdResponse.blockchainConfirm = atoi(data["blockchain-confirm"].GetString());
+    if (data.HasMember("chain"))
+        getWithdrawClientOrderIdResponse.chain = data["chain"].GetString();
+    if (data.HasMember("created-at"))
+        getWithdrawClientOrderIdResponse.createdAt = atol(data["created-at"].GetString());
+    if (data.HasMember("currency"))
+        getWithdrawClientOrderIdResponse.currency = data["currency"].GetString();
+    if (data.HasMember("error-code"))
+        getWithdrawClientOrderIdResponse.errorCode = data["error-code"].GetString();
+    if (data.HasMember("error-msg"))
+        getWithdrawClientOrderIdResponse.errorMsg = data["error-msg"].GetString();
+    if (data.HasMember("fee"))
+        getWithdrawClientOrderIdResponse.fee = atof(data["fee"].GetString());
+    if (data.HasMember("from-addr-tag"))
+        getWithdrawClientOrderIdResponse.fromAddrTag = data["from-addr-tag"].GetString();
+    if (data.HasMember("from-address"))
+        getWithdrawClientOrderIdResponse.fromAddress = data["from-address"].GetString();
+    if (data.HasMember("id"))
+        getWithdrawClientOrderIdResponse.id = atol(data["id"].GetString());
+    if (data.HasMember("request-id"))
+        getWithdrawClientOrderIdResponse.requestId = data["request-id"].GetString();
+    if (data.HasMember("state"))
+        getWithdrawClientOrderIdResponse.state = data["state"].GetString();
+    if (data.HasMember("tx-hash"))
+        getWithdrawClientOrderIdResponse.txHash = data["tx-hash"].GetString();
+    if (data.HasMember("type"))
+        getWithdrawClientOrderIdResponse.type = data["type"].GetString();
+    if (data.HasMember("updated-at"))
+        getWithdrawClientOrderIdResponse.updatedAt = atol(data["updated-at"].GetString());
+    if (data.HasMember("user-id"))
+        getWithdrawClientOrderIdResponse.userId = atol(data["user-id"].GetString());
+    if (data.HasMember("wallet-confirm"))
+        getWithdrawClientOrderIdResponse.walletConfirm = atoi(data["wallet-confirm"].GetString());
+    return getWithdrawClientOrderIdResponse;
 }

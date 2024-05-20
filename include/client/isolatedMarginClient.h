@@ -25,6 +25,8 @@ struct IsolatedMarginClient {
 
     std::vector<IsolatedMarginBalance> getBalance(IsolatedMarginBalanceRequest &request);
 
+    std::vector<MarginLimitResponse> getMarginLimit(string currency);
+
 private:
     Signature signature;
 

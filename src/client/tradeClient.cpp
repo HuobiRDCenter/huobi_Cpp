@@ -33,6 +33,10 @@ long TradeClient::placeOrder(PlaceOrderRequest &request) {
         writer.Key("operator");
         writer.String(request.operator_.c_str());
     }
+    if (!request.selfMatchPrevent) {
+        writer.Key("self-match-prevent");
+        writer.String(to_string(request.selfMatchPrevent).c_str());
+    }
     writer.EndObject();
     url.append(signature.createSignatureParam(POST, "/v1/order/orders/place", std::map<std::string, const char *>()));
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
@@ -41,7 +45,7 @@ long TradeClient::placeOrder(PlaceOrderRequest &request) {
     return atol(data.GetString());
 }
 
-std::vector<long> TradeClient::batchOrders(std::vector<PlaceOrderRequest> &requests) {
+std::vector<PlaceOrderResponse> TradeClient::batchOrders(std::vector<PlaceOrderRequest> &requests) {
     string url = SPLICE("/v1/order/batch-orders?");
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
@@ -83,18 +87,30 @@ std::vector<long> TradeClient::batchOrders(std::vector<PlaceOrderRequest> &reque
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
-    vector<long> vec;
+    vector<PlaceOrderResponse> vec;
     for (int i = 0; i < data.Size(); i++) {
-        vec.push_back(atol(data[i]["order-id"].GetString()));
+        PlaceOrderResponse placeOrderResponse;
+        if (data[i].HasMember("order-id"))
+            placeOrderResponse.orderId = (atol(data[i]["order-id"].GetString()));
+        if (data[i].HasMember("client-order-id"))
+            placeOrderResponse.clientOrderId = (data[i]["client-order-id"].GetString());
+        if (data[i].HasMember("err-code"))
+            placeOrderResponse.errCode = (data[i]["err-code"].GetString());
+        if (data[i].HasMember("err-msg"))
+            placeOrderResponse.errMsg = (data[i]["err-msg"].GetString());
+        vec.push_back(placeOrderResponse);
     }
     return vec;
 }
 
-void TradeClient::submitCancelOrder(long orderId) {
+void TradeClient::submitCancelOrder(long orderId, string symbol) {
     char uri[1024];
     sprintf(uri, "/v1/order/orders/%ld/submitcancel", orderId);
     string url = "https://";
     url.append(HOST).append(uri).append("?");
+    if (!symbol.empty()) {
+        url.append("symbol=" + symbol);
+    }
     url.append(signature.createSignatureParam(POST, uri, std::map<std::string, const char *>()));
     Rest::perform_post(url.c_str(),"");
 }
@@ -130,6 +146,9 @@ std::vector<OpenOrder> TradeClient::getOpenOrders(OpenOrdersRequest &request) {
     }
     if (request.size) {
         paramMap["size"] = to_string(request.size).c_str();
+    }
+    if (!request.types.empty()) {
+        paramMap["types"] = request.types.c_str();
     }
 
     url.append(signature.createSignatureParam(GET, "/v1/order/openOrders", paramMap));
@@ -181,6 +200,10 @@ BatchCancelOpenOrders TradeClient::batchCancelOpenOrders(BatchCancelOpenOrdersRe
     if (request.size) {
         writer.Key("size");
         writer.String(to_string(request.size).c_str());
+    }
+    if (!request.types.empty()) {
+        writer.Key("types");
+        writer.String(request.types.c_str());
     }
     writer.EndObject();
 
@@ -521,4 +544,69 @@ std::vector<TransactFeeRate> TradeClient::getTransactFeeRate(std::string symbols
         vec.push_back(transactFeeRate);
     }
     return vec;
+}
+
+long TradeClient::autoPlace(AutoPlaceRequest &request) {
+    string url = SPLICE("/v1/order/auto/place?");
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    writer.StartObject();
+    writer.Key("symbol");
+    writer.String(request.symbol.c_str());
+    writer.Key("account-id");
+    writer.String(request.accountId.c_str());
+    writer.Key("amount");
+    writer.String(request.amount.c_str());
+    writer.Key("type");
+    writer.String(request.type.c_str());
+    writer.Key("trade-purpose");
+    writer.String(request.tradePurpose.c_str());
+    writer.Key("source");
+    writer.String(request.source.c_str());
+    if (!request.marketAmount.empty()) {
+        writer.Key("market-amount");
+        writer.String(request.marketAmount.c_str());
+    }
+    if (!request.borrowAmount.empty()) {
+        writer.Key("borrow-amount");
+        writer.String(request.borrowAmount.c_str());
+    }
+    if (!request.price.empty()) {
+        writer.Key("price");
+        writer.String(request.price.c_str());
+    }
+    if (!request.stopPrice.empty()) {
+        writer.Key("stop-price");
+        writer.String(request.stopPrice.c_str());
+    }
+    if (!request.opreator_.empty()) {
+        writer.Key("opreator");
+        writer.String(request.opreator_.c_str());
+    }
+    writer.EndObject();
+    url.append(signature.createSignatureParam(POST, "/v1/order/auto/place", std::map<std::string, const char *>()));
+    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"]["order-id"];
+    return atol(data.GetString());
+}
+
+CancelAllAfterResponse TradeClient::cancelAllAfter(int timeout) {
+    string url = SPLICE("/v2/algo-orders/cancel-all-after?");
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    writer.StartObject();
+    writer.Key("timeout");
+    writer.String(to_string(timeout).c_str());
+    writer.EndObject();
+    url.append(signature.createSignatureParam(POST, "/v2/algo-orders/cancel-all-after", std::map<std::string, const char *>()));
+    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    CancelAllAfterResponse cancelAllAfterResponse;
+    if (data.HasMember("currentTime"))
+        cancelAllAfterResponse.currentTime = atol(data["currentTime"].GetString());
+    if (data.HasMember("triggerTime"))
+        cancelAllAfterResponse.triggerTime = atol(data["triggerTime"].GetString());
+    return cancelAllAfterResponse;
 }

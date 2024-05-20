@@ -13,5 +13,6 @@ struct Candlestick {
     std::string low;
     std::string high;
     std::string vol;
+    long version;
 };
 #endif //HUOBI_CANDLESTICK_H

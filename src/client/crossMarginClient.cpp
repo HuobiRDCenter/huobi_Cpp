@@ -101,8 +101,11 @@ std::vector<CrossMarginLoanOrder> CrossMarginClient::getLoanOrders(CrossMarginLo
     if (!request.endDate.empty()) {
         paramMap["end-date"] = request.endDate.c_str();
     }
+    if (!request.currency.empty()) {
+        paramMap["currency"] = request.currency.c_str();
+    }
     if (!request.state.empty()) {
-        paramMap["states"] = Rest::encode(request.state.c_str()).c_str();
+        paramMap["state"] = Rest::encode(request.state.c_str()).c_str();
     }
     if (request.size) {
         paramMap["size"] = to_string(request.size).c_str();

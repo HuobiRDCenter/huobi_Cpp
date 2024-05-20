@@ -24,7 +24,7 @@ struct SubUserClient {
 
     std::vector<Balance> getSubuserAggregateBalance();
 
-    void manageSubUser(ManageSubUserRequest &request);
+    ManageSubUserResponse manageSubUser(ManageSubUserRequest &request);
 
     ApiKeyGenerationResponse apiKeyGeneration(ApiKeyGenerationRequest &request);
 
@@ -41,6 +41,8 @@ struct SubUserClient {
     std::vector<SubUserAccount> getSubUserAccountList(long subUid);
 
     long getUid();
+
+    std::vector<SubUserDeductModeResponse> subUserDeductMode(SubUserDeductModeRequest &request);
 
 private:
     Signature signature;

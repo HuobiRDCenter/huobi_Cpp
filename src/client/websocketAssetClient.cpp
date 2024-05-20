@@ -17,6 +17,8 @@ void WebsocketAssetClient::subAccounts(int mode, const std::function<void(const 
         accountsUpdate.accountType = data["accountType"].GetString();
         if (!data["changeType"].IsNull())
             accountsUpdate.changeType = data["changeType"].GetString();
+        if (!data["seqNum"].IsNull())
+            accountsUpdate.seqNum = atol(data["seqNum"].GetString());
         handler(accountsUpdate);
     });
     th.detach();

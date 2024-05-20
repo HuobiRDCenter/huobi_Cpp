@@ -1,8 +1,8 @@
-# Huobi C++ SDK v2
+# Huobi C++ SDK For Spot v3
 
-This is Huobi C++ SDK v2, you can import to your C++ project and use this SDK to query all market data, trading and manage your account. The SDK supports RESTful API invoking, and subscribing the market, account and order update from the WebSocket connection.
+This is Huobi C++ SDK v3, you can import to your project and use this SDK to query all market data, trading and manage your account. The SDK supports RESTful API invoking, and subscribing the market, account and order update from the WebSocket connection.
 
-If you already use SDK v1, it is strongly suggested migrate to v2 as we refactor the implementation to make it simpler and easy to maintain. We will stop the maintenance of v1 in the near future. Please refer to the instruction on how to migrate v1 to v2 in section [Migrate from v1](#Migrate-from-v1)
+If you already use SDK v1 or v2, it is strongly suggested migrate to v3 as we refactor the implementation to make it simpler and easy to maintain. The SDK v3 is completely consistent with the API documentation of the new HTX open platform. Compared to SDK versions v1 and v2, due to changes in parameters of many interfaces, in order to match the latest interface parameter situation, v3 version has made adjustments to parameters of more than 80 interfaces to ensure that requests can be correctly initiated and accurate response data can be obtained. Meanwhile, the v3 version has added over 130 new interfaces available for use, greatly expanding the number of available interfaces. We will stop the maintenance of v2 in the near future. Please refer to the instruction on how to migrate v1 or v2 to v3 in section [Migrate from v1 and v2](#Migrate-from-v1-and-v2).
 
 ## Table of Contents
 
@@ -12,7 +12,7 @@ If you already use SDK v1, it is strongly suggested migrate to v2 as we refactor
   - [Installation](#Installation)
   - [Run examples](#Run-examples)
   - [Client](#client)
-  - [Migrate from v1](#Migrate-from-v1)
+  - [Migrate from v1 and v2](#Migrate-from-v1-and-v2)
 - [Request example](#Request-example)
   - [Reference data](#Reference-data)
   - [Market data](#Market-data)
@@ -150,7 +150,7 @@ $ make
 
 ### Client
 
-In this SDK, the client is the struct to access the Huobi API. In order to isolate the private data with public data, and isolated different kind of data, the client category is designated to match the API category. 
+In this SDK, the client is the struct to access the Huobi API. In order to isolate the private data with public data, and isolated different kind of data, the client category is designated to match the API category.
 
 All the client is listed in below table. Each client is very small and simple, it is only responsible to operate its related data, you can pick up multiple clients to create your own application based on your business.
 
@@ -161,11 +161,14 @@ All the client is listed in below table. Each client is very small and simple, i
 | Account         | AccountClient         | Private | Rest         |
 | Wallet          | WalletClient          | Private | Rest         |
 | Trade           | TradeClient           | Private | Rest         |
+| SubUser           | SubUserClient           | Private | Rest         |
+| Algo           | AlgoClient           | Private | Rest         |
 | IsolatedMargin  | IsolatedMarginClient  | Private | Rest         |
 | CrossMargin     | CrossMarginClient     | Private | Rest         |
 | WebSocketMarket | WebSocketMarketClient | Public  | WebSocket    |
 | WebSocketAsset  | WebSocketAssetClient  | Private | WebSocket v2 |
 | WebSocketOrders | WebSocketOrdersClient | Private | WebSocket v2 |
+| WebSocketTrade | WebSocketTradeClient | Private | WebSocket v2 |
 
 #### Public and Private
 
@@ -204,9 +207,9 @@ There are two protocols of API, Rest and WebSocket
 - Request method: The method name starts with "req-", it will receive the once-off data after sending the request.
 - Subscription: The method name starts with "sub-", it will receive update after sending the subscription.
 
-### Migrate from v1
+### Migrate from v1 and v2
 
-#### Why v2
+#### Why v3
 
 The major difference between v1 and v2 is that the client category.
 
@@ -214,9 +217,11 @@ In SDK v1, the client is categorized as two protocol, request client and subscri
 
 The thing is different in SDK v2, the client class is categorized as seven data categories, so that the responsibility for each client is clear. For example, if you only need to access market data, you can use MarketClient without applying API Key, and all the market data can be retrieved from MarketClient. If you want to operate your order, then you know you should use TradeClient and all the order related methods are there. Since the category is exactly same as the API document, so it is easy to find the relationship between API and SDK. In SDK v2, each client is smaller and simpler, which means it is easier to maintain and less bugs.
 
+Compared to SDK versions v1 and v2, due to changes and updates in the out and in parameters of many interfaces, in order to match the latest interface in and out parameter situation, v3 version has made adjustments and updates to the out and in parameters of more than 80 interfaces to ensure that requests can be correctly initiated and accurate response data can be obtained. Meanwhile, the v3 version has added over 130 new interfaces available for use, greatly expanding the number of available interfaces.
+
 #### How to migrate
 
-You don't need to change your business logic, what you need is to find the v1 request client and subscription client, and replace with the proper v2 client. The additional cost is that you need to have additional initialization for each v2 client.
+You don't need to change your business logic, what you need is to find the v1 or v2 request client and subscription client, and replace with the proper v3 client. The additional cost is that you need to have additional initialization for each v3 client.
 
 ## Request example
 
@@ -416,7 +421,7 @@ std::string amount = "100.0";
 crossMarginClient.repay(marginId, amount.c_str());
 ```
 
-####Loan history
+#### Loan history
 
 ```c++
 CrossMarginClient crossMarginClient{APIKEY, SECRETKEY};
@@ -437,7 +442,7 @@ client.subTrade("htusdt", [](Trade trade) {
 });
 ```
 
-###Subscribe candlestick update
+### Subscribe candlestick update
 
 ```c++
 websocketMarketClient client;

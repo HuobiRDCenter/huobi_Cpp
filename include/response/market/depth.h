@@ -9,5 +9,6 @@ struct Depth {
     std::vector<DepthPair> asks;
     std::vector<DepthPair> bids;
     long ts;
+    long version;
 };
 #endif //HUOBI_DEPTH_H

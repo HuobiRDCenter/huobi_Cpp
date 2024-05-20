@@ -152,11 +152,17 @@ std::vector<IsolatedMarginLoanOrder> IsolatedMarginClient::getLoanOrders(Isolate
         loan.userId = atol(data[i]["user-id"].GetString());
         loan.accruedAt = atol(data[i]["accrued-at"].GetString());
         loan.createdAt = atol(data[i]["created-at"].GetString());
+        if (data[i].HasMember("updated-at"))
+            loan.updatedAt = atol(data[i]["updated-at"].GetString());
         loan.paidPoint = data[i]["paid-point"].GetString();
         loan.paidCoin = data[i]["paid-coin"].GetString();
         loan.deductCurrency = data[i]["deduct-currency"].GetString();
         loan.deductAmount = data[i]["deduct-amount"].GetString();
         loan.deductRate = data[i]["deduct-rate"].GetString();
+        if (data[i].HasMember("hour-interest-rate"))
+            loan.hourInterestRate = data[i]["hour-interest-rate"].GetString();
+        if (data[i].HasMember("day-interest-rate"))
+            loan.dayInterestRate = data[i]["day-interest-rate"].GetString();
         vec.push_back(loan);
     }
     return vec;
@@ -197,4 +203,23 @@ std::vector<IsolatedMarginBalance> IsolatedMarginClient::getBalance(IsolatedMarg
     return vec;
 }
 
+std::vector<MarginLimitResponse> IsolatedMarginClient::getMarginLimit(string currency) {
+    std::map<std::string, const char *> paramMap;
+    string url = SPLICE("/v2/margin/limit?");
+    paramMap["currency"] = currency.c_str();
+    url.append(signature.createSignatureParam(GET, "/v2/margin/limit", paramMap));
+    string response = Rest::perform_get(url.c_str());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    vector<MarginLimitResponse> vec;
+    for (int i = 0; i < data.Size(); i++) {
+        MarginLimitResponse marginLimitResponse;
+        if (data[i].HasMember("currency"))
+            marginLimitResponse.currency = data[i]["currency"].GetString();
+        if (data[i].HasMember("maxHoldings"))
+            marginLimitResponse.maxHoldings = data[i]["maxHoldings"].GetString();
+        vec.push_back(marginLimitResponse);
+    }
+    return vec;
+}
 

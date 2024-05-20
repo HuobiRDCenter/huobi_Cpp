@@ -37,6 +37,9 @@
 #include <response/accounts/pointAccount.h>
 #include <request/accounts/assetValuationRequest.h>
 #include <response/accounts/assetValuation.h>
+#include <request/accounts/accountValuationRequest.h>
+#include <response/accounts/accountValuation.h>
+#include <request/accounts/accountTransferV2Requese.h>
 
 #include <response/wallet/depositaddress.h>
 #include <response/wallet/withdrawquota.h>
@@ -45,6 +48,7 @@
 #include <request/wallet/querydepositwithdraw.h>
 #include <request/wallet/getWithdrawAddressRequest.h>
 #include <response/wallet/getWithdrawAddressResponse.h>
+#include <response/wallet/getWithdrawClientOrderIdResponse.h>
 
 
 #include <request/trade/placeorder.h>
@@ -60,10 +64,19 @@
 #include <request/trade/ordershistory.h>
 #include <request/trade/matchresultshistory.h>
 #include <response/trade/transactfeerate.h>
+#include <response/trade/placeOrderResponse.h>
+#include <request/trade/autoPlaceRequest.h>
+#include <response/trade/cancelAllAfterResponse.h>
 
 #include <response/reference/symbol.h>
 #include <response/reference/currencies.h>
 #include <request/reference/currencies.h>
+#include <response/reference/symbolV2.h>
+#include <response/reference/currenciesV2.h>
+#include <response/reference/currenciesV1.h>
+#include <response/reference/symbolsV1.h>
+#include <response/reference/marketSymbols.h>
+#include <response/reference/chains.h>
 
 
 #include <request/isolatedMargin/transferorapply.h>
@@ -72,6 +85,7 @@
 #include <request/isolatedMargin/loanorders.h>
 #include <response/isolatedmargin/loanorder.h>
 #include <response/isolatedmargin/balance.h>
+#include <response/isolatedmargin/marginLimitResponse.h>
 
 
 #include <request/crossMargin/transferorapply.h>
@@ -108,6 +122,9 @@
 #include <response/subUser/subUserAccount.h>
 #include <request/subUser/querysubuserdeposit.h>
 #include <response/subUser/subuserdeposit.h>
+#include <response/subUser/manageSubUserResponse.h>
+#include <request/subUser/subUserDeductModeRequest.h>
+#include <response/subUser/subUserDeductModeResponse.h>
 
 #include <request/algo/createAlgoOrderRequest.h>
 #include <request/algo/openingAlgoOrdersRequest.h>

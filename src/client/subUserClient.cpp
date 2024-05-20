@@ -170,6 +170,10 @@ long SubUserClient::subuserTransfer(SubuserTransferRequest &request) {
     writer.String(request.type.c_str());
     writer.Key("amount");
     writer.String(request.amount.c_str());
+    if (!request.clientOrderId.empty()) {
+        writer.Key("client-order-id");
+        writer.String(request.clientOrderId.c_str());
+    }
     writer.EndObject();
     url.append(signature.createSignatureParam(POST, "/v1/subuser/transfer", std::map<std::string, const char *>()));
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
@@ -196,7 +200,7 @@ vector<Balance> SubUserClient::getSubuserAggregateBalance() {
     return vec;
 }
 
-void SubUserClient::manageSubUser(ManageSubUserRequest &request) {
+ManageSubUserResponse SubUserClient::manageSubUser(ManageSubUserRequest &request) {
     string url = SPLICE("/v2/sub-user/management?");
     rapidjson::StringBuffer strBuf;
     rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
@@ -208,6 +212,15 @@ void SubUserClient::manageSubUser(ManageSubUserRequest &request) {
     writer.EndObject();
     url.append(signature.createSignatureParam(POST, "/v2/sub-user/management", std::map<std::string, const char *>()));
     string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+
+    ManageSubUserResponse manageSubUserResponse;
+    if (data.HasMember("subUid"))
+        manageSubUserResponse.subUid = atol(data["subUid"].GetString());
+    if (data.HasMember("userState"))
+        manageSubUserResponse.userState = data["userState"].GetString();
+    return manageSubUserResponse;
 }
 
 ApiKeyGenerationResponse SubUserClient::apiKeyGeneration(ApiKeyGenerationRequest &request) {
@@ -337,6 +350,10 @@ std::vector<User> SubUserClient::getSubUserList(long fromId) {
         User user;
         user.uid = atol(data[i]["uid"].GetString());
         user.userState = data[i]["userState"].GetString();
+        if (data[i].HasMember("subUserName"))
+            user.subUserName = data[i]["subUserName"].GetString();
+        if (data[i].HasMember("note"))
+            user.note = data[i]["note"].GetString();
         vec.push_back(user);
     }
     return vec;
@@ -363,12 +380,13 @@ std::vector<SubUserAccount> SubUserClient::getSubUserAccountList(long subUid) {
     url.append(signature.createSignatureParam(GET, "/v2/sub-user/account-list", paramMap));
     string response = Rest::perform_get(url.c_str());
     Document d;
-    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"]["list"];
     vector<SubUserAccount> vec;
     for (int i = 0; i < data.Size(); i++) {
         SubUserAccount subUserAccount;
         subUserAccount.activation = data[i]["activation"].GetString();
-        subUserAccount.accountType = atol(data[i]["uid"].GetString());
+        subUserAccount.accountType = atol(data[i]["accountType"].GetString());
+        subUserAccount.transferrable = atol(data[i]["transferrable"].GetString());
         if (data[i].HasMember("accountIds")) {
             for (int j = 0; j < data[i]["accountIds"].Size(); i++) {
                 AccountId temp;
@@ -392,4 +410,34 @@ long SubUserClient::getUid() {
     Document d;
     Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
     return atol(data.GetString());
+}
+
+std::vector<SubUserDeductModeResponse> SubUserClient::subUserDeductMode(SubUserDeductModeRequest &request) {
+    string url = SPLICE("/v2/sub-user/deduct-mode?");
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    writer.StartObject();
+    writer.Key("subUids");
+    writer.String(to_string(request.subUids).c_str());
+    writer.Key("deductMode");
+    writer.String(request.deductMode.c_str());
+    url.append(signature.createSignatureParam(POST, "/v2/sub-user/deduct-mode",
+                                              std::map<std::string, const char *>()));
+    string response = Rest::perform_post(url.c_str(), strBuf.GetString());
+    Document d;
+    Value &data = d.Parse<kParseNumbersAsStringsFlag>(response.c_str())["data"];
+    vector<SubUserDeductModeResponse> vec;
+    for (int i = 0; i < data.Size(); i++) {
+        SubUserDeductModeResponse subUserDeductModeResponse;
+        if (data[i].HasMember("subUid"))
+            subUserDeductModeResponse.subUid = data[i]["subUid"].GetString();
+        if (data[i].HasMember("deductMode"))
+            subUserDeductModeResponse.deductMode = data[i]["deductMode"].GetString();
+        if (data[i].HasMember("errCode"))
+            subUserDeductModeResponse.errCode = data[i]["errCode"].GetString();
+        if (data[i].HasMember("errMessage"))
+            subUserDeductModeResponse.errMessage = data[i]["errMessage"].GetString();
+        vec.push_back(subUserDeductModeResponse);
+    }
+    return vec;
 }

@@ -23,11 +23,15 @@ struct AccountClient {
 
     AccountTransferResponse accountTransfer(AccountTransferRequest &request);
 
-    long pointTransfer(PointTransferRequest &request);
+    AccountTransferResponse pointTransfer(PointTransferRequest &request);
 
     PointAccount getPointAccount(long subUid);
 
     AssetValuation getAssetValuation(AssetValuationRequest &request);
+
+    AccountValuation getAccountValuation(AccountValuationRequest &request);
+
+    long accountTransferV2(AccountTransferV2Request &request);
 
 private:
     Signature signature;
