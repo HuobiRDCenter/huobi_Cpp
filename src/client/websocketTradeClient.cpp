@@ -8,7 +8,7 @@ void WebsocketTradeClient::subTradeClearing(const char *symbol, int mode,
     std::thread th(WebsocketHelper::monitor, topic, signature, [handler](Value &value) {
         Value &data = value["data"];
         TradeClearing tradeClearing;
-        tradeClearing.eventType = data["eventType"].GetString();
+        tradeClearing.event = data["event"].GetString();
         tradeClearing.symbol = data["symbol"].GetString();
         if (data.HasMember("orderId"))
             tradeClearing.orderId = atol(data["orderId"].GetString());
