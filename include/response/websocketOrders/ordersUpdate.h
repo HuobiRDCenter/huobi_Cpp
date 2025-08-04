@@ -2,7 +2,7 @@
 #ifndef HUOBI_ORDERSUPDATE_H
 #define HUOBI_ORDERSUPDATE_H
 struct OrdersUpdate {
-    std::string eventType;
+    std::string event;
     std::string symbol;
     long accountId;
     long orderId;

@@ -5,7 +5,7 @@
 #include <string>
 
 struct TradeClearing {
-    std::string eventType;
+    std::string event;
     std::string symbol;
     long orderId;
     std::string tradePrice;
