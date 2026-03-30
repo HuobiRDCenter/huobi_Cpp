@@ -23,6 +23,15 @@ struct WebsocketHelper {
 
     static void monitor(string topic, Signature signature, const std::function<void(Value &)> &handler);
 
+    // 构建V2取消订阅消息
+    static websocket_outgoing_message buildV2UnsubTopic(string topic);
+
+    // 取消订阅的监控函数（不需要handler）
+    static void unsubMonitor(string topic, Signature signature);
+
+    // 取消订阅的处理函数
+    static void unsubFunc(websocket_client &client, string topic, Signature signature);
+
     static void func(websocket_client &client, int &lastRecvTime, string topic, Signature signature,
                      const std::function<void(Value &)> &handler);
 

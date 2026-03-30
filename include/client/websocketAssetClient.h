@@ -9,6 +9,8 @@ struct WebsocketAssetClient {
 
     void subAccounts(int mode, const std::function<void(const AccountsUpdate &)> &handler);
 
+    void unsubAccounts(int mode);
+
     Signature signature;
 
 };

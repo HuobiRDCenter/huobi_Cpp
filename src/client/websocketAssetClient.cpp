@@ -23,3 +23,12 @@ void WebsocketAssetClient::subAccounts(int mode, const std::function<void(const 
     });
     th.detach();
 }
+
+// 取消订阅功能
+void WebsocketAssetClient::unsubAccounts(int mode) {
+    string topic;
+    topic.append("accounts.update#").append(to_string(mode));
+    
+    // 直接调用WebsocketHelper的unsubMonitor函数
+    WebsocketHelper::unsubMonitor(topic, signature);
+}

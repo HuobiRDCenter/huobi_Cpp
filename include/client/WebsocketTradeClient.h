@@ -10,6 +10,8 @@ struct WebsocketTradeClient {
 
     void subTradeClearing(const char* symbol, int mode,const std::function<void(const TradeClearing &)> &handler);
 
+    void unsubTradeClearing(const char* symbol, int mode);
+
     Signature signature;
 };
 #endif //HUOBI_WEBSOCKETTRADECLIENT_H

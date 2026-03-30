@@ -9,6 +9,8 @@ struct WebsocketOrdersClient {
 
     void subOrders(const char* symbol, const std::function<void(const OrdersUpdate &)> &handler);
 
+    void unsubOrders(const char* symbol);
+
     Signature signature;
 };
 

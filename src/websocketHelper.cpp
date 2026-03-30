@@ -140,8 +140,6 @@ void WebsocketHelper::monitor(string topic, Signature signature, const std::func
     }
 }
 
-
-
 void WebsocketHelper::func(websocket_client &client, int &lastRecvTime, string topic, Signature signature,
                            const std::function<void(Value &)> &handler) {
     client.connect(WEBSOCKET_V2_HOST).wait();
@@ -173,3 +171,62 @@ void WebsocketHelper::func(websocket_client &client, int &lastRecvTime, string t
     }
 }
 
+// 构建V2取消订阅消息
+websocket_outgoing_message WebsocketHelper::buildV2UnsubTopic(string topic) {
+    websocket_outgoing_message out_msg;
+    rapidjson::StringBuffer strBuf;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(strBuf);
+    
+    writer.StartObject();
+    writer.Key("action");
+    writer.String("unsub");  // 取消订阅用unsub
+    writer.Key("ch");
+    writer.String(topic.c_str());
+    writer.EndObject();
+    
+    out_msg.set_utf8_message(strBuf.GetString());
+    return out_msg;
+}
+
+
+// 取消订阅的监控函数
+void WebsocketHelper::unsubMonitor(string topic, Signature signature) {
+    websocket_client client;
+    std::thread th(WebsocketHelper::unsubFunc, std::ref(client), topic, signature);
+    th.detach();
+}
+
+// 取消订阅的处理函数
+void WebsocketHelper::unsubFunc(websocket_client &client, string topic, Signature signature) {
+    try {
+        // 连接服务器
+        client.connect(WEBSOCKET_V2_HOST).wait();
+        
+        // 发送认证消息
+        client.send(WebsocketHelper::buildSignatureTopic(signature)).wait();
+        
+        // 等待认证响应
+        string msg = client.receive().then([](websocket_incoming_message in_msg) {
+            return in_msg.extract_string();
+        }).get();
+        
+        // 解析响应，确认认证成功
+        Document d;
+        d.Parse<kParseNumbersAsStringsFlag>(msg.c_str());
+        
+        // 发送取消订阅消息
+        client.send(WebsocketHelper::buildV2UnsubTopic(topic)).wait();
+        
+        // 可以等待取消订阅的确认响应（可选）
+        string unsub_response = client.receive().then([](websocket_incoming_message in_msg) {
+            return in_msg.extract_string();
+        }).get();
+        
+        // 关闭连接
+        client.close();
+        
+    } catch (std::exception &e) {
+        // 出错时关闭连接
+        client.close();
+    }
+}

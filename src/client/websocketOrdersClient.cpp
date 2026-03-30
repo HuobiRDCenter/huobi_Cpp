@@ -53,3 +53,12 @@ void WebsocketOrdersClient::subOrders(const char *symbol, const std::function<vo
     });
     th.detach();
 }
+
+// 取消订阅功能
+void WebsocketOrdersClient::unsubOrders(const char *symbol) {
+    string topic;
+    topic.append("orders#").append(symbol);
+    
+    // 直接调用WebsocketHelper的unsubMonitor函数
+    WebsocketHelper::unsubMonitor(topic, signature);
+}

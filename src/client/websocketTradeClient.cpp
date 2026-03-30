@@ -62,3 +62,11 @@ void WebsocketTradeClient::subTradeClearing(const char *symbol, int mode,
     th.detach();
 }
 
+// 取消订阅功能
+void WebsocketTradeClient::unsubTradeClearing(const char *symbol, int mode) {
+    string topic;
+    topic.append("trade.clearing#").append(symbol).append("#").append(to_string(mode));
+    
+    // 直接调用WebsocketHelper的unsubMonitor函数
+    WebsocketHelper::unsubMonitor(topic, signature);
+}
